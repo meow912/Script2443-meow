@@ -3,276 +3,305 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Script2443 - Code Editor</title>
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
-  body {
-    background: #0d0f16;
-    color: #e6e8ec;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 30px 20px;
-  }
-  .container {
-    width: 100%;
-    max-width: 900px;
-    background: #151822;
-    border: 2px solid #00e676;
-    border-radius: 14px;
-    padding: 25px;
-    box-shadow: 0 0 30px rgba(0, 230, 118, 0.15);
-  }
-  h1 {
-    color: #00e676;
-    font-size: 22px;
-    margin-bottom: 8px;
-    text-align: center;
-  }
-  .subtitle {
-    text-align: center;
-    color: #8b93a7;
-    font-size: 13px;
-    margin-bottom: 20px;
-  }
-  label {
-    display: block;
-    color: #00e676;
-    font-size: 13px;
-    margin-bottom: 6px;
-    font-weight: 600;
-  }
-  input, textarea {
-    width: 100%;
-    background: #0d0f16;
-    border: 1.5px solid #2a3142;
-    border-radius: 8px;
-    color: #e6e8ec;
-    padding: 12px;
-    font-size: 14px;
-    outline: none;
-    transition: 0.2s;
-  }
-  input:focus, textarea:focus {
-    border-color: #00e676;
-  }
-  textarea {
-    min-height: 220px;
-    resize: vertical;
-    font-family: 'Consolas', 'Courier New', monospace;
-    line-height: 1.5;
-  }
-  .field { margin-bottom: 18px; }
-  button {
-    width: 100%;
-    background: linear-gradient(90deg, #00e676, #00b0ff);
-    border: none;
-    border-radius: 8px;
-    color: #0d0f16;
-    font-size: 15px;
-    font-weight: 700;
-    padding: 14px;
-    cursor: pointer;
-    transition: 0.2s;
-    margin-top: 5px;
-  }
-  button:hover {
-    filter: brightness(1.1);
-    transform: translateY(-2px);
-  }
-  button:active { transform: translateY(0); }
+<title>@script2443 Raw Generator</title>
 
-  .output {
-    display: none;
-    margin-top: 22px;
-    padding: 18px;
-    background: #0d0f16;
-    border: 1.5px dashed #00e676;
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: #0b0b0f;
+    color: white;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 700px;
+    background: #15151c;
+    border: 1px solid #292936;
+    border-radius: 18px;
+    padding: 25px;
+    box-shadow: 0 10px 40px rgba(0,0,0,.45);
+}
+
+h1 {
+    text-align: center;
+    margin-top: 0;
+    color: #ff277f;
+}
+
+.subtitle {
+    text-align: center;
+    color: #999;
+    margin-bottom: 25px;
+}
+
+label {
+    display: block;
+    margin: 15px 0 7px;
+    font-weight: bold;
+}
+
+input,
+textarea {
+    width: 100%;
+    border: 1px solid #30303d;
+    background: #0d0d12;
+    color: white;
     border-radius: 10px;
-  }
-  .output.show { display: block; }
-  .output-title {
-    color: #00e676;
-    font-size: 13px;
-    font-weight: 700;
-    margin-bottom: 10px;
-  }
-  .url-box {
-    background: #151822;
-    border-radius: 6px;
-    padding: 10px 12px;
-    font-family: 'Consolas', monospace;
-    font-size: 12px;
-    color: #00b0ff;
-    word-break: break-all;
-    margin-bottom: 10px;
-    border-left: 3px solid #00e676;
-  }
-  .protected {
-    color: #ff5f7e;
-    font-size: 13px;
-    font-weight: 600;
-    padding: 12px;
-    background: rgba(255, 95, 126, 0.08);
-    border-radius: 6px;
-    border-left: 3px solid #ff5f7e;
-    margin-bottom: 12px;
-    line-height: 1.5;
-  }
-  .loadstring-box {
-    background: #151822;
-    border-radius: 6px;
-    padding: 12px;
-    font-family: 'Consolas', monospace;
-    font-size: 12px;
-    color: #ffd54f;
-    word-break: break-all;
-    border-left: 3px solid #ffd54f;
+    padding: 13px;
+    outline: none;
+    font-size: 15px;
+}
+
+input:focus,
+textarea:focus {
+    border-color: #ff277f;
+}
+
+textarea {
+    min-height: 280px;
+    resize: vertical;
+    font-family: Consolas, monospace;
+}
+
+button {
+    width: 100%;
+    border: 0;
+    border-radius: 10px;
+    padding: 14px;
+    margin-top: 18px;
+    background: #ff277f;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
     cursor: pointer;
-    transition: 0.2s;
-  }
-  .loadstring-box:hover {
-    background: #1c2030;
-  }
-  .copy-hint {
-    font-size: 11px;
-    color: #8b93a7;
-    margin-top: 6px;
-    text-align: right;
-  }
-  .toast {
-    position: fixed;
-    bottom: 25px;
-    left: 50%;
-    transform: translateX(-50%) translateY(100px);
-    background: #00e676;
-    color: #0d0f16;
-    padding: 12px 22px;
-    border-radius: 8px;
-    font-weight: 700;
-    font-size: 14px;
-    transition: 0.3s;
-    opacity: 0;
-    pointer-events: none;
-  }
-  .toast.show {
-    transform: translateX(-50%) translateY(0);
-    opacity: 1;
-  }
+}
+
+button:hover {
+    opacity: .9;
+}
+
+button:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+.result {
+    display: none;
+    margin-top: 25px;
+    background: #0d0d12;
+    border: 1px solid #30303d;
+    border-radius: 12px;
+    padding: 15px;
+}
+
+.result-title {
+    color: #aaa;
+    margin-bottom: 7px;
+}
+
+.copy-box {
+    display: flex;
+    gap: 8px;
+}
+
+.copy-box input {
+    flex: 1;
+}
+
+.copy-box button {
+    width: auto;
+    margin: 0;
+    padding: 10px 15px;
+}
+
+.status {
+    text-align: center;
+    margin-top: 15px;
+    color: #aaa;
+}
+
+.error {
+    color: #ff4d6d;
+}
+
+.success {
+    color: #45e08a;
+}
 </style>
 </head>
+
 <body>
 
 <div class="container">
-  <h1>📝 Script2443 Code Editor</h1>
-  <div class="subtitle">Viết code, đặt tên, tạo URL bảo vệ</div>
 
-  <div class="field">
-    <label>Tên script</label>
-    <input type="text" id="scriptName" placeholder="VD: MyScript_v1">
-  </div>
+    <h1>@script2443</h1>
 
-  <div class="field">
-    <label>Nội dung code</label>
-    <textarea id="scriptCode" placeholder="-- Viết code Lua ở đây...&#10;print('Hello World')"></textarea>
-  </div>
-
-  <button onclick="createURL()">🔗 Tạo URL</button>
-
-  <div class="output" id="output">
-    <div class="output-title">✓ URL đã tạo thành công</div>
-    <div class="url-box" id="rawUrl">...</div>
-
-    <div class="protected">
-      🔒 Link đã bảo vệ người tạo web @script2443 tên giả Meow
+    <div class="subtitle">
+        Tạo URL Raw cho code của bạn
     </div>
 
-    <div class="output-title" style="margin-top:14px;">Loadstring để copy</div>
-    <div class="loadstring-box" id="loadstringBox" onclick="copyLoadstring()">...</div>
-    <div class="copy-hint">👆 Nhấn vào để copy</div>
-  </div>
+    <label for="name">Tên script</label>
+
+    <input
+        id="name"
+        type="text"
+        maxlength="80"
+        placeholder="Ví dụ: MyScript"
+    >
+
+    <label for="code">Code</label>
+
+    <textarea
+        id="code"
+        placeholder="Dán hoặc viết code của bạn ở đây..."
+    ></textarea>
+
+    <button id="createButton">
+        TẠO URL
+    </button>
+
+    <div id="status" class="status"></div>
+
+    <div id="result" class="result">
+
+        <div class="result-title">
+            URL Raw
+        </div>
+
+        <div class="copy-box">
+            <input id="rawUrl" readonly>
+            <button onclick="copyRaw()">
+                Copy
+            </button>
+        </div>
+
+        <div class="result-title" style="margin-top:18px;">
+            Loadstring
+        </div>
+
+        <div class="copy-box">
+            <input id="loadstring" readonly>
+            <button onclick="copyLoadstring()">
+                Copy
+            </button>
+        </div>
+
+    </div>
+
 </div>
 
-<div class="toast" id="toast">Đã copy!</div>
-
 <script>
-  // Mã hóa base64 (đơn giản, client-side)
-  function encode(str) {
-    try {
-      return btoa(unescape(encodeURIComponent(str)));
-    } catch(e) {
-      return btoa(str);
-    }
-  }
+const API_URL = "https://YOUR-BACKEND-URL.com";
 
-  function createURL() {
-    const name = document.getElementById('scriptName').value.trim();
-    const code = document.getElementById('scriptCode').value;
+const createButton = document.getElementById("createButton");
+const nameInput = document.getElementById("name");
+const codeInput = document.getElementById("code");
+
+const result = document.getElementById("result");
+const rawUrl = document.getElementById("rawUrl");
+const loadstring = document.getElementById("loadstring");
+const status = document.getElementById("status");
+
+createButton.addEventListener("click", async () => {
+
+    const name = nameInput.value.trim();
+    const code = codeInput.value;
+
+    status.className = "status";
+    status.textContent = "";
+    result.style.display = "none";
 
     if (!name) {
-      alert('Vui lòng nhập tên script!');
-      return;
+        status.className = "status error";
+        status.textContent = "Vui lòng nhập tên script.";
+        return;
     }
+
     if (!code.trim()) {
-      alert('Vui lòng nhập nội dung code!');
-      return;
+        status.className = "status error";
+        status.textContent = "Vui lòng nhập code.";
+        return;
     }
 
-    // Tạo payload = tên + code, mã hóa base64
-    const payload = encode(name + '|||' + code);
+    createButton.disabled = true;
+    createButton.textContent = "ĐANG TẠO...";
 
-    // Giả lập URL raw — trong web thật sẽ là server endpoint
-    // Ở đây dùng query string để demo
-    const baseUrl = window.location.origin + window.location.pathname;
-    const rawUrl = baseUrl + '?s=' + payload;
+    try {
 
-    // Hiện output
-    document.getElementById('rawUrl').textContent = rawUrl;
+        const response = await fetch(API_URL + "/api/create", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                name: name,
+                code: code
+            })
+        });
 
-    const loadstring = 'loadstring(game:HttpGet("' + rawUrl + '"))()';
-    document.getElementById('loadstringBox').textContent = loadstring;
+        const data = await response.json();
 
-    document.getElementById('output').classList.add('show');
-  }
+        if (!response.ok) {
+            throw new Error(data.error || "Không thể tạo URL.");
+        }
 
-  function copyLoadstring() {
-    const text = document.getElementById('loadstringBox').textContent;
-    navigator.clipboard.writeText(text).then(() => {
-      showToast('Đã copy loadstring!');
-    }).catch(() => {
-      // Fallback
-      const ta = document.createElement('textarea');
-      ta.value = text;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
-      showToast('Đã copy loadstring!');
-    });
-  }
+        rawUrl.value = data.rawUrl;
+        loadstring.value =
+            'loadstring(game:HttpGet("' +
+            data.rawUrl +
+            '"))()';
 
-  function showToast(msg) {
-    const toast = document.getElementById('toast');
-    toast.textContent = msg;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 1800);
-  }
+        result.style.display = "block";
 
-  // Nếu URL có tham số ?s= → hiện thông báo bảo vệ (khi ai đó truy cập link raw)
-  window.addEventListener('DOMContentLoaded', () => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('s')) {
-      document.body.innerHTML = `
-        <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;">
-          <div style="text-align:center;max-width:500px;">
-            <div style="font-size:60px;margin-bottom:20px;">🔒</div>
-            <h2 style="color:#ff5f7e;font-size:20px;margin-bottom:12px;">Link đã bảo vệ người tạo web @script2443 tên giả Meow</h2>
-          </div>
-        </div>
-      `;
+        status.className = "status success";
+        status.textContent = "Tạo URL thành công!";
+
+    } catch (error) {
+
+        status.className = "status error";
+        status.textContent = error.message;
+
+    } finally {
+
+        createButton.disabled = false;
+        createButton.textContent = "TẠO URL";
+
     }
-  });
+});
+
+async function copyRaw() {
+
+    try {
+        await navigator.clipboard.writeText(rawUrl.value);
+        status.className = "status success";
+        status.textContent = "Đã copy URL Raw!";
+    } catch {
+        rawUrl.select();
+        document.execCommand("copy");
+    }
+}
+
+async function copyLoadstring() {
+
+    try {
+        await navigator.clipboard.writeText(loadstring.value);
+        status.className = "status success";
+        status.textContent = "Đã copy Loadstring!";
+    } catch {
+        loadstring.select();
+        document.execCommand("copy");
+    }
+}
 </script>
 
 </body>
