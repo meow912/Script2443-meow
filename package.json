@@ -1,0 +1,12 @@
+{
+  "name": "script2443-raw-server",
+  "version": "1.0.0",
+  "description": "Protected raw code generator",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
