@@ -21,7 +21,7 @@
   font-family: "Optimistic Mono", ui-monospace, monospace;
 }
 </style><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>@script2443 V8.6 - AI Suy Nghĩ Sâu + Ảnh 3D 2D + Google Knowledge</title>
+<title>@script2443 V8.7 - AI Video 3D + Ảnh 3D Mèo + Google Fix</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>body{background:#050a0f;color:#e4e4e7;font-family:Inter,system-ui}
 .think-dot{animation:blink 1s infinite}
@@ -30,7 +30,7 @@
 </style></head>
 <body class="min-h-screen">
 <header class="sticky top-0 z-20 backdrop-blur-xl bg-[#050a0f]/90 border-b border-cyan-400/10 p-4 flex justify-between">
-<div class="flex gap-3 items-center"><div class="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-400 to-teal-400 text-black font-black flex items-center justify-center">S2</div><div><h1 class="font-black text-[14px]">@script2443 <span class="text-cyan-300">V8.6 AI Deep Think + 3D 2D + Google</span></h1><p class="text-[10px] text-zinc-500">Suy nghĩ lâu được - Ảnh xịn 3D 2D - Biết Google</p></div></div>
+<div class="flex gap-3 items-center"><div class="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-400 to-teal-400 text-black font-black flex items-center justify-center">S2</div><div><h1 class="font-black text-[14px]">@script2443 <span class="text-cyan-300">V8.7 AI Video 3D + Google Fix</span></h1><p class="text-[10px] text-zinc-500">Suy nghĩ lâu được - Ảnh xịn 3D 2D - Biết Google</p></div></div>
 <div id="vis" class="flex gap-2 text-[10px] font-mono"></div>
 </header>
 <div class="max-w-[1280px] mx-auto p-4">
@@ -123,7 +123,7 @@ function viewRawUrl(){let url=document.getElementById('rawUrlInput').value.trim(
 function copyViewedRaw(){navigator.clipboard.writeText(document.getElementById('rawViewOutput').value);}
 
 let chat=JSON.parse(localStorage.getItem('chatV86')||'[]');
-function renderChat(){let box=document.getElementById('chat');if(!box) return;box.innerHTML='';chat.forEach(m=>{let d=document.createElement('div');d.className=m.role==='user'?'flex justify-end':'flex justify-start';let safe=m.text.replace(/</g,'&lt;');let codeH=m.code?`<pre class="mt-2 p-2 bg-black rounded text-[11px] overflow-auto max-h-[400px] whitespace-pre-wrap"><code>${m.code.replace(/</g,'&lt;')}</code></pre><button onclick="navigator.clipboard.writeText(this.parentElement.previousElementSibling.innerText)" class="px-2 py-1 rounded bg-cyan-500/15 text-[10px] mt-1">Copy code</button>`:'';let imgH=m.img?`<img src="${m.img}" class="mt-2 rounded-xl border border-cyan-400/20 max-w-full canvas-3d"><div class="mt-1 flex gap-2"><a href="${m.img}" download="v86_${Date.now()}.png" class="px-2 py-1 rounded bg-white/5 text-[10px]">Tải ảnh 3D/2D</a><span class="text-[9px] text-zinc-500">${m.imgMode||''}</span></div>`:'';let thinkH=m.think?`<details class="mt-2 text-[10px] text-zinc-500"><summary class="cursor-pointer text-cyan-300">🧠 Quá trình suy nghĩ (${m.thinkTime||''})</summary><pre class="mt-1 p-2 bg-black/50 rounded whitespace-pre-wrap">${m.think.replace(/</g,'&lt;')}</pre></details>`:'';d.innerHTML=`<div class="max-w-[92%] rounded-2xl px-3 py-2 text-[13px] leading-relaxed ${m.role==='user'?'bg-cyan-500/20 border border-cyan-400/20':'bg-[#0f1e2a] border border-white/5'}"><div style="white-space:pre-wrap">${safe}</div>${thinkH}${codeH}${imgH}</div>`;box.appendChild(d);});box.scrollTop=box.scrollHeight;let prof=document.getElementById('prof');if(prof) prof.innerText='Lịch sử: '+chat.length+' tin nhắn | V8.6 Deep Think';}
+function renderChat(){let box=document.getElementById('chat');if(!box) return;box.innerHTML='';chat.forEach(m=>{let d=document.createElement('div');d.className=m.role==='user'?'flex justify-end':'flex justify-start';let safe=m.text.replace(/</g,'&lt;');let codeH=m.code?`<pre class="mt-2 p-2 bg-black rounded text-[11px] overflow-auto max-h-[400px] whitespace-pre-wrap"><code>${m.code.replace(/</g,'&lt;')}</code></pre><button onclick="navigator.clipboard.writeText(this.parentElement.previousElementSibling.innerText)" class="px-2 py-1 rounded bg-cyan-500/15 text-[10px] mt-1">Copy code</button>`:'';let imgH=m.img?`<img src="${m.img}" class="mt-2 rounded-xl border border-cyan-400/20 max-w-full canvas-3d"><div class="mt-1 flex gap-2"><a href="${m.img}" download="v86_${Date.now()}.png" class="px-2 py-1 rounded bg-white/5 text-[10px]">Tải ảnh 3D/2D</a><span class="text-[9px] text-zinc-500">${m.imgMode||''}</span></div>`:'';let videoH=m.video?`<video src="${m.video}" autoplay loop muted playsinline class="mt-2 rounded-xl border border-cyan-400/20 max-w-full canvas-3d w-full"></video><div class="mt-1 flex gap-2"><a href="${m.video}" download="v86_${Date.now()}.webm" class="px-2 py-1 rounded bg-cyan-500/15 text-[10px]">Tải video</a><span class="text-[9px] text-zinc-500">${m.imgMode||''}</span></div>`:'';let thinkH=m.think?`<details class="mt-2 text-[10px] text-zinc-500"><summary class="cursor-pointer text-cyan-300">🧠 Quá trình suy nghĩ (${m.thinkTime||''})</summary><pre class="mt-1 p-2 bg-black/50 rounded whitespace-pre-wrap">${m.think.replace(/</g,'&lt;')}</pre></details>`:'';d.innerHTML=`<div class="max-w-[92%] rounded-2xl px-3 py-2 text-[13px] leading-relaxed ${m.role==='user'?'bg-cyan-500/20 border border-cyan-400/20':'bg-[#0f1e2a] border border-white/5'}"><div style="white-space:pre-wrap">${safe}</div>${thinkH}${codeH}${imgH}${videoH||''}</div>`;box.appendChild(d);});box.scrollTop=box.scrollHeight;let prof=document.getElementById('prof');if(prof) prof.innerText='Lịch sử: '+chat.length+' tin nhắn | V8.7 Video 3D';}
 function quick(t){let el=document.getElementById('aiIn');el.value=t;sendMsg();}
 function clearChat(){if(confirm('Xóa?')){chat=[];localStorage.setItem('chatV86','[]');renderChat();}}
 
@@ -159,81 +159,165 @@ let ns=names.length?names:['Play_'+uniq%100];
 return `-- Yêu cầu: ${orig} | ID ${uniq} | ${ns.length} nút ${ns.join(', ')} | màu ${color}\nlocal gui=Instance.new("ScreenGui")\ngui.Name="S2443_${uniq}"\ngui.Parent=game.Players.LocalPlayer:WaitForChild("PlayerGui")\nlocal main=Instance.new("Frame")\nmain.Size=UDim2.new(0,${sz.w},0,${sz.h})\nmain.Position=UDim2.fromScale(0.5,0.5)\nmain.AnchorPoint=Vector2.new(0.5,0.5)\nmain.Parent=gui\n${ns.map((n,i)=>`local b${i}=Instance.new("TextButton")\nb${i}.Text="${n}"\nb${i}.BackgroundColor3=${col}\nb${i}.Parent=main\n`).join('')}`;
 }
 
+
 function selfGenImgPro(prompt, mode){
 let c=document.createElement('canvas');c.width=768;c.height=768;let ctx=c.getContext('2d');
 let p=prompt.toLowerCase();let hash=0;for(let i=0;i<prompt.length;i++) hash=(hash*31+prompt.charCodeAt(i))%1000;
 let hue=hash%360;
 let is3d = mode==='3d' || p.includes('3d') || p.includes('khối') || p.includes('rubik') || p.includes('isometric');
 let isChibi = p.includes('chibi') || p.includes('cute') || p.includes('dễ thương');
+let isCat = p.includes('mèo')||p.includes('cat');
+let isDog = p.includes('chó')||p.includes('dog');
+let isHouse = p.includes('nhà')||p.includes('house');
+let isCar = p.includes('xe')||p.includes('car')||p.includes('ô tô');
 
-// background
+// background gradient
 let grad=ctx.createRadialGradient(384,384,0,384,384,500);
 grad.addColorStop(0,`hsl(${hue},90%,70%)`);grad.addColorStop(0.5,`hsl(${(hue+40)%360},85%,50%)`);grad.addColorStop(1,`hsl(${(hue+80)%360},80%,20%)`);
 ctx.fillStyle=grad;ctx.fillRect(0,0,768,768);
+// ground shadow
+ctx.fillStyle='rgba(0,0,0,0.25)';ctx.beginPath();ctx.ellipse(384,660,200,45,0,0,Math.PI*2);ctx.fill();
 
-// shadow ground
-ctx.fillStyle='rgba(0,0,0,0.25)';ctx.beginPath();ctx.ellipse(384,620,180,40,0,0,Math.PI*2);ctx.fill();
-
-if(is3d){
-// 3D isometric cubes - Rubik style
+if(is3d && isCat){
+// 3D CAT - isometric cat with 3D blocks
+let ox=384, oy=420;
+let colors=['#ffdd99','#ffbb77','#ffaa66'];
+// body as 3D box
+function drawCube(px,py,s,col){
+ctx.fillStyle=col;
+ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px+s*0.6,py-s*0.3);ctx.lineTo(px,py-s*0.6);ctx.lineTo(px-s*0.6,py-s*0.3);ctx.closePath();ctx.fill();
+ctx.fillStyle='rgba(0,0,0,0.2)';ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px,py+s*0.5);ctx.lineTo(px-s*0.6,py+s*0.2);ctx.lineTo(px-s*0.6,py-s*0.3);ctx.closePath();ctx.fill();
+ctx.fillStyle='rgba(0,0,0,0.35)';ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px,py+s*0.5);ctx.lineTo(px+s*0.6,py+s*0.2);ctx.lineTo(px+s*0.6,py-s*0.3);ctx.closePath();ctx.fill();
+}
+// head 3D
+drawCube(ox,oy,80,colors[0]);
+// ears 3D
+drawCube(ox-45,oy-70,30,'#ffaa66');drawCube(ox+45,oy-70,30,'#ffaa66');
+// eyes 3D
+ctx.fillStyle='black';ctx.beginPath();ctx.arc(ox-25,oy-20,10,0,Math.PI*2);ctx.arc(ox+25,oy-20,10,0,Math.PI*2);ctx.fill();
+ctx.fillStyle='#ff6b9d';ctx.beginPath();ctx.arc(ox,oy+10,8,0,Math.PI*2);ctx.fill();
+// tail 3D
+drawCube(ox+80,oy+20,20,colors[1]);
+}else if(is3d && isDog){
+let ox=384, oy=430;
+function drawCube(px,py,s,col){
+ctx.fillStyle=col;
+ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px+s*0.6,py-s*0.3);ctx.lineTo(px,py-s*0.6);ctx.lineTo(px-s*0.6,py-s*0.3);ctx.closePath();ctx.fill();
+ctx.fillStyle='rgba(0,0,0,0.25)';ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px,py+s*0.5);ctx.lineTo(px-s*0.6,py+s*0.2);ctx.lineTo(px-s*0.6,py-s*0.3);ctx.closePath();ctx.fill();
+ctx.fillStyle='rgba(0,0,0,0.4)';ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px,py+s*0.5);ctx.lineTo(px+s*0.6,py+s*0.2);ctx.lineTo(px+s*0.6,py-s*0.3);ctx.closePath();ctx.fill();
+}
+drawCube(ox,oy,90,'#d2a679');
+drawCube(ox-55,oy-60,35,'#8d5524');drawCube(ox+55,oy-60,35,'#8d5524');
+ctx.fillStyle='black';ctx.beginPath();ctx.arc(ox-20,oy-10,10,0,Math.PI*2);ctx.arc(ox+20,oy-10,10,0,Math.PI*2);ctx.fill();
+}else if(is3d){
+// pure 3D cubes rubik
 let colors=[`hsl(${hue},80%,60%)`,`hsl(${(hue+30)%360},80%,55%)`,`hsl(${(hue+60)%360},80%,45%)`];
-let size=90;
-let ox=384, oy=320;
-for(let z=0;z<3;z++){
-for(let x=0;x<3;x++){
-for(let y=0;y<3;y++){
+let size=70;
+let ox=384, oy=340;
+for(let z=0;z<2;z++){
+for(let x=0;x<2;x++){
+for(let y=0;y<2;y++){
 let px=ox + (x - y)*size*0.6;
 let py=oy + (x + y)*size*0.3 - z*size*0.9;
 let col=colors[(x+y+z)%3];
-// top face
 ctx.fillStyle=col;
 ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px+size*0.6,py-size*0.3);ctx.lineTo(px,py-size*0.6);ctx.lineTo(px-size*0.6,py-size*0.3);ctx.closePath();ctx.fill();
-// left face
 ctx.fillStyle=`hsl(${hue},70%,35%)`;
 ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px,py+size*0.6);ctx.lineTo(px-size*0.6,py+size*0.3);ctx.lineTo(px-size*0.6,py-size*0.3);ctx.closePath();ctx.fill();
-// right face
 ctx.fillStyle=`hsl(${hue},60%,25%)`;
 ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px,py+size*0.6);ctx.lineTo(px+size*0.6,py+size*0.3);ctx.lineTo(px+size*0.6,py-size*0.3);ctx.closePath();ctx.fill();
-ctx.strokeStyle='rgba(0,0,0,0.3)';ctx.lineWidth=1;ctx.stroke();
 }
 }
 }
-// glow
-ctx.shadowColor=`hsl(${hue},100%,60%)`;ctx.shadowBlur=20;ctx.fillStyle='white';ctx.beginPath();ctx.arc(384,200,15,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;
-}else if(p.includes('mèo')||p.includes('cat')){
+}else if(isCat){
 // 2D chibi cat pro
 if(isChibi){
-ctx.fillStyle='#ffe4b5';ctx.beginPath();ctx.arc(384,380,140,0,Math.PI*2);ctx.fill();
-ctx.fillStyle='white';ctx.beginPath();ctx.ellipse(340,360,35,45,0,0,Math.PI*2);ctx.ellipse(428,360,35,45,0,0,Math.PI*2);ctx.fill();
-ctx.fillStyle='#222';ctx.beginPath();ctx.arc(340,375,12,0,Math.PI*2);ctx.arc(428,375,12,0,Math.PI*2);ctx.fill();
-ctx.fillStyle='#ff6b9d';ctx.beginPath();ctx.arc(384,400,10,0,Math.PI*2);ctx.fill();
-ctx.fillStyle='#ffaa66';ctx.beginPath();ctx.moveTo(270,280);ctx.lineTo(320,340);ctx.lineTo(240,340);ctx.fill();ctx.beginPath();ctx.moveTo(498,280);ctx.lineTo(448,340);ctx.lineTo(528,340);ctx.fill();
-ctx.fillStyle='rgba(255,107,157,0.3)';ctx.beginPath();ctx.arc(300,420,25,0,Math.PI*2);ctx.arc(468,420,25,0,Math.PI*2);ctx.fill();
+ctx.fillStyle='#ffe4b5';ctx.beginPath();ctx.arc(384,400,140,0,Math.PI*2);ctx.fill();
+ctx.fillStyle='white';ctx.beginPath();ctx.ellipse(340,380,35,45,0,0,Math.PI*2);ctx.ellipse(428,380,35,45,0,0,Math.PI*2);ctx.fill();
+ctx.fillStyle='#222';ctx.beginPath();ctx.arc(340,395,12,0,Math.PI*2);ctx.arc(428,395,12,0,Math.PI*2);ctx.fill();
+ctx.fillStyle='#ff6b9d';ctx.beginPath();ctx.arc(384,420,10,0,Math.PI*2);ctx.fill();
+ctx.fillStyle='#ffaa66';ctx.beginPath();ctx.moveTo(270,300);ctx.lineTo(320,360);ctx.lineTo(240,360);ctx.fill();ctx.beginPath();ctx.moveTo(498,300);ctx.lineTo(448,360);ctx.lineTo(528,360);ctx.fill();
+ctx.fillStyle='rgba(255,107,157,0.3)';ctx.beginPath();ctx.arc(300,440,25,0,Math.PI*2);ctx.arc(468,440,25,0,Math.PI*2);ctx.fill();
 }else{
-ctx.fillStyle='#ffdd99';ctx.beginPath();ctx.arc(384,380,120,0,Math.PI*2);ctx.fill();
-ctx.fillStyle='#333';ctx.beginPath();ctx.arc(340,360,18,0,Math.PI*2);ctx.arc(428,360,18,0,Math.PI*2);ctx.fill();
+ctx.fillStyle='#ffdd99';ctx.beginPath();ctx.arc(384,400,120,0,Math.PI*2);ctx.fill();
+ctx.fillStyle='#333';ctx.beginPath();ctx.arc(340,380,18,0,Math.PI*2);ctx.arc(428,380,18,0,Math.PI*2);ctx.fill();
+ctx.fillStyle='#ff6699';ctx.beginPath();ctx.arc(384,410,12,0,Math.PI*2);ctx.fill();
 }
-}else if(p.includes('nhà')||p.includes('house')){
-// 3D house isometric
-ctx.fillStyle='#8B4513';ctx.fillRect(284,380,200,150);
-ctx.fillStyle='#CD853F';ctx.beginPath();ctx.moveTo(264,380);ctx.lineTo(384,300);ctx.lineTo(504,380);ctx.fill();
-ctx.fillStyle='#87CEEB';ctx.fillRect(320,420,40,40);ctx.fillRect(410,420,40,40);
-}else if(p.includes('xe')||p.includes('car')){
-ctx.fillStyle='#111';ctx.beginPath();ctx.ellipse(384,500,140,35,0,0,Math.PI*2);ctx.fill();
-ctx.fillStyle=`hsl(${hue},80%,55%)`;ctx.fillRect(244,380,280,80);ctx.beginPath();ctx.moveTo(244,380);ctx.lineTo(280,340);ctx.lineTo(488,340);ctx.lineTo(524,380);ctx.closePath();ctx.fill();
-ctx.fillStyle='#111';ctx.beginPath();ctx.arc(300,500,28,0,Math.PI*2);ctx.arc(468,500,28,0,Math.PI*2);ctx.fill();
+}else if(isDog){
+ctx.fillStyle='#d2a679';ctx.beginPath();ctx.arc(384,400,120,0,Math.PI*2);ctx.fill();
+ctx.fillStyle='#8d5524';ctx.beginPath();ctx.arc(314,320,40,0,Math.PI*2);ctx.arc(454,320,40,0,Math.PI*2);ctx.fill();
+ctx.fillStyle='black';ctx.beginPath();ctx.arc(350,390,14,0,Math.PI*2);ctx.arc(418,390,14,0,Math.PI*2);ctx.fill();
+}else if(isHouse){
+ctx.fillStyle='#8B4513';ctx.fillRect(284,400,200,150);
+ctx.fillStyle='#CD853F';ctx.beginPath();ctx.moveTo(264,400);ctx.lineTo(384,320);ctx.lineTo(504,400);ctx.fill();
+ctx.fillStyle='#87CEEB';ctx.fillRect(320,440,40,40);ctx.fillRect(410,440,40,40);
+}else if(isCar){
+ctx.fillStyle='#111';ctx.beginPath();ctx.ellipse(384,520,140,35,0,0,Math.PI*2);ctx.fill();
+ctx.fillStyle=`hsl(${hue},80%,55%)`;ctx.fillRect(244,400,280,80);ctx.beginPath();ctx.moveTo(244,400);ctx.lineTo(280,360);ctx.lineTo(488,360);ctx.lineTo(524,400);ctx.closePath();ctx.fill();
+ctx.fillStyle='#111';ctx.beginPath();ctx.arc(300,520,28,0,Math.PI*2);ctx.arc(468,520,28,0,Math.PI*2);ctx.fill();
 }else{
-// default logo 2D with 3D shadow
-ctx.fillStyle='rgba(0,0,0,0.4)';ctx.beginPath();ctx.roundRect(184,284,400,200,20);ctx.fill();
-ctx.fillStyle='rgba(255,255,255,0.95)';ctx.beginPath();ctx.roundRect(180,280,400,200,20);ctx.fill();
-ctx.fillStyle='#050a0f';ctx.font='bold 36px sans-serif';ctx.textAlign='center';ctx.fillText(prompt.slice(0,22),384,360);
-ctx.font='18px sans-serif';ctx.fillStyle='#06e7ff';ctx.fillText('@script2443 V8.6 - 3D 2D Pro',384,390);
-ctx.fillStyle=`hsl(${hue},80%,50%)`;ctx.fillRect(284,410,200,8);
+ctx.fillStyle='rgba(0,0,0,0.4)';ctx.beginPath();ctx.roundRect(184,304,400,200,20);ctx.fill();
+ctx.fillStyle='rgba(255,255,255,0.95)';ctx.beginPath();ctx.roundRect(180,300,400,200,20);ctx.fill();
+ctx.fillStyle='#050a0f';ctx.font='bold 34px sans-serif';ctx.textAlign='center';ctx.fillText(prompt.slice(0,22),384,380);
+ctx.font='18px sans-serif';ctx.fillStyle='#06e7ff';ctx.fillText('@script2443 V8.7 - 3D 2D Pro',384,410);
+ctx.fillStyle=`hsl(${hue},80%,50%)`;ctx.fillRect(284,430,200,8);
 }
-
-ctx.font='11px monospace';ctx.fillStyle='rgba(255,255,255,0.9)';ctx.textAlign='center';ctx.fillText((is3d?'3D Isometric':'2D Pro')+' - Canvas tự vẽ - ID '+hash+' - Không lấy mạng',384,750);
+ctx.font='11px monospace';ctx.fillStyle='rgba(255,255,255,0.9)';ctx.textAlign='center';ctx.fillText((is3d?'3D Isometric':'2D Pro')+' - Canvas tự vẽ - ID '+hash,384,750);
 return c.toDataURL('image/png');
 }
+
+function selfGenVideoPro(prompt, mode){
+return new Promise((resolve)=>{
+let c=document.createElement('canvas');c.width=640;c.height=640;let ctx=c.getContext('2d');
+let p=prompt.toLowerCase();let hash=0;for(let i=0;i<prompt.length;i++) hash=(hash*31+prompt.charCodeAt(i))%1000;
+let hue=hash%360;
+let is3d = mode==='3d' || p.includes('3d') || p.includes('khối') || p.includes('rubik');
+let isCat = p.includes('mèo')||p.includes('cat');
+let frames=90;
+let stream=c.captureStream(30);
+let recorder=new MediaRecorder(stream,{mimeType:'video/webm'});
+let chunks=[];
+recorder.ondataavailable=e=>{if(e.data.size>0) chunks.push(e.data);};
+recorder.onstop=()=>{
+let blob=new Blob(chunks,{type:'video/webm'});
+let url=URL.createObjectURL(blob);
+resolve(url);
+};
+recorder.start();
+let frame=0;
+function draw(){
+let t=frame/frames;
+ctx.clearRect(0,0,640,640);
+let grad=ctx.createRadialGradient(320,320,0,320,320,400);
+grad.addColorStop(0,`hsl(${(hue+t*60)%360},90%,70%)`);grad.addColorStop(1,`hsl(${(hue+60)%360},80%,30%)`);
+ctx.fillStyle=grad;ctx.fillRect(0,0,640,640);
+ctx.save();
+ctx.translate(320+Math.sin(t*Math.PI*2)*30, 360+Math.cos(t*Math.PI*2)*10);
+ctx.rotate(Math.sin(t*Math.PI*2)*0.1);
+if(is3d && isCat){
+ctx.fillStyle='#ffdd99';ctx.beginPath();ctx.arc(0,0,80+Math.sin(t*Math.PI*4)*5,0,Math.PI*2);ctx.fill();
+ctx.fillStyle='black';ctx.beginPath();ctx.arc(-20,-10,10,0,Math.PI*2);ctx.arc(20,-10,10,0,Math.PI*2);ctx.fill();
+ctx.fillStyle='#ff6b9d';ctx.beginPath();ctx.arc(0,10,8,0,Math.PI*2);ctx.fill();
+// tail wag
+ctx.fillStyle='#ffaa66';ctx.beginPath();ctx.ellipse(60+Math.sin(t*Math.PI*6)*10,20,20,10,Math.sin(t*Math.PI*6)*0.5,0,Math.PI*2);ctx.fill();
+}else if(is3d){
+let size=60+Math.sin(t*Math.PI*2)*5;
+ctx.fillStyle=`hsl(${hue},80%,60%)`;
+ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(size*0.6,-size*0.3);ctx.lineTo(0,-size*0.6);ctx.lineTo(-size*0.6,-size*0.3);ctx.closePath();ctx.fill();
+ctx.fillStyle=`hsl(${hue},60%,30%)`;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,size*0.5);ctx.lineTo(-size*0.6,size*0.2);ctx.lineTo(-size*0.6,-size*0.3);ctx.closePath();ctx.fill();
+}else if(isCat){
+ctx.fillStyle='#ffdd99';ctx.beginPath();ctx.arc(0,0,80,0,Math.PI*2);ctx.fill();
+ctx.fillStyle='black';ctx.beginPath();ctx.arc(-20,-10,12,0,Math.PI*2);ctx.arc(20,-10,12,0,Math.PI*2);ctx.fill();
+}
+ctx.restore();
+ctx.fillStyle='white';ctx.font='bold 20px sans-serif';ctx.textAlign='center';ctx.fillText(prompt.slice(0,24),320,600);
+frame++;
+if(frame<frames){requestAnimationFrame(draw);}else{recorder.stop();}
+}
+draw();
+});
+}
+
 
 // Google Knowledge Base
 const knowledge={
@@ -318,8 +402,8 @@ renderChat();localStorage.setItem('chatV86',JSON.stringify(chat));return;
 }
 if(/(bạn.*ai tạo|ai tạo.*bạn|bạn được tạo.*bởi ai|who made you|bạn là ai)/i.test(prompt)){
 let ans=[
-`Mình là @script2443 AI V8.6 Deep Think, được tạo bởi @script2443 (bạn đó!) 😊\nMình có thể suy nghĩ sâu 5s, tự vẽ ảnh 3D 2D xịn, và biết cực nhiều thông tin Google về Roblox Lua.\nMình không phải Meta AI hay ChatGPT, mình là AI riêng trong tool @script2443.`,
-`Mình được tạo bởi @script2443 - chủ tool này nè! AI V8.6 Deep Think, suy nghĩ lâu được, ảnh 3D 2D pro.`
+`Mình là @script2443 AI V8.7 Video 3D, được tạo bởi @script2443 (bạn đó!) 😊\nMình có thể suy nghĩ sâu 5s, tự vẽ ảnh 3D 2D xịn, và biết cực nhiều thông tin Google về Roblox Lua.\nMình không phải Meta AI hay ChatGPT, mình là AI riêng trong tool @script2443.`,
+`Mình được tạo bởi @script2443 - chủ tool này nè! AI V8.7 Video 3D, suy nghĩ lâu được, ảnh 3D 2D pro.`
 ];
 chat.push({role:'ai',text:ans[Math.floor(Math.random()*ans.length)],think:thinkLog,thinkTime:thinkTime});
 renderChat();localStorage.setItem('chatV86',JSON.stringify(chat));return;
