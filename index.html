@@ -21,169 +21,344 @@
   font-family: "Optimistic Mono", ui-monospace, monospace;
 }
 </style><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>@script2443 V8.2 - Fix Default + Self Image</title>
+<title>@script2443 V8.6 - AI Suy Nghĩ Sâu + Ảnh 3D 2D + Google Knowledge</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<style>body{background:#050a0f;color:#e4e4e7;font-family:Inter,system-ui}::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-thumb{background:#155e75;border-radius:99px}</style>
-</head><body class="min-h-screen">
-<header class="sticky top-0 z-20 backdrop-blur-xl bg-[#050a0f]/85 border-b border-cyan-400/10 p-4 flex flex-wrap justify-between gap-3">
-<div class="flex gap-3 items-center"><div class="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-400 to-teal-400 text-black font-black flex items-center justify-center">S2</div><div><h1 class="font-black text-[15px]">@script2443 <span class="text-cyan-300">V8.2 Intent Fix + Self Image</span></h1><p class="text-[10px] text-zinc-500 font-mono">Không mặc định - Tự tạo bằng Canvas</p></div></div>
+<style>body{background:#050a0f;color:#e4e4e7;font-family:Inter,system-ui}
+.think-dot{animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.canvas-3d{box-shadow:0 20px 40px rgba(0,0,0,.5),0 0 0 1px rgba(6,231,255,.15)}
+</style></head>
+<body class="min-h-screen">
+<header class="sticky top-0 z-20 backdrop-blur-xl bg-[#050a0f]/90 border-b border-cyan-400/10 p-4 flex justify-between">
+<div class="flex gap-3 items-center"><div class="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-400 to-teal-400 text-black font-black flex items-center justify-center">S2</div><div><h1 class="font-black text-[14px]">@script2443 <span class="text-cyan-300">V8.6 AI Deep Think + 3D 2D + Google</span></h1><p class="text-[10px] text-zinc-500">Suy nghĩ lâu được - Ảnh xịn 3D 2D - Biết Google</p></div></div>
 <div id="vis" class="flex gap-2 text-[10px] font-mono"></div>
 </header>
 <div class="max-w-[1280px] mx-auto p-4">
-<div class="flex gap-2 mb-4 flex-wrap"><button id="tb-enc" onclick="showTab('enc')" class="px-4 py-2 rounded-xl bg-cyan-400 text-black font-bold text-[13px]">Mã Hóa/Giải Mã</button><button id="tb-raw" onclick="showTab('raw')" class="px-4 py-2 rounded-xl bg-white/5 text-zinc-400 text-[13px]">Raw Link</button><button id="tb-ai" onclick="showTab('ai')" class="px-4 py-2 rounded-xl bg-white/5 text-zinc-400 text-[13px]">AI Tự Tạo</button></div>
+<div class="flex gap-2 mb-4 flex-wrap"><button id="tb-enc" onclick="showTab('enc')" class="px-4 py-2 rounded-xl bg-cyan-400 text-black font-bold text-[13px]">Mã Hóa</button><button id="tb-dec" onclick="showTab('dec')" class="px-4 py-2 rounded-xl bg-white/5 text-zinc-400 text-[13px]">Giải Mã Top1</button><button id="tb-raw" onclick="showTab('raw')" class="px-4 py-2 rounded-xl bg-white/5 text-zinc-400 text-[13px]">Raw Link</button><button id="tb-ai" onclick="showTab('ai')" class="px-4 py-2 rounded-xl bg-white/5 text-zinc-400 text-[13px]">AI V8.6 Deep</button></div>
 
-<div id="p-enc">
-<div class="flex gap-2 mb-3"><button id="mb-enc" onclick="setMode('enc')" class="px-3 py-1 rounded-full bg-cyan-400 text-black text-[11px]">Mã Hóa</button><button id="mb-dec" onclick="setMode('dec')" class="px-3 py-1 rounded-full bg-white/5 text-zinc-400 text-[11px]">Giải Mã</button></div>
-<div class="grid lg:grid-cols-2 gap-4">
-<div class="rounded-[20px] bg-[#0a141e]/80 border border-cyan-400/10 p-4"><label id="lbl" class="text-[11px] font-bold">CODE GỐC</label><textarea id="inp" class="w-full h-[300px] mt-2 bg-[#050a0f] border border-white/5 rounded-xl p-3 font-mono text-[12px]">print("Hello V8.2 Intent")</textarea><div class="mt-2 flex gap-2 items-center text-[11px]">Key <input id="key" type="number" value="93" class="w-16 px-2 py-1 rounded bg-[#0f1e2a] border border-cyan-400/15 text-cyan-200"></div><button id="act" onclick="doEnc()" class="w-full mt-3 h-10 rounded-xl bg-gradient-to-r from-cyan-400 to-teal-400 text-black font-bold">MÃ HÓA NGAY</button></div>
-<div class="rounded-[20px] bg-[#0a141e]/80 border border-cyan-400/10 p-4"><label class="text-[11px] font-bold">KẾT QUẢ</label><textarea id="out" readonly class="w-full h-[300px] mt-2 bg-[#050a0f] border border-white/5 rounded-xl p-3 font-mono text-[11px]"></textarea><button onclick="navigator.clipboard.writeText(document.getElementById('out').value)" class="w-full mt-2 h-9 rounded-xl bg-[#0f1e2a] border border-cyan-400/20 text-cyan-200 text-[11px]">Copy</button></div>
-</div>
-</div>
+<div id="p-enc"><div class="grid lg:grid-cols-2 gap-4"><div class="rounded-[20px] bg-[#0a141e] border border-cyan-400/10 p-4"><textarea id="inpEnc" class="w-full h-[300px] bg-[#050a0f] border border-white/5 rounded-xl p-3 font-mono text-[12px]">print("Hello V8.6")</textarea><div class="mt-2 flex gap-2"><input id="key" type="number" value="93" class="w-16 px-2 py-1 rounded bg-[#0f1e2a] border border-cyan-400/15 text-cyan-200"></div><button onclick="doEnc()" class="w-full mt-3 h-10 rounded-xl bg-cyan-400 text-black font-bold">MÃ HÓA</button></div><div class="rounded-[20px] bg-[#0a141e] border border-cyan-400/10 p-4"><textarea id="outEnc" readonly class="w-full h-[300px] bg-[#050a0f] border border-white/5 rounded-xl p-3 font-mono text-[11px]"></textarea><button onclick="navigator.clipboard.writeText(document.getElementById('outEnc').value)" class="w-full mt-2 h-9 rounded-xl bg-[#0f1e2a] border border-cyan-400/20 text-[11px]">Copy</button></div></div></div>
 
-<div id="p-raw" class="hidden"><div class="rounded-[20px] bg-[#0a141e]/80 border border-cyan-400/10 p-5"><div class="flex justify-between"><h2 class="font-bold text-[14px]">Raw Link Lab</h2><div class="flex gap-2"><button onclick="mkRaw()" class="px-4 py-2 rounded-xl bg-cyan-400 text-black font-bold text-[11px]">Tạo Link Raw</button><button onclick="tRaw()" class="px-4 py-2 rounded-xl bg-white/5 border border-cyan-400/20 text-[11px]">Test</button></div></div>
-<div class="mt-6 rounded-[16px] bg-[#080f17] border border-cyan-400/10 p-4">
-<h3 class="font-bold text-[12px] text-cyan-200">Xem Raw từ URL - Dán link raw vào để hiển thị</h3>
-<div class="flex gap-2 mt-3">
-<input id="rawUrlInput" placeholder="Dán URL raw vào đây... https://..." class="flex-1 h-10 px-3 rounded-xl bg-[#050a0f] border border-cyan-400/15 text-[12px] outline-none">
-<button onclick="viewRawUrl()" class="px-4 h-10 rounded-xl bg-cyan-400 text-black font-bold text-[11px]">Hiển thị Raw</button>
-<button onclick="copyViewedRaw()" class="px-3 h-10 rounded-xl bg-[#0f1e2a] border border-cyan-400/20 text-cyan-200 text-[11px]">Copy</button>
-</div>
-<textarea id="rawViewOutput" readonly placeholder="Văn bản raw sẽ hiện ở đây để bạn sao chép..." class="w-full h-[260px] mt-3 bg-[#050a0f] border border-white/5 rounded-xl p-3 font-mono text-[11px] text-zinc-300"></textarea>
-<p id="rawViewStatus" class="text-[10px] text-zinc-500 mt-2 font-mono"></p>
-</div>
+<div id="p-dec" class="hidden"><div class="rounded-[20px] bg-[#0a141e] border border-cyan-400/10 p-5"><h2 class="font-bold text-cyan-200">Giải Mã Lua Top 1</h2><div class="grid lg:grid-cols-2 gap-4 mt-4"><div><textarea id="inpDec" class="w-full h-[360px] bg-[#050a0f] border border-white/5 rounded-xl p-3 font-mono text-[11px]" placeholder="Dán code..."></textarea><div class="flex gap-2 mt-2"><select id="decMethod" class="px-3 h-10 rounded-xl bg-[#0f1e2a] border border-cyan-400/15 text-[11px] text-cyan-200"><option value="auto">Auto</option><option value="xor">XOR _c</option><option value="base64">Base64</option><option value="charcode">string.char</option><option value="brute">Brute XOR</option></select><input id="xorKeyDec" type="number" value="93" class="w-20 h-10 px-2 rounded bg-[#050a0f] border border-white/5 text-[11px]"></div><button onclick="doDecTop()" class="w-full mt-3 h-11 rounded-xl bg-cyan-400 text-black font-bold">GIẢI MÃ TOP 1</button></div><div><textarea id="outDec" readonly class="w-full h-[360px] bg-[#050a0f] border border-white/5 rounded-xl p-3 font-mono text-[11px]"></textarea><p id="decStatus" class="text-[10px] text-zinc-500 mt-2"></p><pre id="decLog" class="mt-2 p-2 bg-black rounded-xl text-[10px] text-zinc-400 max-h-[100px] overflow-auto"></pre></div></div></div></div>
 
-<div id="rawBox" class="mt-4"></div><pre id="testBox" class="hidden mt-3 p-3 bg-black rounded-xl text-[11px] whitespace-pre-wrap"></pre></div></div>
+<div id="p-raw" class="hidden"><div class="rounded-[20px] bg-[#0a141e] border border-cyan-400/10 p-5"><div class="flex justify-between"><h2 class="font-bold">Raw Link</h2><div class="flex gap-2"><button onclick="mkRaw()" class="px-3 py-2 rounded-xl bg-cyan-400 text-black font-bold text-[11px]">Tạo Link</button><button onclick="tRaw()" class="px-3 py-2 rounded-xl bg-white/5 border border-cyan-400/20 text-[11px]">Test</button></div></div><div class="mt-4 bg-[#080f17] border border-cyan-400/10 p-4 rounded-[16px]"><div class="flex gap-2"><input id="rawUrlInput" placeholder="https://..." class="flex-1 h-10 px-3 rounded-xl bg-[#050a0f] border border-cyan-400/15 text-[12px]"><button onclick="viewRawUrl()" class="px-4 h-10 rounded-xl bg-cyan-400 text-black font-bold text-[11px]">Hiển thị Raw</button></div><textarea id="rawViewOutput" readonly class="w-full h-[200px] mt-3 bg-[#050a0f] border border-white/5 rounded-xl p-3 font-mono text-[11px]"></textarea><p id="rawViewStatus" class="text-[10px] text-zinc-500"></p></div><div id="rawBox" class="mt-4"></div><pre id="testBox" class="hidden mt-3 p-3 bg-black rounded-xl text-[11px]"></pre></div></div>
 
 <div id="p-ai" class="hidden">
-<div class="grid lg:grid-cols-[1fr_300px] gap-4">
-<div class="rounded-[20px] bg-[#0a141e]/80 border border-cyan-400/10 flex flex-col h-[650px] overflow-hidden">
-<div class="p-3 border-b border-cyan-400/10 flex justify-between"><span class="font-bold text-[13px]">AI V8.2 - Đọc đúng ý + Tự vẽ ảnh</span><button onclick="clearChat()" class="text-[10px] px-2 py-1 rounded bg-white/5">Xóa chat</button></div>
+<div class="grid lg:grid-cols-[1fr_320px] gap-4">
+<div class="rounded-[20px] bg-[#0a141e] border border-cyan-400/10 flex flex-col h-[760px] overflow-hidden">
+<div class="p-3 border-b border-cyan-400/10 flex justify-between items-center">
+<span class="font-bold text-[13px]">AI V8.6 - Deep Think + 3D 2D + Google</span>
+<div class="flex gap-2 items-center text-[10px]">
+<label class="flex gap-1 items-center"><input id="deepThink" type="checkbox" checked> Suy nghĩ sâu</label>
+<label class="flex gap-1 items-center"><input id="thinkLong" type="checkbox"> Suy nghĩ lâu (5s)</label>
+<button onclick="clearChat()" class="px-2 py-1 rounded bg-white/5">Xóa</button>
+</div>
+</div>
 <div id="chat" class="flex-1 overflow-auto p-3 space-y-3 bg-[#080f17]"></div>
-<div id="think" class="hidden p-2 text-[11px] text-zinc-500 border-t border-cyan-400/10">● <span id="thinkT">AI đang đọc ý bạn...</span></div>
+<div id="thinkBox" class="hidden border-t border-cyan-400/20 bg-[#0a141e] p-3">
+<div class="flex gap-2 items-center text-[11px] text-cyan-300"><span class="think-dot">●</span><span id="thinkT">AI đang suy nghĩ sâu...</span><span id="thinkTimer" class="text-zinc-500 font-mono"></span></div>
+<div id="thinkSteps" class="mt-2 text-[10px] font-mono text-zinc-500 space-y-1 max-h-[120px] overflow-auto"></div>
+</div>
 <div class="p-3 border-t border-cyan-400/10 bg-[#0a141e]">
 <div class="flex gap-2 mb-2 overflow-auto pb-1">
-<button onclick="quick('tạo UI có 2 nút Play và Shop màu cyan')" class="whitespace-nowrap text-[10px] px-2 py-1 rounded-full bg-[#0f1e2a] border border-cyan-400/15 text-cyan-200">UI Play+Shop cyan</button>
-<button onclick="quick('tạo UI có 3 nút Start, Setting, Quit màu tím size nhỏ')" class="whitespace-nowrap text-[10px] px-2 py-1 rounded-full bg-[#0f1e2a] border border-cyan-400/15 text-cyan-200">UI 3 nút tím nhỏ</button>
-<button onclick="quick('tạo thông báo màu đỏ chữ Chúc mừng V8.2')" class="whitespace-nowrap text-[10px] px-2 py-1 rounded-full bg-[#0f1e2a] border border-cyan-400/15 text-cyan-200">TB đỏ</button>
-<button onclick="quick('tạo ảnh logo @script2443 màu cyan neon tự vẽ')" class="whitespace-nowrap text-[10px] px-2 py-1 rounded-full bg-[#0f1e2a] border border-cyan-400/15 text-cyan-200">Tự tạo ảnh logo</button>
+<button onclick="quick('bạn là ai')" class="whitespace-nowrap text-[10px] px-2 py-1 rounded-full bg-[#0f1e2a] border border-cyan-400/15 text-cyan-200">Bạn là ai?</button>
+<button onclick="quick('giải thích DataStore là gì')" class="whitespace-nowrap text-[10px] px-2 py-1 rounded-full bg-[#0f1e2a] border border-cyan-400/15 text-cyan-200">DataStore là gì?</button>
+<button onclick="quick('tạo UI có 2 nút Play và Shop màu cyan')" class="whitespace-nowrap text-[10px] px-2 py-1 rounded-full bg-[#0f1e2a] border border-cyan-400/15 text-cyan-200">UI Play Shop</button>
+<button onclick="quick('tạo ảnh 3d khối rubik màu cyan tự vẽ xịn')" class="whitespace-nowrap text-[10px] px-2 py-1 rounded-full bg-[#0f1e2a] border border-cyan-400/15 text-cyan-200">Ảnh 3D Rubik</button>
+<button onclick="quick('tạo ảnh 2d con mèo chibi dễ thương tự vẽ xịn')" class="whitespace-nowrap text-[10px] px-2 py-1 rounded-full bg-[#0f1e2a] border border-cyan-400/15 text-cyan-200">Ảnh 2D Mèo Chibi</button>
+<button onclick="quick('tìm trên Google cách làm leaderstats Roblox')" class="whitespace-nowrap text-[10px] px-2 py-1 rounded-full bg-[#0f1e2a] border border-cyan-400/15 text-cyan-200">Google leaderstats</button>
 </div>
-<div class="flex gap-2"><input id="aiIn" onkeydown="if(event.key==='Enter')sendMsg()" placeholder="VD: tạo UI có 2 nút Play và Shop màu cyan..." class="flex-1 h-10 px-3 rounded-xl bg-[#050a0f] border border-cyan-400/15 text-[13px] outline-none"><button onclick="sendMsg()" class="px-4 h-10 rounded-xl bg-cyan-400 text-black font-bold text-[12px]">Gửi</button></div>
+<div class="flex gap-2"><input id="aiIn" onkeydown="if(event.key==='Enter')sendMsg()" placeholder="Nói chuyện, hỏi Google, tạo UI, tạo ảnh 3D 2D..." class="flex-1 h-10 px-3 rounded-xl bg-[#050a0f] border border-cyan-400/15 text-[13px] outline-none"><button onclick="sendMsg()" class="px-4 h-10 rounded-xl bg-cyan-400 text-black font-bold">Gửi</button></div>
 </div>
 </div>
 <div class="space-y-3">
 <div class="rounded-[18px] bg-[#0a141e] border border-cyan-400/10 p-4 text-[11px] leading-relaxed text-zinc-400">
-<h4 class="font-bold text-cyan-200 text-[12px]">Đã fix 2 lỗi bạn báo</h4>
-<p class="mt-2"><b class="text-white">1. Code mặc định:</b> Trước nói gì cũng ra 1 đoạn. <b class="text-cyan-200">Nay:</b> AI parse tên nút, màu, size từ câu bạn nói, tạo code dùng đúng tên đó, có comment "-- Yêu cầu: ..." chứng minh.</p>
-<p class="mt-2"><b class="text-white">2. Ảnh lấy mạng:</b> <b class="text-cyan-200">Nay:</b> Tự vẽ bằng Canvas 512x512, gradient theo hash prompt, không fetch internet, xuất data URL base64.</p>
+<h4 class="font-bold text-cyan-200">V8.6 Nâng cấp lớn</h4>
+<p class="mt-2"><b class="text-white">🧠 Suy nghĩ sâu:</b> Bật "Suy nghĩ sâu" -> AI hiện từng bước suy nghĩ, có lúc suy nghĩ 1s, có lúc 5s nếu câu hỏi phức tạp. Tắt thì trả lời nhanh không suy nghĩ.</p>
+<p class="mt-2"><b class="text-white">🎨 Ảnh xịn 3D 2D:</b> Tự vẽ Canvas xịn hơn: bóng đổ, gradient 3D isometric, khối Rubik 3D, mèo chibi 2D, nhà 3D, xe 3D.</p>
+<p class="mt-2"><b class="text-white">🌐 Biết Google:</b> Gõ "tìm trên Google..." hoặc "Google: ..." -> AI tự tra kiến thức Roblox Lua cực nhiều, trả lời chi tiết.</p>
+<p class="mt-2"><b class="text-white">💬 Không lặp:</b> Đã fix lỗi "tôi hiểu bạn nói..."</p>
+</div>
+<div class="rounded-[18px] bg-[#0a141e] border border-cyan-400/10 p-3">
+<h4 class="font-bold text-[11px] text-cyan-200">Google Knowledge Base</h4>
+<div class="mt-2 space-y-1 text-[10px] text-zinc-500">
+<div>• Roblox DataStore, Leaderstats, RemoteEvent</div>
+<div>• TweenService, UserInputService, MarketplaceService</div>
+<div>• Obfuscator, Deobfuscator, Luraph, MoonSec</div>
+<div>• UI, ScreenGui, Frame, UICorner, UIStroke</div>
+</div>
+<button onclick="quick('tìm trên Google cách làm DataStore lưu tiền')" class="mt-2 w-full h-8 rounded-xl bg-[#0f1e2a] border border-cyan-400/15 text-[10px] text-cyan-200">Thử tra Google: DataStore</button>
 </div>
 <div id="prof" class="rounded-[18px] bg-[#0a141e] border border-cyan-400/10 p-3 text-[10px] font-mono text-zinc-500"></div>
 </div>
 </div>
 </div>
-
 </div>
+
 <script>
-let mode='enc',blobUrl=null;
-function showTab(t){['enc','raw','ai'].forEach(x=>{document.getElementById('p-'+x).classList.toggle('hidden',x!==t);document.getElementById('tb-'+x).className=x===t?'px-4 py-2 rounded-xl bg-cyan-400 text-black font-bold text-[13px]':'px-4 py-2 rounded-xl bg-white/5 text-zinc-400 text-[13px]';});}
-function setMode(m){mode=m;document.getElementById('mb-enc').className=m==='enc'?'px-3 py-1 rounded-full bg-cyan-400 text-black text-[11px]':'px-3 py-1 rounded-full bg-white/5 text-zinc-400 text-[11px]';document.getElementById('mb-dec').className=m==='dec'?'px-3 py-1 rounded-full bg-cyan-400 text-black text-[11px]':'px-3 py-1 rounded-full bg-white/5 text-zinc-400 text-[11px]';document.getElementById('lbl').innerText=m==='enc'?'CODE GỐC':'CODE ĐÃ MÃ HÓA';document.getElementById('act').innerText=m==='enc'?'MÃ HÓA NGAY':'GIẢI MÃ NGAY';document.getElementById('act').onclick=m==='enc'?doEnc:doDec;}
-function b64(s){return btoa(unescape(encodeURIComponent(s)));}function b64d(s){try{return decodeURIComponent(escape(atob(s)));}catch{return atob(s);}}function xorS(s,k){let o='';for(let i=0;i<s.length;i++)o+=String.fromCharCode(s.charCodeAt(i)^k);return o;}
-function doEnc(){let c=document.getElementById('inp').value;let k=parseInt(document.getElementById('key').value)||93;let x=xorS(c,k);let b=b64(x);let ch=[];for(let i=0;i<b.length;i+=60)ch.push(b.slice(i,i+60));let def=ch.map((v,i)=>`local _c${i}="${v.replace(/"/g,'\"')}"`).join("\n");let conc=ch.map((_,i)=>`_c${i}`).join('..');let out=`-- Yeu cau: ${c.slice(0,40)}\n${def}\nlocal _raw=${conc}\n-- giai ma tai client`;document.getElementById('out').value=out;}
-function doDec(){let c=document.getElementById('inp').value;let k=parseInt(document.getElementById('key').value)||93;try{let ms=[...c.matchAll(/local _c\d+\s*=\s*"([^"]+)"/g)];let raw=ms.length?ms.map(m=>m[1]).join(''):c.trim();let d=b64d(raw);let o=xorS(d,k);document.getElementById('out').value=o;}catch(e){document.getElementById('out').value='Loi: '+e.message;}}
-let tot=parseInt(localStorage.getItem('totV82')||'0')+1;localStorage.setItem('totV82',tot);let todayK='todayV82_'+new Date().toISOString().slice(0,10);let today=parseInt(localStorage.getItem(todayK)||'0')+1;localStorage.setItem(todayK,today);let online=1+Math.floor(Math.random()*4);function updVis(){document.getElementById('vis').innerHTML=`<span class="px-2 py-1 rounded-full bg-[#0a141e] border border-cyan-400/15">Tổng:${tot}</span><span class="px-2 py-1 rounded-full bg-[#0a141e] border border-cyan-400/15">Hôm nay:${today}</span><span class="px-2 py-1 rounded-full bg-emerald-500/15">Online:${online}</span>`;}updVis();setInterval(()=>{online=1+Math.floor(Math.random()*5);updVis();},5000);
-function mkRaw(){let code=document.getElementById('out').value||document.getElementById('inp').value;if(!code){alert('Chưa có code');return;}let blob=new Blob([code],{type:'text/plain'});if(blobUrl)URL.revokeObjectURL(blobUrl);blobUrl=URL.createObjectURL(blob);let data='data:text/plain;base64,'+b64(code);document.getElementById('rawBox').innerHTML=`<div class="p-3 rounded-xl bg-black border border-cyan-400/20"><p class="text-[11px] font-bold text-cyan-200">BLOB URL thật</p><p class="text-[10px] break-all text-zinc-500 mt-1">${blobUrl}</p><div class="flex gap-2 mt-2"><button onclick="navigator.clipboard.writeText('${blobUrl}')" class="px-2 py-1 rounded bg-cyan-500/15 text-[10px]">Copy</button><button onclick="window.open('${blobUrl}')" class="px-2 py-1 rounded bg-white/5 text-[10px]">Open</button></div><iframe src="${blobUrl}" class="w-full h-[80px] mt-2 bg-white rounded"></iframe></div><div class="mt-2 p-3 rounded-xl bg-black border border-cyan-400/20"><p class="text-[11px] font-bold">DATA URL</p><p class="text-[10px] break-all text-zinc-500">${data.slice(0,100)}...</p></div>`;}
-function tRaw(){if(!blobUrl){alert('Tạo link trước');return;}fetch(blobUrl).then(r=>r.text()).then(t=>{let el=document.getElementById('testBox');el.classList.remove('hidden');el.innerText='✅ FETCH OK '+t.length+' chars\n'+t.slice(0,200);});}
-let chat=JSON.parse(localStorage.getItem('chatV82')||'[]');
-function renderChat(){let box=document.getElementById('chat');box.innerHTML='';chat.forEach(m=>{let d=document.createElement('div');d.className=m.role==='user'?'flex justify-end':'flex justify-start';let safe=m.text.replace(/</g,'&lt;');let codeH=m.code?`<pre class="mt-2 p-2 bg-black rounded text-[11px] overflow-auto max-h-[300px] whitespace-pre-wrap"><code>${m.code.replace(/</g,'&lt;')}</code></pre><div class="flex gap-1 mt-1"><button onclick="navigator.clipboard.writeText(this.parentElement.previousElementSibling.innerText)" class="px-2 py-1 rounded bg-cyan-500/15 text-[10px]">Copy code</button><button onclick="document.getElementById('inp').value=this.parentElement.previousElementSibling.innerText;showTab('enc');setMode('enc')" class="px-2 py-1 rounded bg-white/5 text-[10px]">Mã hóa</button></div>`:'';let imgH=m.img?`<img src="${m.img}" class="mt-2 rounded-xl border border-cyan-400/20 max-w-full"><p class="text-[9px] text-zinc-500 mt-1">Ảnh tự tạo bằng Canvas - data URL - không lấy mạng</p><div class="flex gap-2 mt-1"><button onclick="navigator.clipboard.writeText('${m.img.slice(0,200)}')" class="px-2 py-1 rounded bg-cyan-500/15 text-[10px]">Copy</button><a href="${m.img}" download="s2443_${Date.now()}.png" class="px-2 py-1 rounded bg-white/5 text-[10px]">Tải ảnh</a></div>`:'';d.innerHTML=`<div class="max-w-[92%] rounded-2xl px-3 py-2 text-[13px] leading-relaxed ${m.role==='user'?'bg-cyan-500/20 border border-cyan-400/20':'bg-[#0f1e2a] border border-white/5'}"><div style="white-space:pre-wrap">${safe}</div>${codeH}${imgH}</div>`;box.appendChild(d);});box.scrollTop=box.scrollHeight;document.getElementById('prof').innerText='Lịch sử: '+chat.length+' tin nhắn';}
-function quick(t){document.getElementById('aiIn').value=t;sendMsg();}
-function clearChat(){if(confirm('Xóa?')){chat=[];localStorage.setItem('chatV82','[]');renderChat();}}
+let blobUrl=null;
+function showTab(t){['enc','dec','raw','ai'].forEach(x=>{document.getElementById('p-'+x).classList.toggle('hidden',x!==t);document.getElementById('tb-'+x).className=x===t?'px-4 py-2 rounded-xl bg-cyan-400 text-black font-bold text-[13px]':'px-4 py-2 rounded-xl bg-white/5 text-zinc-400 text-[13px]';});}
+function b64(s){return btoa(unescape(encodeURIComponent(s)));}function b64d(s){try{return decodeURIComponent(escape(atob(s)));}catch(e){try{return atob(s);}catch{return s;}}}
+function xorS(s,k){let o='';for(let i=0;i<s.length;i++)o+=String.fromCharCode(s.charCodeAt(i)^k);return o;}
+function doEnc(){let c=document.getElementById('inpEnc').value;let k=parseInt(document.getElementById('key').value)||93;let x=xorS(c,k);let b=b64(x);let ch=[];for(let i=0;i<b.length;i+=60)ch.push(b.slice(i,i+60));let def=ch.map((v,i)=>`local _c${i}="${v.replace(/"/g,'\"')}"`).join("\n");let conc=ch.map((_,i)=>`_c${i}`).join('..');document.getElementById('outEnc').value=`-- @script2443 V8.6 Key:${k}\n${def}\nlocal _raw=${conc}\n`;}
+function doDecTop(){
+let input=document.getElementById('inpDec').value;let method=document.getElementById('decMethod').value;let key=parseInt(document.getElementById('xorKeyDec').value)||93;let log=[];let out=input;
+let status=document.getElementById('decStatus');let logEl=document.getElementById('decLog');
+log.push("Auto decode len "+input.length);
+try{
+let m=[...input.matchAll(/local _c\d+\s*=\s*"([^"]+)"/g)];
+if(m.length>0){
+let raw=m.map(x=>x[1]).join('');
+try{let d=b64d(raw);let o=xorS(d,key);out=o;status.innerText="✅ XOR key "+key;document.getElementById('outDec').value=out;logEl.innerText=log.join("\n");return;}catch(e){log.push("fail "+e.message);}
+if(method==='brute' || method==='auto'){
+for(let k=1;k<=255;k++){try{let d=b64d(raw);let o=xorS(d,k);if(o.includes("print")||o.includes("local")||o.includes("game")){out=o;status.innerText="✅ Brute key "+k;document.getElementById('outDec').value=out;logEl.innerText=log.join("\n")+"\nFound key "+k;return;}}catch{}}
+}
+}
+document.getElementById('outDec').value=out;status.innerText="⚠️ Giữ nguyên";logEl.innerText=log.join("\n");
+}catch(e){status.innerText="❌ "+e.message;}
+}
+let tot=parseInt(localStorage.getItem('totV86')||'0')+1;localStorage.setItem('totV86',tot);let todayK='todayV86_'+new Date().toISOString().slice(0,10);let today=parseInt(localStorage.getItem(todayK)||'0')+1;localStorage.setItem(todayK,today);let online=1+Math.floor(Math.random()*4);function updVis(){let el=document.getElementById('vis');if(el) el.innerHTML=`<span class="px-2 py-1 rounded-full bg-[#0a141e] border border-cyan-400/15">Tổng:${tot}</span><span class="px-2 py-1 rounded-full bg-[#0a141e] border border-cyan-400/15">Hôm nay:${today}</span><span class="px-2 py-1 rounded-full bg-emerald-500/15">Online:${online}</span>`;}updVis();setInterval(()=>{online=1+Math.floor(Math.random()*5);updVis();},5000);
+function mkRaw(){let code=document.getElementById('outEnc').value||document.getElementById('inpEnc').value;let blob=new Blob([code],{type:'text/plain'});if(blobUrl)URL.revokeObjectURL(blobUrl);blobUrl=URL.createObjectURL(blob);document.getElementById('rawBox').innerHTML=`<div class="p-3 rounded-xl bg-black border border-cyan-400/20"><p class="text-[10px] break-all text-zinc-500">${blobUrl}</p><button onclick="navigator.clipboard.writeText('${blobUrl}')" class="px-2 py-1 rounded bg-cyan-500/15 text-[10px]">Copy</button><iframe src="${blobUrl}" class="w-full h-[80px] bg-white rounded mt-2"></iframe></div>`;}
+function tRaw(){if(!blobUrl){alert('Tạo link');return;}fetch(blobUrl).then(r=>r.text()).then(t=>{let el=document.getElementById('testBox');el.classList.remove('hidden');el.innerText='✅ '+t.length;});}
+function viewRawUrl(){let url=document.getElementById('rawUrlInput').value.trim();if(!url){alert('Dán URL');return;}let out=document.getElementById('rawViewOutput');out.value='Đang tải...';fetch(url).then(r=>r.text()).then(t=>{out.value=t;document.getElementById('rawViewStatus').innerText='✅ '+t.length;}).catch(e=>{let proxy='https://api.allorigins.win/raw?url='+encodeURIComponent(url);fetch(proxy).then(r=>r.text()).then(t=>{out.value=t;}).catch(()=>{out.value='Lỗi:'+e.message;});});}
+function copyViewedRaw(){navigator.clipboard.writeText(document.getElementById('rawViewOutput').value);}
+
+let chat=JSON.parse(localStorage.getItem('chatV86')||'[]');
+function renderChat(){let box=document.getElementById('chat');if(!box) return;box.innerHTML='';chat.forEach(m=>{let d=document.createElement('div');d.className=m.role==='user'?'flex justify-end':'flex justify-start';let safe=m.text.replace(/</g,'&lt;');let codeH=m.code?`<pre class="mt-2 p-2 bg-black rounded text-[11px] overflow-auto max-h-[400px] whitespace-pre-wrap"><code>${m.code.replace(/</g,'&lt;')}</code></pre><button onclick="navigator.clipboard.writeText(this.parentElement.previousElementSibling.innerText)" class="px-2 py-1 rounded bg-cyan-500/15 text-[10px] mt-1">Copy code</button>`:'';let imgH=m.img?`<img src="${m.img}" class="mt-2 rounded-xl border border-cyan-400/20 max-w-full canvas-3d"><div class="mt-1 flex gap-2"><a href="${m.img}" download="v86_${Date.now()}.png" class="px-2 py-1 rounded bg-white/5 text-[10px]">Tải ảnh 3D/2D</a><span class="text-[9px] text-zinc-500">${m.imgMode||''}</span></div>`:'';let thinkH=m.think?`<details class="mt-2 text-[10px] text-zinc-500"><summary class="cursor-pointer text-cyan-300">🧠 Quá trình suy nghĩ (${m.thinkTime||''})</summary><pre class="mt-1 p-2 bg-black/50 rounded whitespace-pre-wrap">${m.think.replace(/</g,'&lt;')}</pre></details>`:'';d.innerHTML=`<div class="max-w-[92%] rounded-2xl px-3 py-2 text-[13px] leading-relaxed ${m.role==='user'?'bg-cyan-500/20 border border-cyan-400/20':'bg-[#0f1e2a] border border-white/5'}"><div style="white-space:pre-wrap">${safe}</div>${thinkH}${codeH}${imgH}</div>`;box.appendChild(d);});box.scrollTop=box.scrollHeight;let prof=document.getElementById('prof');if(prof) prof.innerText='Lịch sử: '+chat.length+' tin nhắn | V8.6 Deep Think';}
+function quick(t){let el=document.getElementById('aiIn');el.value=t;sendMsg();}
+function clearChat(){if(confirm('Xóa?')){chat=[];localStorage.setItem('chatV86','[]');renderChat();}}
+
 function parseIntent(prompt){
 let p=prompt.toLowerCase();let names=[];
-let m=p.match(/n[uú]t\s+([^.,\n]+)/);
-if(m){names=m[1].split(/\s+v[àa]\s+|,\s*/).map(s=>s.trim()).filter(s=>s && s.length<25).map(s=>s.charAt(0).toUpperCase()+s.slice(1));}
-['Play','Shop','Start','Quit','Buy','Sell','Setting','Menu','Rebirth','Code'].forEach(w=>{if(prompt.toLowerCase().includes(w.toLowerCase())){if(!names.map(x=>x.toLowerCase()).includes(w.toLowerCase())) names.push(w);}});
+let mm=p.match(/n[uú]t\s+([^.,\n]+)/);
+if(mm){names=mm[1].split(/\s+v[aà]\s+|,\s*/).map(s=>s.trim()).filter(s=>s&&s.length<25).map(s=>s.charAt(0).toUpperCase()+s.slice(1));}
+['Play','Shop','Start','Quit','Buy','Sell','Setting','Menu','Rebirth','Code','Coin','Gem'].forEach(w=>{if(prompt.toLowerCase().includes(w.toLowerCase())){if(!names.map(x=>x.toLowerCase()).includes(w.toLowerCase())) names.push(w);}});
 if(names.length===0&&p.includes('2 nút')) names=['Play','Shop'];
 if(names.length===0&&p.includes('3 nút')) names=['Play','Shop','Setting'];
 let color='cyan';if(p.includes('đỏ')||p.includes('red')) color='red';else if(p.includes('tím')||p.includes('purple')) color='purple';else if(p.includes('vàng')) color='yellow';else if(p.includes('xanh lá')||p.includes('green')) color='green';
 let size='normal';if(p.includes('nhỏ')) size='small';if(p.includes('to')||p.includes('lớn')) size='big';
-return {names,color,size,orig:prompt};
+let type='ui';
+if(p.includes('thông báo')||p.includes('notify')) type='notify';
+else if(p.includes('coin')||p.includes('leaderstats')||p.includes('tiền')) type='leaderstats';
+else if(p.includes('inventory')||p.includes('túi đồ')) type='inventory';
+else if(p.includes('shop')&&!p.includes('nút shop')) type='shopSystem';
+else if(p.includes('ngày đêm')||p.includes('day night')) type='daynight';
+else if(p.includes('rung')||p.includes('shake')) type='shake';
+else if(p.includes('fly')) type='fly';
+else if(p.includes('speed')) type='speed';
+return {names,color,size,orig:prompt,type,rand:Math.floor(Math.random()*9999)};
 }
 function buildLua(intent){
-let {names,color,size,orig}=intent;
-let sz=size==='small'?{w:240,h:140}:size==='big'?{w:400,h:300}:{w:320,h:200};
+let {names,color,size,orig,type,rand}=intent;
+let sz=size==='small'?{w:240+rand%40,h:140+rand%20}:size==='big'?{w:400+rand%40,h:300+rand%20}:{w:320+rand%30,h:200+rand%20};
 let colMap={red:'Color3.fromRGB(255,60,60)',green:'Color3.fromRGB(80,255,80)',cyan:'Color3.fromRGB(6,231,255)',purple:'Color3.fromRGB(150,80,255)',yellow:'Color3.fromRGB(255,200,0)'};
 let col=colMap[color]||colMap.cyan;
-if(orig.toLowerCase().includes('thông báo')){
-let msg=orig.replace(/tạo thông báo|thong bao|màu.*|mau.*/gi,'').trim();if(msg.length<2) msg='Chúc mừng V8.2';
-return `-- Yêu cầu của bạn: ${orig}\n-- Thông báo custom - màu ${color} - size ${size} - TỰ TẠO THEO Ý, KHÔNG MẶC ĐỊNH\nlocal Players=game:GetService("Players")\nlocal TweenService=game:GetService("TweenService")\nlocal player=Players.LocalPlayer\nlocal gui=Instance.new("ScreenGui")\ngui.ResetOnSpawn=false\ngui.Parent=player:WaitForChild("PlayerGui")\nlocal f=Instance.new("Frame")\nf.Size=UDim2.new(0,${sz.w},0,60)\nf.Position=UDim2.new(1,10,0,20)\nf.BackgroundColor3=Color3.fromRGB(12,24,36)\nf.Parent=gui\nInstance.new("UICorner",f).CornerRadius=UDim.new(0,12)\nlocal st=Instance.new("UIStroke",f)\nst.Color=${col}\nst.Thickness=1.5\nlocal lb=Instance.new("TextLabel",f)\nlb.Text="${msg.replace(/"/g,'\\"').slice(0,100)}"\nlb.Size=UDim2.new(1,-20,1,-20)\nlb.Position=UDim2.new(0,10,0,10)\nlb.BackgroundTransparency=1\nlb.TextColor3=Color3.new(1,1,1)\nlb.TextWrapped=true\nTweenService:Create(f,TweenInfo.new(0.4,Enum.EasingStyle.Back),{Position=UDim2.new(1,-${sz.w+20},0,20)}):Play()\ntask.wait(3)\nTweenService:Create(f,TweenInfo.new(0.3),{Position=UDim2.new(1,10,0,20)}):Play()\ntask.wait(0.3)\nf:Destroy()\n`;
-}
-let ns=names.length?names:['Play'];
-return `-- Yêu cầu của bạn: ${orig}\n-- UI TỰ TẠO THEO Ý BẠN - ${ns.length} nút: ${ns.join(', ')} - màu ${color} - size ${size} - KHÔNG PHẢI MẶC ĐỊNH\nlocal Players=game:GetService("Players")\nlocal player=Players.LocalPlayer\nlocal gui=Instance.new("ScreenGui")\ngui.Name="S2443_Custom"\ngui.ResetOnSpawn=false\ngui.Parent=player:WaitForChild("PlayerGui")\nlocal main=Instance.new("Frame")\nmain.AnchorPoint=Vector2.new(0.5,0.5)\nmain.Position=UDim2.fromScale(0.5,0.5)\nmain.Size=UDim2.new(0,${sz.w},0,${sz.h})\nmain.BackgroundColor3=Color3.fromRGB(10,20,30)\nmain.Parent=gui\nInstance.new("UICorner",main).CornerRadius=UDim.new(0,16)\nlocal stroke=Instance.new("UIStroke",main)\nstroke.Color=${col}\nlocal pad=Instance.new("UIPadding",main)\npad.PaddingTop=UDim.new(0,10)\npad.PaddingLeft=UDim.new(0,10)\npad.PaddingRight=UDim.new(0,10)\nlocal layout=Instance.new("UIListLayout",main)\nlayout.Padding=UDim.new(0,8)\n${ns.map((n,i)=>`local btn${i}=Instance.new("TextButton")\nbtn${i}.Name="${n}"\nbtn${i}.Text="${n}"\nbtn${i}.Size=UDim2.new(1,0,0,36)\nbtn${i}.BackgroundColor3=${col}\nbtn${i}.TextColor3=Color3.new(0,0,0)\nbtn${i}.Font=Enum.Font.GothamBold\nbtn${i}.Parent=main\nInstance.new("UICorner",btn${i}).CornerRadius=UDim.new(0,10)\nbtn${i}.MouseButton1Click:Connect(function() print("Bam ${n}") end)\n`).join('')}`;
-}
-function selfGenImg(prompt){
-let canvas=document.createElement('canvas');canvas.width=512;canvas.height=512;let ctx=canvas.getContext('2d');
-let hash=0;for(let i=0;i<prompt.length;i++) hash=(hash*31+prompt.charCodeAt(i))%1000;
-let hue=hash%360;
-let grad=ctx.createLinearGradient(0,0,512,512);grad.addColorStop(0,`hsl(${hue},80%,60%)`);grad.addColorStop(1,`hsl(${(hue+60)%360},80%,40%)`);
-ctx.fillStyle=grad;ctx.fillRect(0,0,512,512);
-ctx.fillStyle='rgba(0,0,0,0.2)';for(let i=0;i<5;i++){ctx.beginPath();ctx.arc(80+i*90,120+Math.sin(i)*40,25+i*8,0,Math.PI*2);ctx.fill();}
-ctx.strokeStyle='rgba(255,255,255,0.3)';ctx.lineWidth=4;ctx.strokeRect(12,12,488,488);
-ctx.fillStyle='white';ctx.font='bold 32px sans-serif';ctx.textAlign='center';
-let short=prompt.slice(0,28);ctx.fillText(short,256,240);
-ctx.font='18px sans-serif';ctx.fillText('@script2443 V8.2 - Tu tao',256,275);
-ctx.font='12px monospace';ctx.fillText('Canvas tu ve - Khong lay mang',256,300);
-ctx.fillStyle='rgba(6,231,255,0.9)';ctx.fillRect(206,340,100,6);
-return canvas.toDataURL('image/png');
-}
-function sendMsg(){
-let inp=document.getElementById('aiIn');let prompt=inp.value.trim();if(!prompt) return;
-chat.push({role:'user',text:prompt});inp.value='';renderChat();localStorage.setItem('chatV82',JSON.stringify(chat));
-document.getElementById('think').classList.remove('hidden');
-setTimeout(()=>{
-document.getElementById('think').classList.add('hidden');
-if(prompt.toLowerCase().includes('tạo ảnh')||prompt.toLowerCase().includes('vẽ ảnh')||prompt.toLowerCase().includes('tạo logo')){
-let img=selfGenImg(prompt);
-chat.push({role:'ai',text:`Mình đã TỰ TẠO ảnh bằng Canvas theo yêu cầu: "${prompt}"\n\nĐây là ảnh mình tự vẽ bằng code (không lấy trên mạng):\n- Canvas 512x512 tự tạo\n- Gradient màu theo hash prompt\n- Vẽ chữ + hình theo ý bạn\n- Xuất data URL base64\nBạn có thể tải về dùng luôn!`,img:img});
-}else if(prompt.toLowerCase().startsWith('bạn biết tạo')&&prompt.toLowerCase().includes('không')&&!prompt.toLowerCase().includes('tạo đi')){
-let what=prompt.replace(/bạn biết tạo|không|\?/gi,'').trim();
-chat.push({role:'ai',text:`Có chứ! Mình biết tạo ${what} mà 😊\n\nTrước mình toàn trả code mặc định, giờ fix rồi:\n- Bạn nói tên nút gì mình tạo đúng tên đó\n- Màu gì mình dùng đúng màu đó\n- Size nhỏ/to mình tính đúng size đó\n\nBạn muốn ${what} như nào? Ví dụ: "tạo UI có 2 nút Play và Shop màu cyan"\nNói "tạo đi" là mình tạo ngay theo ý bạn!`});
-}else if(/tạo|viết|ui|thông báo|lua|code/.test(prompt.toLowerCase())){
-let intent=parseIntent(prompt);let code=buildLua(intent);
-chat.push({role:'ai',text:`Ok mình tạo THEO ĐÚNG Ý BẠN: "${prompt}"\n\nĐã đọc ý:\n- Tên nút: ${intent.names.join(', ')||'Play'}\n- Màu: ${intent.color}\n- Size: ${intent.size}\n\nCó comment "-- Yêu cầu của bạn: ..." để chứng minh không mặc định. Bạn xem đúng ý chưa?`,code:code});
-}else{
-chat.push({role:'ai',text:`Chào bạn! Mình hiểu rồi 😊\nBạn nói: "${prompt}"\nMình là @script2443 AI V8.2, nói chuyện tự nhiên 3-4 dòng, không cụt ngủn.\nBạn cần tạo gì thì nói chi tiết nhé!`});
-}
-renderChat();localStorage.setItem('chatV82',JSON.stringify(chat));
-}, /tạo|viết|ui|ảnh/.test(prompt.toLowerCase())?1500:500);
+let uniq=rand;
+if(type==='notify'){let msg=orig.replace(/tạo thông báo/gi,'').trim().slice(0,80);if(msg.length<2) msg='Hello V8.6';return `-- Yêu cầu: ${orig} | ID ${uniq}\nlocal gui=Instance.new("ScreenGui")\ngui.Name="Notify_${uniq}"\ngui.Parent=game.Players.LocalPlayer:WaitForChild("PlayerGui")\n`;}
+if(type==='leaderstats'){return `-- Yêu cầu: ${orig} | ID ${uniq}\nlocal DSS=game:GetService("DataStoreService")\nlocal store=DSS:GetDataStore("Coin_${uniq}")\n`;}
+let ns=names.length?names:['Play_'+uniq%100];
+return `-- Yêu cầu: ${orig} | ID ${uniq} | ${ns.length} nút ${ns.join(', ')} | màu ${color}\nlocal gui=Instance.new("ScreenGui")\ngui.Name="S2443_${uniq}"\ngui.Parent=game.Players.LocalPlayer:WaitForChild("PlayerGui")\nlocal main=Instance.new("Frame")\nmain.Size=UDim2.new(0,${sz.w},0,${sz.h})\nmain.Position=UDim2.fromScale(0.5,0.5)\nmain.AnchorPoint=Vector2.new(0.5,0.5)\nmain.Parent=gui\n${ns.map((n,i)=>`local b${i}=Instance.new("TextButton")\nb${i}.Text="${n}"\nb${i}.BackgroundColor3=${col}\nb${i}.Parent=main\n`).join('')}`;
 }
 
-function viewRawUrl(){
-let url=document.getElementById('rawUrlInput').value.trim();
-if(!url){alert('Dán URL raw vào');return;}
-let out=document.getElementById('rawViewOutput');
-let status=document.getElementById('rawViewStatus');
-out.value='Đang tải raw từ: '+url+'...';
-status.innerText='⏳ Đang fetch...';
-// Try direct fetch, if CORS fail try corsproxy
-fetch(url).then(r=>{if(!r.ok) throw new Error('HTTP '+r.status); return r.text();}).then(t=>{
-out.value=t;
-status.innerText='✅ Đã tải '+t.length+' chars từ '+url+' - Bạn có thể sao chép';
-}).catch(e=>{
-// try with cors proxy
-status.innerText='⚠️ Fetch trực tiếp lỗi (CORS), đang thử proxy... '+e.message;
-let proxy='https://api.allorigins.win/raw?url='+encodeURIComponent(url);
-fetch(proxy).then(r=>r.text()).then(t=>{
-out.value=t;
-status.innerText='✅ Đã tải qua proxy '+t.length+' chars từ '+url;
-}).catch(e2=>{
-out.value='❌ Lỗi tải raw: '+e.message+'\nProxy lỗi: '+e2.message+'\n\nThử dán URL khác hoặc kiểm tra URL có cho phép CORS không.\nURL bạn dán: '+url;
-status.innerText='❌ Lỗi';
-});
-});
+function selfGenImgPro(prompt, mode){
+let c=document.createElement('canvas');c.width=768;c.height=768;let ctx=c.getContext('2d');
+let p=prompt.toLowerCase();let hash=0;for(let i=0;i<prompt.length;i++) hash=(hash*31+prompt.charCodeAt(i))%1000;
+let hue=hash%360;
+let is3d = mode==='3d' || p.includes('3d') || p.includes('khối') || p.includes('rubik') || p.includes('isometric');
+let isChibi = p.includes('chibi') || p.includes('cute') || p.includes('dễ thương');
+
+// background
+let grad=ctx.createRadialGradient(384,384,0,384,384,500);
+grad.addColorStop(0,`hsl(${hue},90%,70%)`);grad.addColorStop(0.5,`hsl(${(hue+40)%360},85%,50%)`);grad.addColorStop(1,`hsl(${(hue+80)%360},80%,20%)`);
+ctx.fillStyle=grad;ctx.fillRect(0,0,768,768);
+
+// shadow ground
+ctx.fillStyle='rgba(0,0,0,0.25)';ctx.beginPath();ctx.ellipse(384,620,180,40,0,0,Math.PI*2);ctx.fill();
+
+if(is3d){
+// 3D isometric cubes - Rubik style
+let colors=[`hsl(${hue},80%,60%)`,`hsl(${(hue+30)%360},80%,55%)`,`hsl(${(hue+60)%360},80%,45%)`];
+let size=90;
+let ox=384, oy=320;
+for(let z=0;z<3;z++){
+for(let x=0;x<3;x++){
+for(let y=0;y<3;y++){
+let px=ox + (x - y)*size*0.6;
+let py=oy + (x + y)*size*0.3 - z*size*0.9;
+let col=colors[(x+y+z)%3];
+// top face
+ctx.fillStyle=col;
+ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px+size*0.6,py-size*0.3);ctx.lineTo(px,py-size*0.6);ctx.lineTo(px-size*0.6,py-size*0.3);ctx.closePath();ctx.fill();
+// left face
+ctx.fillStyle=`hsl(${hue},70%,35%)`;
+ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px,py+size*0.6);ctx.lineTo(px-size*0.6,py+size*0.3);ctx.lineTo(px-size*0.6,py-size*0.3);ctx.closePath();ctx.fill();
+// right face
+ctx.fillStyle=`hsl(${hue},60%,25%)`;
+ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px,py+size*0.6);ctx.lineTo(px+size*0.6,py+size*0.3);ctx.lineTo(px+size*0.6,py-size*0.3);ctx.closePath();ctx.fill();
+ctx.strokeStyle='rgba(0,0,0,0.3)';ctx.lineWidth=1;ctx.stroke();
 }
-function copyViewedRaw(){
-let out=document.getElementById('rawViewOutput').value;
-if(!out){alert('Chưa có raw để copy');return;}
-navigator.clipboard.writeText(out).then(()=>{document.getElementById('rawViewStatus').innerText='✅ Đã copy '+out.length+' chars vào clipboard';});
+}
+}
+// glow
+ctx.shadowColor=`hsl(${hue},100%,60%)`;ctx.shadowBlur=20;ctx.fillStyle='white';ctx.beginPath();ctx.arc(384,200,15,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;
+}else if(p.includes('mèo')||p.includes('cat')){
+// 2D chibi cat pro
+if(isChibi){
+ctx.fillStyle='#ffe4b5';ctx.beginPath();ctx.arc(384,380,140,0,Math.PI*2);ctx.fill();
+ctx.fillStyle='white';ctx.beginPath();ctx.ellipse(340,360,35,45,0,0,Math.PI*2);ctx.ellipse(428,360,35,45,0,0,Math.PI*2);ctx.fill();
+ctx.fillStyle='#222';ctx.beginPath();ctx.arc(340,375,12,0,Math.PI*2);ctx.arc(428,375,12,0,Math.PI*2);ctx.fill();
+ctx.fillStyle='#ff6b9d';ctx.beginPath();ctx.arc(384,400,10,0,Math.PI*2);ctx.fill();
+ctx.fillStyle='#ffaa66';ctx.beginPath();ctx.moveTo(270,280);ctx.lineTo(320,340);ctx.lineTo(240,340);ctx.fill();ctx.beginPath();ctx.moveTo(498,280);ctx.lineTo(448,340);ctx.lineTo(528,340);ctx.fill();
+ctx.fillStyle='rgba(255,107,157,0.3)';ctx.beginPath();ctx.arc(300,420,25,0,Math.PI*2);ctx.arc(468,420,25,0,Math.PI*2);ctx.fill();
+}else{
+ctx.fillStyle='#ffdd99';ctx.beginPath();ctx.arc(384,380,120,0,Math.PI*2);ctx.fill();
+ctx.fillStyle='#333';ctx.beginPath();ctx.arc(340,360,18,0,Math.PI*2);ctx.arc(428,360,18,0,Math.PI*2);ctx.fill();
+}
+}else if(p.includes('nhà')||p.includes('house')){
+// 3D house isometric
+ctx.fillStyle='#8B4513';ctx.fillRect(284,380,200,150);
+ctx.fillStyle='#CD853F';ctx.beginPath();ctx.moveTo(264,380);ctx.lineTo(384,300);ctx.lineTo(504,380);ctx.fill();
+ctx.fillStyle='#87CEEB';ctx.fillRect(320,420,40,40);ctx.fillRect(410,420,40,40);
+}else if(p.includes('xe')||p.includes('car')){
+ctx.fillStyle='#111';ctx.beginPath();ctx.ellipse(384,500,140,35,0,0,Math.PI*2);ctx.fill();
+ctx.fillStyle=`hsl(${hue},80%,55%)`;ctx.fillRect(244,380,280,80);ctx.beginPath();ctx.moveTo(244,380);ctx.lineTo(280,340);ctx.lineTo(488,340);ctx.lineTo(524,380);ctx.closePath();ctx.fill();
+ctx.fillStyle='#111';ctx.beginPath();ctx.arc(300,500,28,0,Math.PI*2);ctx.arc(468,500,28,0,Math.PI*2);ctx.fill();
+}else{
+// default logo 2D with 3D shadow
+ctx.fillStyle='rgba(0,0,0,0.4)';ctx.beginPath();ctx.roundRect(184,284,400,200,20);ctx.fill();
+ctx.fillStyle='rgba(255,255,255,0.95)';ctx.beginPath();ctx.roundRect(180,280,400,200,20);ctx.fill();
+ctx.fillStyle='#050a0f';ctx.font='bold 36px sans-serif';ctx.textAlign='center';ctx.fillText(prompt.slice(0,22),384,360);
+ctx.font='18px sans-serif';ctx.fillStyle='#06e7ff';ctx.fillText('@script2443 V8.6 - 3D 2D Pro',384,390);
+ctx.fillStyle=`hsl(${hue},80%,50%)`;ctx.fillRect(284,410,200,8);
+}
+
+ctx.font='11px monospace';ctx.fillStyle='rgba(255,255,255,0.9)';ctx.textAlign='center';ctx.fillText((is3d?'3D Isometric':'2D Pro')+' - Canvas tự vẽ - ID '+hash+' - Không lấy mạng',384,750);
+return c.toDataURL('image/png');
+}
+
+// Google Knowledge Base
+const knowledge={
+"datastore":{title:"DataStore Roblox",content:"DataStoreService dùng để lưu dữ liệu người chơi vĩnh viễn.\nCách dùng:\nlocal DSS=game:GetService('DataStoreService')\nlocal store=DSS:GetDataStore('Coins')\nstore:SetAsync(userId, value)\nstore:GetAsync(userId)\nNên dùng pcall để tránh lỗi, và lưu khi PlayerRemoving."},
+"leaderstats":{title:"Leaderstats",content:"Leaderstats là Folder chứa IntValue/NumberValue để hiện trên bảng xếp hạng.\nTạo trong PlayerAdded:\nlocal ls=Instance.new('Folder')\nls.Name='leaderstats'\nls.Parent=player\nlocal coin=Instance.new('IntValue')\ncoin.Name='Coins'\ncoin.Parent=ls\n"},
+"remoteevent":{title:"RemoteEvent",content:"RemoteEvent để client-server giao tiếp.\nTạo trong ReplicatedStorage.\nClient: remote:FireServer(data)\nServer: remote.OnServerEvent:Connect(function(player,data) end)"},
+"tween":{title:"TweenService",content:"TweenService tạo hiệu ứng mượt:\nlocal TS=game:GetService('TweenService')\nTS:Create(frame,TweenInfo.new(0.5,Enum.EasingStyle.Quad),{Position=UDim2.new(0.5,0,0.5,0)}):Play()"},
+"obfuscator":{title:"Obfuscator Lua",content:"Obfuscator biến code thành khó đọc: Base64, XOR, string.char, loadstring.\nGiải mã: tìm pattern _c chunk, Base64 dài, thử XOR brute force 1-255."}
+};
+
+function searchGoogle(query){
+let q=query.toLowerCase();
+for(let k in knowledge){
+if(q.includes(k)){return knowledge[k];}
+}
+if(q.includes('datastore')||q.includes('lưu tiền')) return knowledge['datastore'];
+if(q.includes('leaderstats')||q.includes('bảng xếp hạng')) return knowledge['leaderstats'];
+if(q.includes('remote')) return knowledge['remoteevent'];
+if(q.includes('tween')||q.includes('mượt')) return knowledge['tween'];
+if(q.includes('obfuscator')||q.includes('mã hóa')||q.includes('giải mã')) return knowledge['obfuscator'];
+return {title:"Google Search: "+query,content:"Mình tìm trên Google kiến thức về '"+query+"':\n\nĐây là chủ đề Roblox Lua phổ biến.\n- Tìm docs chính thức trên developer.roblox.com\n- Xem DevForum, YouTube tutorial\n- Dùng DataStore2 hoặc ProfileService cho lưu dữ liệu an toàn\n- Tránh dùng _G, dùng ModuleScript\n\nBạn cần code mẫu cụ thể không? Nói 'tạo ...' là mình tạo luôn!"};
+}
+
+function sendMsg(){
+let inp=document.getElementById('aiIn');let prompt=inp.value.trim();if(!prompt) return;
+chat.push({role:'user',text:prompt});inp.value='';renderChat();localStorage.setItem('chatV86',JSON.stringify(chat));
+let deep=document.getElementById('deepThink').checked;
+let longThink=document.getElementById('thinkLong').checked;
+let thinkBox=document.getElementById('thinkBox');
+let thinkSteps=document.getElementById('thinkSteps');
+let thinkT=document.getElementById('thinkT');
+let timerEl=document.getElementById('thinkTimer');
+
+if(!deep){
+// không suy nghĩ, trả lời ngay
+setTimeout(()=>{processPrompt(prompt);},300);
+return;
+}
+
+// suy nghĩ sâu
+thinkBox.classList.remove('hidden');
+thinkSteps.innerHTML='';
+let steps=[];
+let low=prompt.toLowerCase();
+if(low.includes('tìm') && (low.includes('google')||low.includes('cách làm')||low.includes('là gì'))){
+steps=["🔍 Phân tích câu hỏi: '"+prompt+"'","🌐 Nhận diện cần tra Google Knowledge","📚 Tìm trong knowledge base Roblox Lua","🧠 Tổng hợp thông tin DataStore, Leaderstats, RemoteEvent","✍️ Chuẩn bị câu trả lời chi tiết + code mẫu"];
+}else if(low.includes('tạo ảnh')||low.includes('vẽ ảnh')){
+steps=["🎨 Phân tích yêu cầu ảnh: '"+prompt+"'","🤔 Xác định style: "+(low.includes('3d')?'3D Isometric':'2D Chibi Pro'),"🖌️ Tính toán màu sắc theo hash prompt","💡 Thêm bóng đổ, gradient, highlight 3D","🖼️ Render Canvas 768x768 tự vẽ"];
+}else if(low.includes('tạo')||low.includes('viết')){
+steps=["📝 Phân tích ý người dùng: '"+prompt+"'","🔧 Xác định loại: "+(low.includes('ui')?'UI':low.includes('coin')?'Coin System':low.includes('inventory')?'Inventory':'Custom'),"🎨 Chọn màu, size, tên theo yêu cầu","⚙️ Tạo ID random để không trùng mẫu","💻 Viết Lua code client-runnable"];
+}else{
+steps=["💭 Hiểu câu: '"+prompt+"'","🤔 Phân loại: "+(prompt.length<=4?'Câu ngắn':'Câu hỏi tự nhiên'),"🧠 Chọn cách trả lời tự nhiên, không lặp","✍️ Chuẩn bị câu trả lời đa dạng"];
+}
+
+let stepIdx=0;
+let start=Date.now();
+let interval=setInterval(()=>{
+if(stepIdx<steps.length){
+let div=document.createElement('div');div.innerText="["+ (Date.now()-start)/1000+"s] "+steps[stepIdx];thinkSteps.appendChild(div);
+thinkSteps.scrollTop=thinkSteps.scrollHeight;
+stepIdx++;
+let elapsed=(Date.now()-start)/1000;
+timerEl.innerText=elapsed.toFixed(1)+"s";
+thinkT.innerText="AI đang suy nghĩ sâu... bước "+stepIdx+"/"+steps.length;
+}else{
+clearInterval(interval);
+thinkBox.classList.add('hidden');
+processPrompt(prompt, steps.join("\n"), ((Date.now()-start)/1000).toFixed(1)+"s");
+}
+}, longThink?1000:400);
+
+function processPrompt(prompt, thinkLog, thinkTime){
+let low=prompt.toLowerCase();
+// Google search
+if((low.includes('tìm') && low.includes('google')) || low.startsWith('google:') || low.includes('cách làm') && (low.includes('datastore')||low.includes('leaderstats')||low.includes('là gì')) || low.includes('giải thích')){
+let q=prompt.replace(/tìm trên google|google:|tìm|giải thích/gi,'').trim();
+let res=searchGoogle(q||prompt);
+let txt=`🔍 **${res.title}** (từ Google Knowledge)\n\n${res.content}\n\n💡 Bạn cần mình tạo code mẫu luôn không? Nói "tạo ..." là mình tạo theo ý bạn!`;
+if(thinkLog) txt="🧠 Đã suy nghĩ "+thinkTime+"\n\n"+txt;
+chat.push({role:'ai',text:txt,think:thinkLog,thinkTime:thinkTime});
+renderChat();localStorage.setItem('chatV86',JSON.stringify(chat));return;
+}
+if(/(bạn.*ai tạo|ai tạo.*bạn|bạn được tạo.*bởi ai|who made you|bạn là ai)/i.test(prompt)){
+let ans=[
+`Mình là @script2443 AI V8.6 Deep Think, được tạo bởi @script2443 (bạn đó!) 😊\nMình có thể suy nghĩ sâu 5s, tự vẽ ảnh 3D 2D xịn, và biết cực nhiều thông tin Google về Roblox Lua.\nMình không phải Meta AI hay ChatGPT, mình là AI riêng trong tool @script2443.`,
+`Mình được tạo bởi @script2443 - chủ tool này nè! AI V8.6 Deep Think, suy nghĩ lâu được, ảnh 3D 2D pro.`
+];
+chat.push({role:'ai',text:ans[Math.floor(Math.random()*ans.length)],think:thinkLog,thinkTime:thinkTime});
+renderChat();localStorage.setItem('chatV86',JSON.stringify(chat));return;
+}
+if(/(con gà|ngu|gà|óc chó|đần)/i.test(prompt) && prompt.length<30){
+let fun=[`Haha bạn trêu mình à 😂 Mình là AI mà, gà thì không nhưng code thì mình cân được!`,`Ơ kìa bạn nói thế mình buồn đó 😅 Thử thách mình code gì đi!`];
+chat.push({role:'ai',text:fun[Math.floor(Math.random()*fun.length)],think:thinkLog,thinkTime:thinkTime});
+renderChat();localStorage.setItem('chatV86',JSON.stringify(chat));return;
+}
+if(prompt.length<=4){
+let shortReplies=[`Ủa gì đó bạn? 😅`,`Hả? Bạn cần gì nè?`,`Ok ok, bạn nói tiếp đi!`,`Dạ? Mình nghe nè!`];
+chat.push({role:'ai',text:shortReplies[Math.floor(Math.random()*shortReplies.length)],think:thinkLog,thinkTime:thinkTime});
+renderChat();localStorage.setItem('chatV86',JSON.stringify(chat));return;
+}
+if(/tạo ảnh|vẽ ảnh|tạo logo/i.test(prompt)){
+let mode='2d';
+if(prompt.toLowerCase().includes('3d')||prompt.toLowerCase().includes('khối')||prompt.toLowerCase().includes('rubik')||prompt.toLowerCase().includes('isometric')) mode='3d';
+else if(prompt.toLowerCase().includes('2d')||prompt.toLowerCase().includes('chibi')) mode='2d';
+let img=selfGenImgPro(prompt, mode);
+chat.push({role:'ai',text:`Mình đã tự vẽ ảnh ${mode.toUpperCase()} xịn bằng Canvas theo yêu cầu: "${prompt}"\nCanvas 768x768, có bóng đổ, gradient 3D, không lấy mạng. Mode: ${mode}`,img:img,imgMode:mode.toUpperCase()+" Pro - Canvas tự vẽ",think:thinkLog,thinkTime:thinkTime});
+renderChat();localStorage.setItem('chatV86',JSON.stringify(chat));return;
+}
+if(/(tạo|viết).*(ui|code|lua|thông báo|notify|coin|leaderstats|inventory|shop|túi đồ|ngày đêm|daynight|rung|shake|fly|speed|menu|button|nút|hệ thống)/i.test(low)){
+if(/^(tạo code|viết code|tạo lua|cho code)$/i.test(prompt.trim())){
+chat.push({role:'ai',text:`Bạn muốn tạo code gì cụ thể nè? 😊\n- UI: "tạo UI có 2 nút Play và Shop màu cyan"\n- Coin: "tạo hệ thống coin leaderstats"\n- Inventory: "tạo inventory 8 ô màu tím"`,think:thinkLog,thinkTime:thinkTime});
+renderChat();localStorage.setItem('chatV86',JSON.stringify(chat));return;
+}
+let intent=parseIntent(prompt);let code=buildLua(intent);
+chat.push({role:'ai',text:`Đã xong theo ý bạn! 🚀 Yêu cầu: "${prompt}" | ID: ${intent.rand} | Loại: ${intent.type} | Suy nghĩ: ${thinkTime||'nhanh'}`,code:code,think:thinkLog,thinkTime:thinkTime});
+renderChat();localStorage.setItem('chatV86',JSON.stringify(chat));return;
+}
+let naturals=[
+`Chào bạn! Mình nghe "${prompt}" rồi nè 😊 ${thinkLog?'Mình đã suy nghĩ '+thinkTime+' để trả lời kỹ hơn.':''}\nBạn cần tạo gì thì nói rõ "tạo UI...", "tạo coin system..." hoặc "tìm trên Google..." là mình tra Google luôn!`,
+`Mình hiểu rồi! "${prompt}" - Bạn cứ nói tự nhiên nhé!`,
+`Ok bạn! "${prompt}" - mình ghi nhận. Bạn muốn tạo UI, coin, inventory hay ảnh 3D 2D gì nè?`
+];
+chat.push({role:'ai',text:naturals[Math.floor(Math.random()*naturals.length)],think:thinkLog,thinkTime:thinkTime});
+renderChat();localStorage.setItem('chatV86',JSON.stringify(chat));
+}
 }
 
 renderChat();
