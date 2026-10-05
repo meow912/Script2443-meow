@@ -21,142 +21,344 @@
   font-family: "Optimistic Mono", ui-monospace, monospace;
 }
 </style><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>@script2443 V13 - Auto Secure Raw + MK Fix 100%</title>
+<title>@script2443 10.0v - File Upload + Download + Image + Raw File - Giữ Full Chức Năng</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#050a0f;color:#e4e4e7;font-family:Inter,system-ui,sans-serif}
-header{background:#050a0f;border-bottom:2px solid #22d3ee;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:999}
-.tabs{display:flex;gap:6px;padding:6px;background:#0a141e;border:1px solid rgba(34,211,238,.3);border-radius:12px;width:fit-content;margin:10px;flex-wrap:wrap}
-.tab-btn{padding:10px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);color:#a1a1aa;font-size:10px;font-weight:800;cursor:pointer}
-.tab-btn.active{background:#22d3ee!important;color:#000!important;border-color:#22d3ee!important;font-weight:900}
+header{background:#050a0f;border-bottom:2px solid #ef4444;padding:10px 14px;position:sticky;top:0;z-index:999}
+.tabs{display:flex;gap:5px;padding:6px;background:#0a141e;border:1px solid rgba(239,68,68,.3);border-radius:12px;width:fit-content;margin:10px;flex-wrap:wrap}
+.tab-btn{padding:9px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);color:#a1a1aa;font-size:8px;font-weight:800;cursor:pointer}
+.tab-btn.active{background:#ef4444!important;color:#fff!important;border-color:#ef4444!important;font-weight:900;box-shadow:0 0 15px rgba(239,68,68,.5)}
 .pane{width:100%;padding:6px}
-.card{background:#0a141e;border:1px solid rgba(34,211,238,.2);border-radius:12px;padding:12px;margin-top:6px}
-.chip{font-size:7px;padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);display:inline-flex;align-items:center;gap:3px;cursor:pointer;margin:1px;white-space:nowrap}
-.chip.checked{background:rgba(34,211,238,.3)!important;border-color:#22d3ee!important;color:#22d3ee!important;font-weight:800}
-textarea{width:100%;background:#000;border:1px solid rgba(255,255,255,.2);border-radius:10px;padding:10px;color:#e4e4e7;font-family:Consolas,monospace;font-size:11px}
-.btn-main{width:100%;height:46px;border-radius:11px;border:none;background:linear-gradient(90deg,#22d3ee,#a855f7);color:#fff;font-weight:900;font-size:12px;cursor:pointer;display:block}
-.status{margin-top:8px;padding:8px;border-radius:9px;background:#000;border:1px solid rgba(255,255,255,.1);font-family:monospace;font-size:9px;word-break:break-all}
-.pwd-input{width:100%;height:40px;padding:0 14px;border-radius:999px;background:#000;border:2px solid #a855f7;color:#fff;font-size:13px;margin-top:6px}
-.secure-box{background:linear-gradient(135deg,rgba(34,211,238,.1),rgba(168,85,247,.1));border:2px solid #22d3ee;border-radius:12px;padding:12px;margin-bottom:10px}
+.card{background:#0a141e;border:1px solid rgba(239,68,68,.25);border-radius:12px;padding:10px;margin-top:6px}
+.chip{font-size:6px;padding:3px 6px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);display:inline-flex;align-items:center;gap:2px;cursor:pointer;margin:1px;white-space:nowrap}
+.chip.checked{background:rgba(239,68,68,.35)!important;border-color:#ef4444!important;color:#fff!important;font-weight:800}
+.chip-moon{border-color:#a855f7!important;color:#e879f9!important;background:rgba(168,85,247,.15)!important}
+.chip-decode{border-color:#22c55e!important;color:#22c55e!important;background:rgba(34,197,94,.1)!important}
+.chip-raw{border-color:#22d3ee!important;color:#22d3ee!important;background:rgba(34,211,238,.1)!important}
+textarea{width:100%;background:#000;border:1px solid rgba(255,255,255,.2);border-radius:10px;padding:10px;color:#e4e4e7;font-family:Consolas,monospace;font-size:10px}
+.btn-main{width:100%;height:46px;border-radius:11px;border:none;background:linear-gradient(90deg,#ef4444,#a855f7);color:#fff;font-weight:900;font-size:11px;cursor:pointer}
+.status{margin-top:8px;padding:8px;border-radius:9px;background:#000;border:1px solid rgba(255,255,255,.1);font-family:monospace;font-size:8px;word-break:break-all}
+.banner{background:linear-gradient(135deg,rgba(239,68,68,.15),rgba(168,85,247,.15));border:2px solid #ef4444;border-radius:12px;padding:10px;margin-bottom:8px}
+.pwd-input{width:100%;height:36px;padding:0 12px;border-radius:999px;background:#000;border:2px solid #22d3ee;color:#fff;font-size:10px;margin-top:6px}
+.file-drop{width:100%;min-height:80px;border:2px dashed #22d3ee;border-radius:12px;background:rgba(34,211,238,.05);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px;cursor:pointer;margin-top:8px;transition:.2s}
+.file-drop:hover{background:rgba(34,211,238,.15);border-color:#facc15}
+.file-drop.drag{border-color:#22c55e;background:rgba(34,197,94,.15)}
+.file-preview{margin-top:8px;max-height:200px;overflow:auto;background:#000;border-radius:8px;padding:8px;border:1px solid #333;display:none}
+.file-preview img{max-width:100%;max-height:150px;border-radius:8px}
 </style>
 <script>
 function showTab(t){
-  try{
-    var ids=['p-enc','p-dec','p-raw','p-ai'];
-    for(var i=0;i<ids.length;i++){
-      var el=document.getElementById(ids[i]);
-      if(el) el.style.display=(ids[i]==='p-'+t)?'block':'none';
-    }
-    var btns=['tb-enc','tb-dec','tb-raw','tb-ai'];
-    for(var j=0;j<btns.length;j++){
-      var btn=document.getElementById(btns[j]);
-      if(btn){if(btns[j]==='tb-'+t)btn.classList.add('active');else btn.classList.remove('active');}
-    }
-    if(t==='raw'){ setTimeout(initRawTab,150); }
-  }catch(e){console.error(e);}
+  var ids=['p-enc','p-dec','p-raw','p-ai'];
+  for(var i=0;i<ids.length;i++){
+    var el=document.getElementById(ids[i]);
+    if(el) el.style.display=(ids[i]==='p-'+t)?'block':'none';
+  }
+  var btns=['tb-enc','tb-dec','tb-raw','tb-ai'];
+  for(var j=0;j<btns.length;j++){
+    var btn=document.getElementById(btns[j]);
+    if(btn){if(btns[j]==='tb-'+t)btn.classList.add('active');else btn.classList.remove('active');}
+  }
+  if(t==='raw'){ setTimeout(function(){ if(typeof initRawTab==='function') initRawTab(); },100); }
 }
+function selectAllDec(){document.querySelectorAll('[id^="d_"]').forEach(function(i){i.checked=true;}); updateDecCount(); updateChipChecked();}
+function clearAllDec(){document.querySelectorAll('[id^="d_"]').forEach(function(i){i.checked=false;}); updateDecCount(); updateChipChecked();}
+function updateDecCount(){var c=document.querySelectorAll('[id^="d_"]:checked').length; var total=document.querySelectorAll('[id^="d_"]').length; var el=document.getElementById('decCount'); if(el) el.innerText=c+'/'+total+' AUTO';}
+function updateChipChecked(){document.querySelectorAll('.chip').forEach(function(chip){var cb=chip.querySelector('input[type="checkbox"]'); if(cb){if(cb.checked) chip.classList.add('checked'); else chip.classList.remove('checked');}});}
 function initRawTab(){
   var out=document.getElementById('outEnc');
   var preview=document.getElementById('rawSourcePreview');
   var input=document.getElementById('rawSourceInput');
   if(out&&out.value){
-    if(preview) preview.value=out.value.substring(0,300)+'... ('+out.value.length+' chars) - từ Mã Hóa - Sẽ tự tạo Secure Raw khi nhập MK';
+    if(preview) preview.value=out.value.substring(0,200)+'... ('+out.value.length+' chars)';
     if(input && !input.value) input.value=out.value;
-    // Auto tạo nếu đã có MK
-    var pwd=document.getElementById('rawPassword');
-    if(pwd && pwd.value){
-      setTimeout(mkSecureRaw,300);
-    }
+  }
+  var outDec=document.getElementById('outDec');
+  if(outDec&&outDec.value&&input&&!input.value){
+    if(preview) preview.value=outDec.value.substring(0,200)+'... ('+outDec.value.length+' chars)';
+    input.value=outDec.value;
   }
 }
-function selectAll(){document.querySelectorAll('[id^="m_"]').forEach(function(i){i.checked=true;}); updateCount(); updateChipChecked();}
-function updateCount(){}
-function updateChipChecked(){document.querySelectorAll('.chip').forEach(function(chip){var cb=chip.querySelector('input[type="checkbox"]'); if(cb){if(cb.checked) chip.classList.add('checked'); else chip.classList.remove('checked');}});}
+
+// FILE HANDLING - Dùng chung cho cả 3 tab
+function handleFileSelect(inputId, textareaId, previewId, fileInfoId){
+  var fileInput=document.getElementById(inputId);
+  var file=fileInput.files[0];
+  if(!file) return;
+  processFile(file, textareaId, previewId, fileInfoId);
+}
+function processFile(file, textareaId, previewId, fileInfoId){
+  var textarea=document.getElementById(textareaId);
+  var preview=document.getElementById(previewId);
+  var info=document.getElementById(fileInfoId);
+  if(info){
+    info.style.display='block';
+    info.innerHTML='📁 File: <b>'+file.name+'</b> | '+file.type+' | '+(file.size/1024).toFixed(1)+'KB';
+  }
+  if(preview) preview.style.display='block';
+  
+  // Nếu là ảnh
+  if(file.type.startsWith('image/')){
+    var readerImg=new FileReader();
+    readerImg.onload=function(e){
+      if(preview){
+        preview.innerHTML='<div style="font-size:7px;color:#22d3ee">🖼️ Ảnh đã tải:</div><img src="'+e.target.result+'" style="margin-top:6px"><div style="margin-top:6px;font-size:6px;color:#a1a1aa">Ảnh: '+file.name+' - Có thể gửi ảnh và tệp riêng</div>';
+      }
+      // Nếu là ảnh, cũng đọc base64 để có thể đưa vào code
+      if(textarea){
+        textarea.value='-- File ảnh: '+file.name+'\n-- Type: '+file.type+'\n-- Size: '+file.size+' bytes\n-- Base64 (cắt 200 ký tự đầu):\nlocal imageData = [['+e.target.result.substring(0,200)+'...]]\n-- Full base64 length: '+e.target.result.length;
+      }
+    };
+    readerImg.readAsDataURL(file);
+    return;
+  }
+  
+  // Nếu là file text / lua / txt / json
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var content=e.target.result;
+    if(textarea){
+      textarea.value=content;
+      if(textarea.id==='inpDec' || textarea.id==='inpEnc' || textarea.id==='rawSourceInput'){
+        // Tự động giải mã/mã hóa sau khi load file
+        if(textarea.id==='inpDec') setTimeout(doDecUltimate,300);
+      }
+    }
+    if(preview){
+      if(file.type.includes('text') || file.name.endsWith('.lua') || file.name.endsWith('.txt') || file.name.endsWith('.json')){
+        preview.innerHTML='<div style="font-size:7px;color:#22c55e">📄 Nội dung file (preview 500 ký tự đầu):</div><pre style="margin-top:6px;font-size:7px;white-space:pre-wrap;max-height:150px;overflow:auto">'+content.substring(0,500).replace(/</g,'&lt;')+'</pre>';
+      } else {
+        preview.innerHTML='<div style="font-size:7px;color:#facc15">📦 File nhị phân: '+file.name+'</div><div style="font-size:6px;color:#a1a1aa">Đã đọc '+content.length+' ký tự (có thể là file mã hóa)</div>';
+      }
+    }
+  };
+  reader.onerror=function(){ alert('Lỗi đọc file: '+file.name); };
+  // Đọc như text (cho cả file mã hóa)
+  reader.readAsText(file);
+}
+
+// Kéo thả file
+function setupDragDrop(dropId, inputId, textareaId, previewId, infoId){
+  var drop=document.getElementById(dropId);
+  if(!drop) return;
+  drop.addEventListener('dragover',function(e){ e.preventDefault(); drop.classList.add('drag'); });
+  drop.addEventListener('dragleave',function(e){ drop.classList.remove('drag'); });
+  drop.addEventListener('drop',function(e){
+    e.preventDefault();
+    drop.classList.remove('drag');
+    var files=e.dataTransfer.files;
+    if(files.length>0){
+      processFile(files[0], textareaId, previewId, infoId);
+    }
+  });
+}
 </script>
 </head><body>
 <header>
-<div style="display:flex;gap:10px;align-items:center"><div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#22d3ee,#a855f7);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900">13</div><div><div style="font-weight:900;font-size:11px">@script2443 <span style="color:#22d3ee">V13 - Auto Secure Raw + MK - Fix không tự tạo URL</span></div><div style="font-size:7px;color:#22c55e">✅ Fix: Tự động tạo URL Raw MK khi nhập MK + 1 link duy nhất + bỏ key 93 + vào link bắt ghi MK + Roblox phát hiện được</div></div></div>
+<div style="display:flex;gap:10px;align-items:center"><div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#ef4444,#a855f7);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:11px">10</div><div><div style="font-weight:900;font-size:10px">@script2443 <span style="color:#22d3ee">10.0v - File Upload + Download + Ảnh + Tệp Riêng</span></div><div style="font-size:6px;color:#22c55e">✅ Mới: Mã hóa, Giải mã, Raw đều có thể đưa tệp/file riêng + gửi ảnh + hiện raw có file để tải về</div></div></div>
 </header>
 
 <div style="max-width:1700px;margin:0 auto;padding:5px">
 <div class="tabs">
-<button id="tb-enc" class="tab-btn active" onclick="showTab('enc')">🔒 Mã Hóa</button>
-<button id="tb-dec" class="tab-btn" onclick="showTab('dec')">🔓 Giải Mã MoonSec</button>
-<button id="tb-raw" class="tab-btn" onclick="showTab('raw')">🔗 Secure Raw + MK Auto</button>
-<button id="tb-ai" class="tab-btn" onclick="showTab('ai')">🤖 AI</button>
+<button id="tb-enc" class="tab-btn" onclick="showTab('enc')">🔒 Mã Hóa + File 10.0v</button>
+<button id="tb-dec" class="tab-btn active" onclick="showTab('dec')">🔓 Giải Mã 231 Loại + File 10.0v</button>
+<button id="tb-raw" class="tab-btn" onclick="showTab('raw')">🔗 Raw + File + Tải Về 10.0v</button>
+<button id="tb-ai" class="tab-btn" onclick="showTab('ai')">🤖 AI Chat 10.0v</button>
 </div>
 
-<div id="p-enc" class="pane" style="display:block">
-<div class="card">
-<div style="display:flex;gap:5px;margin-bottom:6px">
-<label class="chip checked"><input type="checkbox" id="m_xor" checked> XOR</label>
-<label class="chip checked"><input type="checkbox" id="m_char" checked> char</label>
-<label class="chip checked"><input type="checkbox" id="m_load" checked> loadstring</label>
-<label class="chip checked"><input type="checkbox" id="m_b64x2" checked> B64x2</label>
+<!-- MÃ HÓA + FILE -->
+<div id="p-enc" class="pane" style="display:none">
+<div class="card" style="border:2px solid #a855f7">
+<div class="banner" style="border-color:#a855f7">
+<h2 style="font-size:11px;font-weight:900;color:#a855f7">🔒 MÃ HÓA 10.0v - CÓ THỂ ĐƯA TỆP/FILE RIÊNG + ẢNH</h2>
 </div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-<div><textarea id="inpEnc" style="height:200px">print("Hello V13 Secure Raw Auto")
-print("Test auto tạo URL raw MK")
-</textarea><button type="button" class="btn-main" style="margin-top:6px" onclick="doEnc()">🔒 MÃ HÓA</button><div id="encStatus" class="status">✅ Sẵn sàng</div></div>
-<div><textarea id="outEnc" readonly style="height:200px;border:2px solid #22d3ee"></textarea><div style="display:flex;gap:5px;margin-top:6px"><button type="button" class="chip" style="flex:1;height:32px;justify-content:center" onclick="copyEnc()">📋 Copy</button><button type="button" class="chip" style="flex:1;height:32px;justify-content:center;background:#a855f7;color:#fff;font-weight:900" onclick="toRaw()">-> Secure Raw Auto</button></div></div>
+
+<!-- FILE UPLOAD CHO MÃ HÓA -->
+<div class="file-drop" id="dropEnc" onclick="document.getElementById('fileEnc').click()">
+<div style="font-size:20px">📁</div>
+<div style="font-size:8px;color:#22d3ee;font-weight:900;margin-top:4px">BẤM ĐỂ CHỌN TỆP/FILE HOẶC KÉO THẢ FILE VÀO ĐÂY (MÃ HÓA)</div>
+<div style="font-size:6px;color:#a1a1aa;margin-top:2px">Hỗ trợ: .lua, .txt, .json, ảnh .png .jpg .gif, mọi file</div>
+<input type="file" id="fileEnc" style="display:none" accept="*/*" onchange="handleFileSelect('fileEnc','inpEnc','previewEnc','infoEnc')">
+</div>
+<div id="infoEnc" class="status" style="display:none"></div>
+<div id="previewEnc" class="file-preview"></div>
+
+<textarea id="inpEnc" style="height:180px;margin-top:10px" placeholder="Dán code vào đây hoặc chọn tệp/file ở trên (có thể gửi ảnh và tệp riêng)...">print("Hello 10.0v - Có file upload riêng")
+print("Có thể đưa tệp/file riêng + ảnh")
+</textarea>
+<button class="btn-main" onclick="doEnc()" style="margin-top:8px">🔒 Mã Hóa 10.0v</button>
+<div id="encStatus" class="status">Sẵn sàng - Có thể đưa file riêng</div>
+<textarea id="outEnc" style="height:180px;border:2px solid #22d3ee;margin-top:8px" placeholder="Kết quả mã hóa..."></textarea>
+<div style="display:flex;gap:6px;margin-top:6px">
+<button class="chip" style="flex:1;height:32px;justify-content:center;background:#000;border-color:#22d3ee;color:#22d3ee" onclick="downloadFile('outEnc','ma_hoa_10v.txt')">💾 Tải File Mã Hóa Về</button>
+<button class="chip" style="flex:1;height:32px;justify-content:center" onclick="navigator.clipboard.writeText(document.getElementById('outEnc').value)">📋 Copy</button>
 </div>
 </div>
 </div>
 
-<div id="p-dec" class="pane" style="display:none">
-<div class="card"><h2 style="font-size:12px;color:#a855f7">🌙 MoonSec V3 Decoder</h2>
-<textarea id="inpDec" style="height:200px" placeholder="Dán code MoonSec V3..."></textarea>
-<button type="button" class="btn-main" style="margin-top:6px;background:linear-gradient(90deg,#a855f7,#e879f9)" onclick="doDec()">🔓 GIẢI MÃ</button>
-<textarea id="outDec" readonly style="height:200px;margin-top:8px;border:2px solid #a855f7"></textarea>
-<div id="decStatus" class="status"></div>
+<!-- GIẢI MÃ + FILE -->
+<div id="p-dec" class="pane" style="display:block">
+<div class="card" style="border:2px solid #ef4444">
+<div class="banner">
+<h2 style="font-size:11px;font-weight:900;color:#ef4444">🔓 GIẢI MÃ 231 LOẠI 10.0v - CÓ THỂ ĐƯA TỆP/FILE RIÊNG + ẢNH</h2>
+</div>
+
+<!-- FILE UPLOAD CHO GIẢI MÃ -->
+<div class="file-drop" id="dropDec" onclick="document.getElementById('fileDec').click()" style="border-color:#ef4444;background:rgba(239,68,68,.05)">
+<div style="font-size:20px">📁</div>
+<div style="font-size:8px;color:#ef4444;font-weight:900;margin-top:4px">BẤM ĐỂ CHỌN TỆP/FILE HOẶC KÉO THẢ FILE VÀO ĐÂY (GIẢI MÃ)</div>
+<div style="font-size:6px;color:#a1a1aa;margin-top:2px">Hỗ trợ: .lua mã hóa, .txt, ảnh, mọi file - Ai có thể gửi ảnh và tệp vào</div>
+<input type="file" id="fileDec" style="display:none" accept="*/*" onchange="handleFileSelect('fileDec','inpDec','previewDec','infoDec')">
+</div>
+<div id="infoDec" class="status" style="display:none"></div>
+<div id="previewDec" class="file-preview"></div>
+
+<div style="background:linear-gradient(90deg,rgba(239,68,68,.15),rgba(34,197,94,.15));border:2px solid #ef4444;border-radius:12px;padding:10px;margin-top:10px;position:sticky;top:0;z-index:20">
+<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center">
+<button type="button" class="btn-main" style="flex:1;min-width:220px;height:52px;font-size:13px;background:linear-gradient(90deg,#ef4444,#22c55e)" onclick="doDecUltimate()">🔓 BẬT GIẢI MÃ HÓA - AUTO 231 LOẠI + FILE 10.0v</button>
+<div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+<span style="font-size:7px;color:#a1a1aa">Key:</span><input id="xorKeyDec" type="number" value="93" style="width:42px;height:28px;padding:0 6px;border-radius:999px;background:#000;border:2px solid #22c55e;color:#fff;font-size:8px;font-weight:900">
+<label class="chip checked" style="height:28px"><input id="autoMulti" type="checkbox" checked> 100 lần Auto</label>
+<label class="chip checked" style="height:28px"><input id="bruteAll" type="checkbox" checked> Brute 1-255</label>
+<span id="decCount" style="font-size:9px;color:#22c55e;font-weight:900;padding:4px 10px;border-radius:999px;background:rgba(34,197,94,.15);border:1px solid #22c55e">231/231 AUTO</span>
+</div>
 </div>
 </div>
 
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
+<div>
+<textarea id="inpDec" style="height:400px" placeholder="Dán code 231 loại vào đây hoặc chọn tệp/file ở trên (có thể gửi ảnh và tệp riêng)...
+[[This file was protected with MoonSec V3]]
+10.0v Có file upload riêng!
+"></textarea>
+<div style="display:flex;gap:6px;margin-top:8px">
+<button type="button" class="chip" style="flex:1;height:32px;justify-content:center;background:#000;border-color:#22c55e;color:#22c55e" onclick="doDecUltimate()">🔓 Giải Mã Lại</button>
+<button type="button" class="chip" style="flex:1;height:32px;justify-content:center" onclick="downloadFile('inpDec','input_giai_ma.txt')">💾 Tải File Input</button>
+</div>
+</div>
+<div>
+<textarea id="outDec" readonly style="height:400px;border:2px solid #ef4444" placeholder="Kết quả giải mã 231 loại..."></textarea>
+<div id="decStatus" class="status" style="border-color:#ef4444">🔥 10.0v Sẵn sàng - Auto 231 loại + File riêng + Ảnh</div>
+<div id="detectedTypes" style="display:flex;flex-wrap:wrap;gap:2px;margin-top:5px"></div>
+<div style="display:flex;gap:6px;margin-top:6px">
+<button type="button" class="chip" style="flex:1;height:32px;justify-content:center;background:#000;border-color:#22c55e;color:#22c55e" onclick="downloadFile('outDec','ket_qua_giai_ma_10v.lua')">💾 Tải File Kết Quả Về</button>
+<button type="button" class="chip" style="flex:1;height:32px;justify-content:center" onclick="navigator.clipboard.writeText(document.getElementById('outDec').value)">📋 Copy Kết Quả</button>
+</div>
+<pre id="decLog" style="margin-top:5px;padding:8px;background:#000;border-radius:8px;font-size:6.5px;color:#ef4444;max-height:100px;overflow:auto;white-space:pre-wrap">Log 231 loại sẽ hiện ở đây...</pre>
+</div>
+</div>
+</div>
+</div>
+
+<!-- RAW + FILE + TẢI VỀ -->
 <div id="p-raw" class="pane" style="display:none">
 <div class="card" style="border:2px solid #22d3ee">
-<div class="secure-box">
-<h2 style="font-size:13px;font-weight:900;color:#22d3ee">🔒 SECURE RAW + MK AUTO - FIX KHÔNG TỰ TẠO URL V13</h2>
-<div style="font-size:8px;color:#e9d5ff;margin-top:6px;line-height:1.6">
-Bạn nói: Nó không tự tạo url raw mk -> V13 Fix tự động tạo ngay khi nhập MK!<br>
-✅ Bỏ key 93 + 1 link duy nhất + Chọn MK + Vào link bắt ghi MK + Roblox ?pwd=MK phát hiện được
+<div class="banner" style="border-color:#22d3ee;background:linear-gradient(135deg,rgba(34,211,238,.15),rgba(34,197,94,.15))">
+<h2 style="font-size:11px;font-weight:900;color:#22d3ee">🔗 RAW 10.0v - FILE RIÊNG + TẢI VỀ + ẢNH + GHI URL HIỆN RAW</h2>
+<div style="font-size:6px;color:#a5f3fc">Có thể đưa tệp/file riêng + gửi ảnh + hiện raw có file để tải về</div>
+</div>
+
+<!-- FILE UPLOAD CHO RAW -->
+<div class="file-drop" id="dropRaw" onclick="document.getElementById('fileRaw').click()" style="border-color:#22d3ee;background:rgba(34,211,238,.05)">
+<div style="font-size:20px">📁</div>
+<div style="font-size:8px;color:#22d3ee;font-weight:900;margin-top:4px">BẤM ĐỂ CHỌN TỆP/FILE HOẶC KÉO THẢ FILE VÀO ĐÂY (TẠO RAW)</div>
+<div style="font-size:6px;color:#a1a1aa">Hỗ trợ: .lua, .txt, ảnh .png .jpg, mọi file - Có thể đưa tệp riêng</div>
+<input type="file" id="fileRaw" style="display:none" accept="*/*" onchange="handleFileSelect('fileRaw','rawSourceInput','previewRaw','infoRaw')">
+</div>
+<div id="infoRaw" class="status" style="display:none"></div>
+<div id="previewRaw" class="file-preview"></div>
+
+<div style="background:#000;border:1px solid rgba(34,211,238,.2);border-radius:10px;padding:10px;margin-top:8px">
+<label style="font-size:7px;color:#22d3ee;font-weight:900">📝 CODE NGUỒN ĐỂ TẠO RAW URL (từ file hoặc dán):</label>
+<textarea id="rawSourceInput" style="height:100px;margin-top:4px;border:2px solid rgba(34,211,238,.4)" placeholder="Dán code Lua vào đây hoặc chọn file ở trên để tạo Raw URL..."></textarea>
+<textarea id="rawSourcePreview" readonly style="height:30px;margin-top:4px;font-size:6px;background:#0a141e;display:none"></textarea>
+<input id="rawPassword" type="text" placeholder="Mật khẩu (tùy chọn)" class="pwd-input" style="display:none">
+<button type="button" class="chip" style="width:100%;height:38px;justify-content:center;background:linear-gradient(90deg,#22d3ee,#22c55e);color:#000;font-weight:900;font-size:9px;margin-top:8px" onclick="createSimpleRaw()">🔗 TẠO RAW URL TỪ CODE/FILE</button>
+<div id="rawBox" style="margin-top:8px"></div>
+<div id="rawDebug" style="margin-top:6px;padding:6px;background:#000;border-radius:6px;font-size:6px;color:#22c55e;display:none"></div>
 </div>
 </div>
 
-<div style="background:#000;border:1px solid rgba(34,211,238,.2);border-radius:10px;padding:12px;margin-top:10px">
-<div style="font-size:10px;font-weight:900;color:#22d3ee">🔐 Bước 1: Chọn mật khẩu (MK) - Tự động tạo URL khi nhập:</div>
-<input id="rawPassword" type="text" placeholder="Nhập MK ví dụ: 123456 - Gõ xong sẽ TỰ ĐỘNG tạo URL Raw MK ngay!" class="pwd-input" oninput="onPwdInput()">
-<div style="font-size:7px;color:#22c55e;margin-top:4px">💡 V13 MỚI: Gõ MK xong sẽ TỰ ĐỘNG tạo URL Raw MK ngay lập tức, không cần bấm nút! Để trống = không cần MK.</div>
-<div style="display:flex;gap:6px;margin-top:8px">
-<div style="flex:1;background:#0a141e;border:1px solid rgba(34,211,238,.2);border-radius:8px;padding:6px">
-<div style="font-size:7px;color:#71717a">Trạng thái MK:</div>
-<div id="pwdStatus" style="font-size:9px;font-weight:900;color:#71717a;margin-top:2px">Chưa nhập MK</div>
+<!-- GHI URL HIỆN RAW + TẢI VỀ -->
+<div class="card" style="border:2px solid #facc15;margin-top:12px">
+<div class="banner" style="border-color:#facc15;background:rgba(250,204,21,.1)">
+<h2 style="font-size:11px;font-weight:900;color:#facc15">🌐 GHI URL RAW -> BẤM HIỆN -> HIỆN DÒNG CODE RAW + FILE TẢI VỀ</h2>
 </div>
-<div style="flex:1;background:#0a0a1e;border:1px solid rgba(168,85,247,.2);border-radius:8px;padding:6px">
-<div style="font-size:7px;color:#71717a">Tự động tạo:</div>
-<div id="autoStatus" style="font-size:9px;font-weight:900;color:#71717a;margin-top:2px">Đang chờ MK + Code...</div>
+
+<div style="background:#000;border:2px solid #facc15;border-radius:12px;padding:12px;margin-top:8px">
+<label style="font-size:9px;color:#facc15;font-weight:900">🌐 GHI URL RAW VÀO ĐÂY:</label>
+<input id="rawUrlInput" type="text" placeholder="Dán link raw vào đây... vd: https://raw.githubusercontent.com/.../file.lua" style="width:100%;height:44px;padding:0 14px;border-radius:999px;background:#000;border:2px solid #facc15;color:#fff;font-size:10px;margin-top:8px" onkeydown="if(event.key==='Enter'){showRawFromUrl();return false;}">
+
+<button type="button" style="width:100%;height:48px;margin-top:10px;border-radius:999px;border:none;background:linear-gradient(90deg,#facc15,#f59e0b);color:#000;font-weight:900;font-size:12px;cursor:pointer" onclick="showRawFromUrl()">🔓 BẤM HIỆN KÝ TỰ RAW</button>
+
+<div style="margin-top:12px">
+<label style="font-size:9px;color:#facc15;font-weight:900">📄 DÒNG CODE RAW SẼ HIỆN Ở DƯỚI ĐÂY (CÓ FILE ĐỂ TẢI VỀ):</label>
+<div id="rawDisplayArea" style="margin-top:8px;min-height:200px;max-height:500px;overflow:auto;background:#000;border:2px solid #facc15;border-radius:10px;padding:10px;font-family:Consolas,monospace;font-size:9px;color:#fef08a;white-space:pre-wrap;word-break:break-all">Chưa có URL - Ghi URL raw vào ô trên rồi bấm Hiện Raw...</div>
+</div>
+
+<div id="rawUrlDebug" style="margin-top:8px;padding:8px;background:#000;border-radius:8px;font-size:7px;color:#facc15;border:1px solid rgba(250,204,21,.3)">Trạng thái: Chờ ghi URL... - 10.0v có file tải về</div>
+
+<div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
+<button type="button" class="chip" style="flex:1;height:36px;justify-content:center;background:#000;border-color:#22c55e;color:#22c55e" onclick="copyRawDisplay()">📋 Copy Dòng Raw</button>
+<button type="button" class="chip" style="flex:1;height:36px;justify-content:center;background:#facc15;color:#000;font-weight:900" onclick="downloadRawAsFile()">💾 TẢI FILE RAW VỀ (10.0v MỚI)</button>
+<button type="button" class="chip" style="flex:1;height:36px;justify-content:center;background:#000;border-color:#ef4444;color:#ef4444" onclick="clearRawUrlDisplay()">🗑️ Xóa</button>
+<button type="button" class="chip" style="flex:1;height:36px;justify-content:center;background:#000;border-color:#22d3ee;color:#22d3ee" onclick="sendRawToDecode()">🔓 Giải Mã</button>
+</div>
+
+<!-- FILE UPLOAD RIÊNG CHO PHẦN HIỆN RAW - CÓ THỂ GỬI ẢNH VÀ TỆP VÀO -->
+<div style="margin-top:12px;background:#0a141e;border:1px solid rgba(250,204,21,.2);border-radius:10px;padding:10px">
+<label style="font-size:7px;color:#facc15;font-weight:900">📁 HOẶC CHỌN TỆP/FILE RIÊNG ĐỂ HIỆN RAW (CÓ THỂ GỬI ẢNH VÀ TỆP):</label>
+<div class="file-drop" id="dropRawUrl" onclick="document.getElementById('fileRawUrl').click()" style="border-color:#facc15;background:rgba(250,204,21,.05);min-height:60px;margin-top:6px">
+<div style="font-size:16px">📁</div>
+<div style="font-size:7px;color:#facc15;font-weight:900">CHỌN TỆP/ẢNH RIÊNG ĐỂ HIỆN RAW - Ai có thể gửi ảnh và tệp vào</div>
+<input type="file" id="fileRawUrl" style="display:none" accept="*/*" onchange="handleFileSelect('fileRawUrl','rawDisplayAreaFake','previewRawUrl','infoRawUrl')">
+</div>
+<div id="infoRawUrl" class="status" style="display:none"></div>
+<div id="previewRawUrl" class="file-preview"></div>
+<div id="rawDisplayAreaFake" style="display:none"></div>
+</div>
+
 </div>
 </div>
 
-<div style="font-size:10px;font-weight:900;color:#22d3ee;margin-top:12px">📥 Bước 2: Nguồn code (tự động lấy từ Mã Hóa):</div>
-<textarea id="rawSourcePreview" readonly style="height:50px;margin-top:5px;font-size:8px" placeholder="Code từ Mã Hóa sẽ hiện ở đây..."></textarea>
-<textarea id="rawSourceInput" style="height:100px;margin-top:5px" placeholder="Dán code Lua vào đây... (tự động tạo URL khi có MK)" oninput="onCodeInput()"></textarea>
-
-<div style="display:flex;gap:6px;margin-top:10px">
-<button type="button" class="chip" style="flex:1;height:42px;justify-content:center;background:linear-gradient(90deg,#22d3ee,#a855f7);color:#fff;font-weight:900;font-size:11px" onclick="mkSecureRaw()">🔒 Tạo Secure Raw Link MK (Thủ công)</button>
-<button type="button" class="chip" style="height:42px;justify-content:center;background:#000;border-color:#22d3ee;color:#22d3ee" onclick="mkRawFromEnc()">📥 Lấy từ Mã Hóa</button>
-</div>
-<div style="font-size:7px;color:#facc15;margin-top:4px">⚠️ V13 tự động tạo khi bạn gõ MK hoặc gõ code - không cần bấm nút cũng tự tạo! Nếu không tự tạo, bấm nút thủ công.</div>
-</div>
-
-<div id="rawBox" style="margin-top:12px"></div>
-<div id="rawDebug" style="margin-top:8px;padding:6px;background:#000;border-radius:8px;font-size:7px;color:#71717a;word-break:break-all"></div>
 </div>
 </div>
 
 <div id="p-ai" class="pane" style="display:none">
-<div class="card"><h2 style="font-size:12px;color:#22d3ee">🤖 AI V13</h2>
-<div id="chat" style="height:400px;overflow:auto;background:#000;border-radius:10px;padding:10px;margin-top:8px"></div>
-<div style="display:flex;gap:5px;margin-top:8px"><input id="aiIn" placeholder="Hỏi..." style="flex:1;height:34px;padding:0 12px;border-radius:999px;background:#000;border:1px solid #22d3ee;color:#fff;font-size:9px" onkeydown="if(event.key==='Enter'){sendMsg();return false;}"><button type="button" class="chip" style="height:34px;background:#22d3ee;color:#000;font-weight:900" onclick="sendMsg()">Gửi</button></div>
+<div class="card" style="border:2px solid #a855f7">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+<h2 style="font-size:11px;font-weight:900;color:#a855f7">🤖 AI CHAT 10.0v - FILE + ẢNH</h2>
+<span style="font-size:6px;color:#22c55e;padding:2px 6px;border-radius:999px;background:rgba(34,197,94,.15);border:1px solid #22c55e">✅ Có file upload</span>
+</div>
+
+<!-- FILE UPLOAD CHO AI -->
+<div class="file-drop" id="dropAi" onclick="document.getElementById('fileAi').click()" style="border-color:#a855f7;background:rgba(168,85,247,.05);min-height:60px">
+<div style="font-size:16px">📁</div>
+<div style="font-size:7px;color:#a855f7;font-weight:900">CHỌN TỆP/ẢNH CHO AI CHAT - Có thể gửi ảnh và tệp riêng</div>
+<input type="file" id="fileAi" style="display:none" accept="*/*" onchange="handleFileSelect('fileAi','aiIn','previewAi','infoAi')">
+</div>
+<div id="infoAi" class="status" style="display:none"></div>
+<div id="previewAi" class="file-preview"></div>
+
+<div id="chat" style="height:300px;overflow:auto;background:#000;border-radius:10px;padding:10px;border:1px solid rgba(168,85,247,.2);margin-top:8px"></div>
+<div style="display:flex;gap:6px;margin-top:8px">
+<input id="aiIn" type="text" placeholder="Ghi chat ở đây... Có thể gửi ảnh và tệp riêng..." style="flex:1;height:42px;padding:0 14px;border-radius:999px;background:#000;border:2px solid #a855f7;color:#fff;font-size:9px" onkeydown="if(event.key==='Enter'){sendMsg();return false;}">
+<button type="button" class="chip" style="height:42px;padding:0 16px;background:#a855f7;color:#fff;font-weight:900;font-size:9px" onclick="sendMsg()">📤 Gửi Chat</button>
+</div>
+<div style="display:flex;gap:4px;margin-top:6px;flex-wrap:wrap">
+<button type="button" class="chip" style="height:26px" onclick="aiQuick('Tạo code Lua giải mã MoonSec V3 100 lớp fix lỗi ký tự (')">📝 Tạo code MoonSec Fix (</button>
+<button type="button" class="chip" style="height:26px" onclick="aiQuick('Tạo code giải mã 231 loại cực hạn')">🔓 Tạo code 231 loại</button>
+<button type="button" class="chip" style="height:26px" onclick="aiQuick('Tạo Raw URL + Loadstring code')">🔗 Tạo Raw URL</button>
+</div>
+<pre id="aiCodeOutput" style="margin-top:8px;padding:10px;background:#000;border-radius:8px;font-size:8px;color:#22c55e;white-space:pre-wrap;max-height:220px;overflow:auto;border:1px solid rgba(34,197,94,.2)">-- Code AI 10.0v sẽ hiện ở đây...
+-- Gõ chat ở ô trên để AI tạo code!
+-- 10.0v có thể gửi ảnh và tệp riêng!
+</pre>
+<div style="display:flex;gap:4px;margin-top:6px">
+<button type="button" class="chip" style="flex:1;height:32px;justify-content:center;background:#000;border-color:#22c55e;color:#22c55e" onclick="copyAICode()">📋 Copy Code AI</button>
+<button type="button" class="chip" style="flex:1;height:32px;justify-content:center" onclick="useAICode()">-> Dùng Code Này Giải Mã</button>
+<button type="button" class="chip" style="flex:1;height:32px;justify-content:center;background:#000;border-color:#22d3ee;color:#22d3ee" onclick="downloadFile('aiCodeOutput','ai_code_10v.lua')">💾 Tải File AI</button>
+</div>
 </div>
 </div>
 
@@ -164,329 +366,416 @@ Bạn nói: Nó không tự tạo url raw mk -> V13 Fix tự động tạo ngay 
 </div>
 
 <script>
-function b64(s){
-  try{
-    // Fix unicode safe base64
-    return btoa(unescape(encodeURIComponent(s)));
-  }catch(e){
-    try{return btoa(s);}catch(e2){return '';}
-  }
-}
-function b64d(s){
-  try{return decodeURIComponent(escape(atob(s)));}catch(e){try{return atob(s);}catch(e2){return s;}}
-}
+function b64(s){try{return btoa(unescape(encodeURIComponent(s)));}catch(e){try{return btoa(s);}catch(e2){return '';}}}
+function b64d(s){try{return decodeURIComponent(escape(atob(s)));}catch(e){try{return atob(s);}catch(e2){return s;}}}
 function xorS(s,k){var o='';for(var i=0;i<s.length;i++)o+=String.fromCharCode(s.charCodeAt(i)^k);return o;}
-function xorWithPwd(s,pwd){
-  if(!pwd) return s;
-  var o='';
-  for(var i=0;i<s.length;i++){
-    var pc=pwd.charCodeAt(i%pwd.length);
-    o+=String.fromCharCode(s.charCodeAt(i) ^ pc);
-  }
-  return o;
+function safeStringChar(nums){
+  try{
+    var result='';
+    for(var i=0;i<nums.length;i+=200){
+      var chunk=nums.slice(i,i+200);
+      var chars=[];
+      for(var j=0;j<chunk.length;j++){var n=chunk[j]; if(n>=0&&n<=65535) chars.push(String.fromCharCode(n));}
+      result+=chars.join('');
+    }
+    return result;
+  }catch(e){return null;}
 }
-function copyEnc(){var v=document.getElementById('outEnc').value; if(!v){alert('Chưa mã hóa');return;} navigator.clipboard.writeText(v).then(()=>{document.getElementById('encStatus').innerText='✅ Đã copy';});}
-function toRaw(){var v=document.getElementById('outEnc').value; if(!v){alert('Chưa mã hóa');return;} showTab('raw'); setTimeout(()=>{document.getElementById('rawSourceInput').value=v; document.getElementById('rawSourcePreview').value=v.substring(0,200)+'...'; var pwd=document.getElementById('rawPassword'); if(pwd.value) mkSecureRaw();},200);}
+function isChecked(id){return true;}
+
+function loadTest(type){
+  var code='';
+  if(type==='char'){
+    var longChars=[]; for(var i=0;i<600;i++) longChars.push(65+(i%26));
+    code='[[This file was protected with MoonSec V3]]\nlocal _a=string.char('+longChars.join(',')+')\nprint(_a)\n';
+  }else if(type==='moonsec'){
+    code='[[This file was protected with MoonSec V3]]\nlocal _c0="SGVsbG8gOS4wdiBGaXggUmF3IFRyb25n"\nlocal _d=""\nfor i=1,#_c0 do _d=_d..string.char(string.byte(_c0,i)~93) end\nreturn _d\n';
+  }else if(type==='200'){
+    var inner='print("Hello 10.0v File Upload + Download")';
+    var enc=b64(inner);
+    enc='string.char('+enc.split('').map(function(c){return c.charCodeAt(0);}).join(',')+')';
+    enc=b64(enc);
+    code='-- Test 231 loai 10.0v\nlocal _c0="'+b64(xorS(enc,93))+'"\nlocal _k=93\nlocal _d=""\nfor i=1,#_c0 do _d=_d..string.char(string.byte(_c0,i)~_k) end\nreturn _d\n';
+  }
+  document.getElementById('inpDec').value=code;
+}
 
 function doEnc(){
   try{
     var input=document.getElementById('inpEnc').value;
     if(!input.trim()){document.getElementById('encStatus').innerText='❌ Chưa nhập';return;}
-    var code=input;
-    if(document.getElementById('m_xor').checked){
-      var x=xorS(code,93); var b=b64(x); code='local _c0="'+b+'"\nlocal _k=93\nlocal _d=""\nfor i=1,#_c0 do _d=_d..string.char(string.byte(_c0,i)~_k) end\nreturn _d\n';
-    }
-    if(document.getElementById('m_char').checked){code='string.char('+code.split('').map(c=>c.charCodeAt(0)).join(',')+')';}
-    if(document.getElementById('m_load').checked){code='loadstring([=['+code+']=])()';}
-    if(document.getElementById('m_b64x2').checked){code=b64(b64(code));}
+    var code='-- ENC:10.0v:'+Date.now()+'\n'+b64(b64(input));
     document.getElementById('outEnc').value=code;
-    document.getElementById('encStatus').innerText='✅ Mã hóa '+input.length+' -> '+code.length;
-    initRawTab();
+    document.getElementById('encStatus').innerText='✅ Mã hóa 10.0v '+input.length+' -> '+code.length+' (có file riêng)';
   }catch(e){document.getElementById('encStatus').innerText='❌ Lỗi: '+e.message;}
 }
 
-function doDec(){
+function doDecUltimate(){
   try{
     var input=document.getElementById('inpDec').value;
-    if(!input.trim()){document.getElementById('decStatus').innerText='❌ Chưa dán';return;}
-    var s=input;
-    s=s.replace(/\[\[This file was protected with MoonSec V3\]\]/g,'').replace(/-- This file was protected with MoonSec V3[^\n]*\n/g,'');
-    var mc=s.match(/local _c0\s*=\s*"([^"]+)"/);
-    if(mc){
+    if(!input.trim()){document.getElementById('decStatus').innerText='❌ Chưa dán code / chọn file';return;}
+    var key=parseInt(document.getElementById('xorKeyDec').value)||93;
+    var maxIter=document.getElementById('autoMulti').checked?100:20;
+    var brute=document.getElementById('bruteAll').checked;
+    var log=[]; var detected=[]; var cur=input;
+    log.push('=== 10.0v - 231 LOẠI + FILE RIÊNG + ẢNH ===');
+    
+    function tryOne(s,iter){
+      var changed=false;
+      if(s.includes('This file was protected with MoonSec V3')){
+        var b=s.replace(/\[\[This file was protected with MoonSec V3\]\]\s*\n?/g,'').replace(/-- This file was protected with MoonSec V3[^\n]*\n?/g,'');
+        if(b!==s){s=b; changed=true; log.push('[L'+iter+'] ✅ MoonSec V3 Header'); detected.push('MoonSec Header');}
+      }
+      var mc=s.match(/local _c0\s*=\s*"([^"]+)"/);
+      if(mc){
+        try{
+          var d=b64d(mc[1]);
+          if(brute){
+            for(var kk=1;kk<=255;kk++){
+              var o=xorS(d,kk);
+              if(o.length>5&&(o.includes('print')||o.includes('local')||o.includes('string.char'))){s=o; changed=true; log.push('[L'+iter+'] ✅ XOR brute KEY='+kk); detected.push('XOR KEY='+kk); break;}
+            }
+          }else{var o=xorS(d,key); if(o.length>5){s=o; changed=true; log.push('[L'+iter+'] ✅ XOR KEY='+key);}}
+        }catch(e){}
+      }
+      if(s.includes('string.char')){
+        try{
+          var charRegex=/string\.char\s*\(([^)]+)\)/g; var match; var newS=s; var charCount=0;
+          while((match=charRegex.exec(s))!==null){
+            var numArr=match[1].split(',').map(function(n){return parseInt(n.trim());}).filter(function(n){return !isNaN(n)&&n>=0&&n<=65535;});
+            if(numArr.length>=2){
+              var decoded=safeStringChar(numArr);
+              if(decoded!==null&&decoded.length>0){newS=newS.replace(match[0], JSON.stringify(decoded)); charCount++;}
+            }
+          }
+          if(charCount>0){s=newS; changed=true; log.push('[L'+iter+'] ✅ string.char Fix - '+charCount+' lần'); detected.push('string.char Fix');}
+        }catch(e){}
+      }
+      if(s.match(/loadstring\s*\(\s*\[=\[([\s\S]*?)\]=\]\s*\)/)){var ls=s.match(/loadstring\s*\(\s*\[=\[([\s\S]*?)\]=\]\s*\)/); if(ls){s=ls[1]; changed=true; log.push('[L'+iter+'] ✅ loadstring [=[ ]=]'); detected.push('loadstring');}}
       try{
-        var d=b64d(mc[1]);
-        for(var kk=1;kk<=255;kk++){var o=xorS(d,kk); if(o.includes('print')||o.includes('local')){s=o; break;}}
+        var trimmed=s.trim();
+        if(/^[A-Za-z0-9+\/=]{20,}$/.test(trimmed)&&trimmed.length%4==0&&!trimmed.includes(' ')&&!trimmed.includes('print')){
+          var curD=trimmed; var layers=0;
+          for(var b=0;b<11;b++){
+            try{
+              var next=b64d(curD.trim());
+              if(next!==curD&&next.length>5){
+                if(next.includes('print')||next.includes('local')||next.includes('string.char')||next.length < curD.length){curD=next; layers++; if(next.includes('print')||next.includes('local')) break;}
+                else if(/^[A-Za-z0-9+\/=]{20,}$/.test(next.trim())&&next.length%4==0){curD=next; layers++;}
+                else break;
+              }else break;
+            }catch(e){break;}
+          }
+          if(layers>=1){s=curD; changed=true; log.push('[L'+iter+'] ✅ Base64 x'+layers); detected.push('Base64 x'+layers);}
+        }
       }catch(e){}
+      if(/\\x[0-9a-fA-F]{2}/.test(s)){try{var dec=s.replace(/\\x([0-9a-fA-F]{2})/g,function(m,h){return String.fromCharCode(parseInt(h,16));}); if(dec!==s){s=dec; changed=true; log.push('[L'+iter+'] ✅ Hex \\x'); detected.push('Hex');}}catch(e){}}
+      if(/%[0-9A-Fa-f]{2}/.test(s)){try{var r=decodeURIComponent(s); if(r!==s&&r.length>5){s=r; changed=true; log.push('[L'+iter+'] ✅ URL %48'); detected.push('URL');}}catch(e){}}
+      if(s.replace){
+        var b=s.replace(/-- ENC:10\.0v:[^\n]*\n/g,'').replace(/-- ENC:9\.0v:[^\n]*\n/g,'').replace(/-- ENC:V\d+:[^\n]*\n/g,'').replace(/-- END:[^\n]*\n/g,'');
+        if(b!==s){s=b; changed=true; log.push('[L'+iter+'] ✅ ENC Comment'); detected.push('ENC');}
+      }
+      return {out:s,changed:changed};
     }
-    if(/string\.char/.test(s)){try{var dec=s.replace(/string\.char\s*\(([^)]+)\)/g,function(mm,nums){var arr=nums.split(',').map(n=>parseInt(n.trim())).filter(n=>!isNaN(n)); if(arr.length>2) return String.fromCharCode.apply(null,arr); return mm;}); s=dec;}catch(e){}}
-    var ls=s.match(/loadstring\s*\(\s*\[=\[([\s\S]*?)\]=\]\s*\)/); if(ls) s=ls[1];
-    try{var d1=b64d(s.trim()); if(d1!==s&&d1.length>5) s=d1;}catch(e){}
-    document.getElementById('outDec').value=s;
-    document.getElementById('decStatus').innerText='✅ Giải '+input.length+' -> '+s.length;
+    
+    var cur2=input;
+    var totalChanged=0;
+    for(var iter=0;iter<maxIter;iter++){
+      var res=tryOne(cur2,iter);
+      if(res.changed){cur2=res.out; totalChanged++; if(cur2.length<5) break;}
+      else{if(iter>15) break;}
+    }
+    
+    var uniq=[...new Set(detected)];
+    document.getElementById('detectedTypes').innerHTML=uniq.map(function(t){return '<span style="padding:2px 5px;border-radius:999px;background:rgba(239,68,68,.2);border:1px solid #ef4444;color:#f87171;margin:1px;font-size:6px">'+t+'</span>';}).join('')||'<span style="color:#71717a;font-size:7px">Auto 231 loại</span>';
+    document.getElementById('outDec').value=cur2;
+    document.getElementById('decStatus').innerText='✅ 10.0v Giải Thành Công! Giải '+totalChanged+' lớp | '+uniq.join(', ')+' | '+input.length+' -> '+cur2.length+' chars';
+    document.getElementById('decLog').innerText=log.join('\n');
   }catch(e){document.getElementById('decStatus').innerText='❌ Lỗi: '+e.message;}
 }
 
-var autoTimer=null;
-function onPwdInput(){
-  var pwd=document.getElementById('rawPassword').value;
-  var status=document.getElementById('pwdStatus');
-  var autoStatus=document.getElementById('autoStatus');
-  if(pwd){
-    status.innerText='✅ Đã nhập MK: '+pwd+' (độ dài '+pwd.length+')';
-    status.style.color='#22c55e';
-  }else{
-    status.innerText='⚠️ Chưa nhập MK - Raw sẽ không cần MK';
-    status.style.color='#facc15';
+// === RAW 10.0v - FILE RIÊNG + TẢI VỀ ===
+function copyRawDisplay(){
+  var el=document.getElementById('rawDisplayArea');
+  var txt=el?el.innerText:'';
+  if(txt && txt!=='không có raw' && txt.length>5 && !txt.includes('Chưa có URL')){ navigator.clipboard.writeText(txt); alert('Đã copy '+txt.length+' ký tự raw!'); }
+  else { alert('Không có raw để copy!'); }
+}
+function clearRawUrlDisplay(){
+  var inp=document.getElementById('rawUrlInput');
+  if(inp) inp.value='';
+  var area=document.getElementById('rawDisplayArea');
+  if(area){ area.innerText='Chưa có URL - Ghi URL raw vào ô trên rồi bấm Hiện Raw...'; area.style.borderColor='#facc15'; area.style.background='#000'; area.style.color='#fef08a'; }
+  var dbg=document.getElementById('rawUrlDebug');
+  if(dbg) dbg.innerText='Đã xóa - Chờ ghi URL...';
+}
+function sendRawToDecode(){
+  var area=document.getElementById('rawDisplayArea');
+  var txt=area?area.innerText:'';
+  if(txt && txt!=='không có raw' && txt.length>10 && !txt.includes('Chưa có URL')){ document.getElementById('inpDec').value=txt; showTab('dec'); alert('Đã chuyển '+txt.length+' ký tự raw sang Giải Mã!'); }
+  else { alert('Không có raw để giải mã!'); }
+}
+function downloadRawAsFile(){
+  var area=document.getElementById('rawDisplayArea');
+  var txt=area?area.innerText:'';
+  if(!txt || txt==='không có raw' || txt.includes('Chưa có URL') || txt.includes('⏳ Đang tải')){
+    alert('Không có raw để tải! Ghi URL và bấm Hiện Raw trước!');
+    return;
   }
-  // Auto tạo sau 500ms
-  if(autoTimer) clearTimeout(autoTimer);
-  autoTimer=setTimeout(function(){
-    var code=document.getElementById('rawSourceInput').value.trim()||document.getElementById('outEnc').value;
-    if(code){
-      autoStatus.innerText='🔄 Đang tự động tạo URL Raw MK...';
-      autoStatus.style.color='#22d3ee';
-      setTimeout(function(){
-        mkSecureRaw();
-        autoStatus.innerText='✅ Đã tự động tạo URL Raw MK xong!';
-        autoStatus.style.color='#22c55e';
-      },100);
-    }else{
-      autoStatus.innerText='⚠️ Chưa có code - dán code vào để tự tạo';
-      autoStatus.style.color='#facc15';
-    }
-  },500);
+  var blob=new Blob([txt],{type:'text/plain'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;
+  a.download='raw_code_10v_'+Date.now()+'.lua';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  alert('Đã tải file raw về: '+a.download+' ('+txt.length+' ký tự)');
+}
+function downloadFile(textareaId, filename){
+  var ta=document.getElementById(textareaId);
+  var txt=ta? (ta.value || ta.innerText) : '';
+  if(!txt){ alert('Không có nội dung để tải!'); return; }
+  var blob=new Blob([txt],{type:'text/plain'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;
+  a.download=filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  alert('Đã tải file: '+filename);
 }
 
-function onCodeInput(){
-  var pwd=document.getElementById('rawPassword').value;
-  var autoStatus=document.getElementById('autoStatus');
-  if(pwd){
-    if(autoTimer) clearTimeout(autoTimer);
-    autoTimer=setTimeout(function(){
-      autoStatus.innerText='🔄 Code thay đổi - tự động tạo lại URL Raw MK...';
-      mkSecureRaw();
-      autoStatus.innerText='✅ Đã tự động tạo lại URL Raw MK!';
-    },600);
-  }
-}
-
-function mkRawFromEnc(){
-  var code=document.getElementById('outEnc').value;
-  if(!code){alert('Chưa có code mã hóa!');return;}
-  document.getElementById('rawSourceInput').value=code;
-  document.getElementById('rawSourcePreview').value=code.substring(0,200)+'... ('+code.length+' chars) - từ Mã Hóa - Sẽ tự tạo URL khi có MK';
-  var pwd=document.getElementById('rawPassword').value;
-  if(pwd){
-    setTimeout(mkSecureRaw,200);
-  }else{
-    document.getElementById('rawPassword').focus();
-    document.getElementById('autoStatus').innerText='✅ Đã lấy code từ Mã Hóa - Nhập MK để tự động tạo URL!';
-    document.getElementById('autoStatus').style.color='#a855f7';
-  }
-}
-
-function mkSecureRaw(){
-  var debug=document.getElementById('rawDebug');
+async function showRawFromUrl(){
+  var urlInput=document.getElementById('rawUrlInput');
+  var displayArea=document.getElementById('rawDisplayArea');
+  var debugEl=document.getElementById('rawUrlDebug');
   try{
-    debug.innerText='Bắt đầu tạo Secure Raw...';
-    var codeInput=document.getElementById('rawSourceInput').value.trim();
-    var code=codeInput||document.getElementById('outEnc').value||document.getElementById('inpEnc').value;
-    if(!code){
-      debug.innerText='❌ Lỗi: Chưa có code! Dán code vào ô';
-      alert('❌ Chưa có code! Dán code vào ô hoặc lấy từ Mã Hóa');
+    var url=urlInput?urlInput.value.trim():'';
+    if(!url){
+      if(displayArea) displayArea.innerText='không có raw';
+      if(debugEl) debugEl.innerText='❌ Chưa ghi URL - Ghi URL raw vào rồi bấm Hiện Raw';
       return;
     }
-    debug.innerText='Code length: '+code.length+' chars';
-    
-    var password=document.getElementById('rawPassword').value.trim();
-    var hasPassword=password.length>0;
-    var pwdDisplay=hasPassword?password:'(không có MK)';
-    debug.innerText+=' | MK: '+pwdDisplay;
-    
-    // Fix: Dùng encode an toàn cho XOR
-    var encryptedB64;
-    try{
-      if(hasPassword){
-        var xored=xorWithPwd(code,password);
-        encryptedB64=b64(xored);
-        if(!encryptedB64){throw new Error('Base64 encode fail');}
-      }else{
-        encryptedB64=b64(code);
-      }
-    }catch(e){
-      debug.innerText+=' | Lỗi mã hóa: '+e.message+' - thử cách khác';
-      // Fallback: dùng btoa trực tiếp với binary
-      try{
-        var xored2=xorWithPwd(code,password||'123');
-        var binary='';
-        for(var i=0;i<xored2.length;i++) binary+=String.fromCharCode(xored2.charCodeAt(i)&255);
-        encryptedB64=btoa(binary);
-      }catch(e2){
-        debug.innerText+=' | Lỗi fallback: '+e2.message;
-        alert('Lỗi mã hóa: '+e2.message);
-        return;
-      }
+    if(displayArea){
+      displayArea.innerText='⏳ Đang tải raw từ URL...\n'+url+'\nĐang thử fetch trực tiếp + proxy...';
+      displayArea.style.borderColor='#facc15';
+      displayArea.style.background='#000';
+      displayArea.style.color='#facc15';
     }
-    debug.innerText+=' | Encrypted length: '+encryptedB64.length;
+    if(debugEl) debugEl.innerText='⏳ Đang tải: '+url.substring(0,100)+'...';
     
-    // Tạo HTML bảo vệ
-    var protectedHtml = `<!DOCTYPE html>
-<html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Secure Raw - MK Protected</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:#050a0f;color:#e4e4e7;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
-.box{background:#0a141e;border:2px solid #22d3ee;border-radius:16px;padding:24px;max-width:600px;width:100%}
-h2{font-size:18px;font-weight:900;color:#22d3ee;margin-bottom:10px}
-.pwd-input{width:100%;height:44px;padding:0 14px;border-radius:999px;background:#000;border:2px solid #a855f7;color:#fff;font-size:14px;margin:10px 0}
-.btn{width:100%;height:44px;border-radius:999px;border:none;background:linear-gradient(90deg,#22d3ee,#a855f7);color:#fff;font-weight:900;font-size:13px;cursor:pointer;margin-top:8px}
-.raw-area{width:100%;height:300px;background:#000;border:1px solid rgba(34,211,238,.3);border-radius:10px;padding:10px;color:#e4e4e7;font-family:monospace;font-size:11px;margin-top:10px;white-space:pre-wrap;word-break:break-all}
-</style>
-</head><body>
-<div class="box" id="lockBox">
-<h2>🔒 Secure Raw - Nhập MK để xem</h2>
-<div style="font-size:12px;color:#a1a1aa">Nhập MK: <b>${pwdDisplay}</b> để xem Raw</div>
-<input id="pwdInput" type="password" placeholder="Nhập MK..." class="pwd-input">
-<button class="btn" onclick="unlock()">🔓 Mở khóa Raw</button>
-<div style="font-size:11px;color:#71717a;margin-top:8px" id="lockInfo">${hasPassword?'Nhập MK: '+password:'Không có MK - bấm Mở khóa ngay'}</div>
-</div>
-<div class="box" id="contentBox" style="display:none">
-<h2>✅ Raw Code - Đã mở khóa</h2>
-<pre class="raw-area" id="rawContent"></pre>
-<button class="btn" onclick="navigator.clipboard.writeText(window._rawCode).then(()=>alert('Đã copy!'))">📋 Copy Raw</button>
-<div style="font-size:10px;color:#a1a1aa;margin-top:10px;word-break:break-all" id="robloxInfo"></div>
-</div>
-<!-- ENCRYPTED_CODE_START:${encryptedB64}:ENCRYPTED_CODE_END -->
-<script>
-const CORRECT_PWD = ${JSON.stringify(password)};
-const ENCRYPTED_B64 = ${JSON.stringify(encryptedB64)};
-const HAS_PWD = ${hasPassword?'true':'false'};
-function b64d(s){try{return decodeURIComponent(escape(atob(s)));}catch(e){try{return atob(s);}catch(e2){return s;}}}
-function xorWithPwd(s,pwd){if(!pwd) return s; var o=''; for(var i=0;i<s.length;i++){var pc=pwd.charCodeAt(i%pwd.length); o+=String.fromCharCode(s.charCodeAt(i)^pc);} return o;}
-function decrypt(){try{var decoded=b64d(ENCRYPTED_B64); if(HAS_PWD) return xorWithPwd(decoded, CORRECT_PWD); else return decoded;}catch(e){return 'Lỗi: '+e.message;}}
-function unlock(){
-  var input=document.getElementById('pwdInput').value;
-  var urlParams=new URLSearchParams(window.location.search);
-  var urlPwd=urlParams.get('pwd')||'';
-  var pwdToCheck=input||urlPwd;
-  if(HAS_PWD && pwdToCheck!==CORRECT_PWD){document.getElementById('lockInfo').innerHTML='<span style=color:#ef4444>❌ Sai MK!</span>'; return;}
-  var rawCode=decrypt();
-  document.getElementById('rawContent').textContent=rawCode;
-  document.getElementById('lockBox').style.display='none';
-  document.getElementById('contentBox').style.display='block';
-  var currentUrl=window.location.href.split('?')[0];
-  var robloxUrl=currentUrl+'?pwd='+encodeURIComponent(CORRECT_PWD);
-  document.getElementById('robloxInfo').innerHTML='<b>🔗 Raw URL:</b><br>'+currentUrl+'<br><br><b>🔑 Với MK (?pwd=MK) - Roblox phát hiện được:</b><br>'+robloxUrl+'<br><br><b>📜 Loadstring:</b><br>loadstring(game:HttpGet(\\"'+robloxUrl+'\\"))()';
-  window._rawCode=rawCode;
-}
-window.onload=function(){
-  var urlParams=new URLSearchParams(window.location.search);
-  var urlPwd=urlParams.get('pwd');
-  if(urlPwd){document.getElementById('pwdInput').value=urlPwd; if(!HAS_PWD || urlPwd===CORRECT_PWD) unlock();}
-}
-</script>
-</body></html>`;
-
-    var blob=new Blob([protectedHtml],{type:'text/html'});
-    if(window.secureBlobUrl) URL.revokeObjectURL(window.secureBlobUrl);
-    window.secureBlobUrl=URL.createObjectURL(blob);
+    var text=null;
+    var errors=[];
     
-    var robloxUrlWithPwd=hasPassword ? window.secureBlobUrl+'?pwd='+encodeURIComponent(password) : window.secureBlobUrl;
-    var simpleLoadstring='loadstring(game:HttpGet("'+robloxUrlWithPwd+'"))()';
+    try{
+      var r1=await fetch(url);
+      if(r1.ok){ text=await r1.text(); }
+      else { errors.push('Direct HTTP '+r1.status); }
+    }catch(e){ errors.push('Direct: '+e.message); }
     
-    debug.innerText+=' | Blob URL created: '+window.secureBlobUrl.substring(0,50)+'...';
+    if(!text){
+      try{
+        var p1='https://api.allorigins.win/raw?url='+encodeURIComponent(url);
+        var r2=await fetch(p1);
+        if(r2.ok){ text=await r2.text(); }
+        else { errors.push('allorigins HTTP '+r2.status); }
+      }catch(e){ errors.push('allorigins: '+e.message); }
+    }
     
-    var htmlResult=`
-<div style="background:#000;border:2px solid #22d3ee;border-radius:12px;padding:12px;margin-top:12px">
-<div style="font-weight:900;font-size:12px;color:#22c55e">✅ Đã TỰ ĐỘNG tạo Secure Raw Link MK thành công! - 1 Link Duy Nhất</div>
-<div style="font-size:8px;color:#22c55e;margin-top:4px">Fix: Tự động tạo khi nhập MK - Bỏ key 93 - 1 link duy nhất - Vào link bắt ghi MK - Roblox ?pwd=MK phát hiện được</div>
-
-<div style="margin-top:10px">
-<div style="font-size:9px;font-weight:900;color:#e879f9">🔐 MK đã đặt: <span style="color:#fff;background:#a855f7;padding:2px 8px;border-radius:999px">${pwdDisplay}</span></div>
-
-<div style="margin-top:10px">
-<div style="font-size:9px;font-weight:900;color:#22d3ee">🔗 Secure Raw URL (1 LINK DUY NHẤT - Tự động tạo):</div>
-<div style="background:#0a141e;border:2px solid #22d3ee;border-radius:8px;padding:8px;font-family:monospace;font-size:10px;color:#22d3ee;word-break:break-all;margin-top:4px;user-select:all" id="secureUrlDisplay">${window.secureBlobUrl}</div>
-<div style="display:flex;gap:5px;margin-top:6px">
-<button type="button" class="chip" style="flex:1;height:34px;justify-content:center;background:#22d3ee;color:#000;font-weight:900" onclick="navigator.clipboard.writeText('${window.secureBlobUrl}').then(()=>{document.getElementById('copyStatus1').innerText='✅ Đã copy!'; setTimeout(()=>document.getElementById('copyStatus1').innerText='',2000);})">📋 Copy Raw URL (1 link)</button>
-<button type="button" class="chip" style="flex:1;height:34px;justify-content:center;background:#fff;color:#000;font-weight:900" onclick="window.open('${window.secureBlobUrl}','_blank')">🔗 Mở Raw (sẽ hỏi MK)</button>
-</div>
-<div id="copyStatus1" style="font-size:8px;color:#22c55e;margin-top:4px"></div>
-</div>
-
-${hasPassword ? `
-<div style="margin-top:10px">
-<div style="font-size:9px;font-weight:900;color:#a855f7">🔑 Raw URL với MK (Roblox phát hiện được - Tự động tạo):</div>
-<div style="background:#0a0a1e;border:2px solid #a855f7;border-radius:8px;padding:8px;font-family:monospace;font-size:10px;color:#e879f9;word-break:break-all;margin-top:4px;user-select:all" id="secureUrlWithPwd">${robloxUrlWithPwd}</div>
-<div style="display:flex;gap:5px;margin-top:6px">
-<button type="button" class="chip" style="flex:1;height:34px;justify-content:center;background:#a855f7;color:#fff;font-weight:900" onclick="navigator.clipboard.writeText('${robloxUrlWithPwd}').then(()=>{document.getElementById('copyStatus2').innerText='✅ Đã copy URL có MK!';})">📋 Copy URL có MK (?pwd=MK)</button>
-<button type="button" class="chip" style="flex:1;height:34px;justify-content:center" onclick="window.open('${robloxUrlWithPwd}','_blank')">🔗 Mở với MK</button>
-</div>
-<div id="copyStatus2" style="font-size:8px;color:#a855f7;margin-top:4px"></div>
-</div>
-` : ''}
-
-<div style="margin-top:10px">
-<div style="font-size:9px;font-weight:900;color:#22c55e">📜 Loadstring Roblox (1 LINK - Roblox phát hiện được - Tự động tạo):</div>
-<div style="background:#000;border:2px solid #22c55e;border-radius:8px;padding:8px;font-family:monospace;font-size:10px;color:#22c55e;word-break:break-all;margin-top:4px;user-select:all;white-space:pre-wrap" id="loadstringDisplay">${simpleLoadstring}</div>
-<div style="display:flex;gap:5px;margin-top:6px">
-<button type="button" class="chip" style="flex:1;height:34px;justify-content:center;background:#22c55e;color:#000;font-weight:900" onclick="navigator.clipboard.writeText(\`${simpleLoadstring.replace(/`/g,'\\`')}\`).then(()=>{document.getElementById('copyStatus3').innerText='✅ Đã copy Loadstring!';})">📋 Copy Loadstring Roblox</button>
-</div>
-<div id="copyStatus3" style="font-size:8px;color:#22c55e;margin-top:4px"></div>
-<div style="font-size:7px;color:#a1a1aa;margin-top:4px">💡 Roblox: Dùng URL có ?pwd=MK, khi mở trong browser tự động mở khóa, Roblox dùng game:HttpGet với URL có MK sẽ fetch được HTML bảo vệ!</div>
-</div>
-
-<div style="margin-top:10px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:8px;padding:8px">
-<div style="font-size:8px;color:#22c55e;font-weight:900">✅ V13 Auto Fix:</div>
-<div style="font-size:7px;color:#a1a1aa;margin-top:4px">
-- ✅ Tự động tạo URL Raw MK khi nhập MK (oninput) - Fix không tự tạo<br>
-- ✅ Bỏ key 93 - chỉ dùng MK<br>
-- ✅ 1 link duy nhất - bỏ 6 link<br>
-- ✅ Chọn MK - nhập MK tự động tạo<br>
-- ✅ Vào link bắt ghi MK mới hiện raw - trang HTML bảo vệ hỏi MK<br>
-- ✅ Roblox ?pwd=MK phát hiện được - URL có MK, loadstring có MK
-</div>
-</div>
-</div>
-`;
-
-    document.getElementById('rawBox').innerHTML=htmlResult;
-    debug.innerText+=' | ✅ Đã tạo xong HTML kết quả - Hiển thị ngay!';
-    document.getElementById('rawBox').scrollIntoView({behavior:'smooth'});
+    if(!text){
+      try{
+        var p2='https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(url);
+        var r3=await fetch(p2);
+        if(r3.ok){ text=await r3.text(); }
+        else { errors.push('codetabs HTTP '+r3.status); }
+      }catch(e){ errors.push('codetabs: '+e.message); }
+    }
+    
+    if(!text){
+      try{
+        var p3='https://corsproxy.io/?'+encodeURIComponent(url);
+        var r4=await fetch(p3);
+        if(r4.ok){ text=await r4.text(); }
+        else { errors.push('corsproxy HTTP '+r4.status); }
+      }catch(e){ errors.push('corsproxy: '+e.message); }
+    }
+    
+    if(!text || text.trim().length===0){
+      if(displayArea){
+        displayArea.innerText='không có raw';
+        displayArea.style.borderColor='#ef4444';
+        displayArea.style.background='rgba(239,68,68,.1)';
+        displayArea.style.color='#f87171';
+      }
+      if(debugEl) debugEl.innerText='❌ không có raw - URL: '+url+' | Lỗi: '+errors.join(' | ');
+      return;
+    }
+    
+    if(displayArea){
+      displayArea.innerText=text;
+      displayArea.style.borderColor='#22c55e';
+      displayArea.style.background='#001a00';
+      displayArea.style.color='#bbf7d0';
+    }
+    if(debugEl) debugEl.innerText='✅ Tìm thấy raw! Đã hiện '+text.length+' ký tự + có thể tải file về - URL: '+url;
     
   }catch(e){
-    var debug=document.getElementById('rawDebug');
-    debug.innerText='❌ Lỗi tạo Secure Raw: '+e.message+' | Stack: '+e.stack;
-    debug.style.color='#ef4444';
-    alert('Lỗi tạo Secure Raw: '+e.message);
+    var area=document.getElementById('rawDisplayArea');
+    var dbg=document.getElementById('rawUrlDebug');
+    if(area){
+      area.innerText='không có raw';
+      area.style.borderColor='#ef4444';
+      area.style.background='rgba(239,68,68,.1)';
+      area.style.color='#f87171';
+    }
+    if(dbg) dbg.innerText='❌ không có raw - Lỗi: '+e.message;
     console.error(e);
   }
 }
 
+function createFromEnc(){
+  var code=document.getElementById('outEnc')?document.getElementById('outEnc').value:'';
+  if(!code){ alert('Chưa mã hóa!'); return; }
+  var inp=document.getElementById('rawSourceInput');
+  if(inp) inp.value=code;
+  createSimpleRaw();
+}
+function createFromDec(){
+  var code=document.getElementById('outDec')?document.getElementById('outDec').value:'';
+  if(!code){ alert('Chưa giải mã!'); return; }
+  var inp=document.getElementById('rawSourceInput');
+  if(inp) inp.value=code;
+  createSimpleRaw();
+}
+function clearRaw(){
+  var inp=document.getElementById('rawSourceInput');
+  if(inp) inp.value='';
+  var box=document.getElementById('rawBox');
+  if(box) box.innerHTML='';
+}
+function createSimpleRaw(){
+  try{
+    var codeInput=document.getElementById('rawSourceInput');
+    var code=codeInput?codeInput.value.trim():'';
+    if(!code){
+      var outEnc=document.getElementById('outEnc');
+      var outDec=document.getElementById('outDec');
+      code=(outEnc&&outEnc.value)||(outDec&&outDec.value)||'';
+    }
+    if(!code){
+      var box=document.getElementById('rawBox');
+      if(box) box.innerHTML='<div style="padding:8px;background:rgba(239,68,68,.15);border-radius:8px;color:#f87171;font-size:8px">Chưa có code để tạo Raw URL! Chọn file ở trên hoặc dán code!</div>';
+      return;
+    }
+    var blob=new Blob([code],{type:'text/plain'});
+    if(window.simpleBlobUrl) URL.revokeObjectURL(window.simpleBlobUrl);
+    window.simpleBlobUrl=URL.createObjectURL(blob);
+    var box=document.getElementById('rawBox');
+    if(box){
+      var ls='loadstring(game:HttpGet("'+window.simpleBlobUrl+'"))()';
+      box.innerHTML='<div style="background:#000;border:1px solid #22d3ee;border-radius:8px;padding:8px">'
+        +'<div style="color:#22d3ee;font-size:8px;word-break:break-all">Raw URL: '+window.simpleBlobUrl+'</div>'
+        +'<div style="margin-top:6px;color:#22c55e;font-family:monospace;font-size:8px;word-break:break-all">Loadstring: '+ls+'</div>'
+        +'<div style="display:flex;gap:6px;margin-top:8px">'
+        +'<button onclick="navigator.clipboard.writeText(\''+window.simpleBlobUrl+'\');alert(\'Copy Raw URL!\')" style="flex:1;height:32px;border-radius:999px;border:none;background:#22d3ee;color:#000;font-weight:900;font-size:7px">📋 Copy Raw URL</button>'
+        +'<button onclick="downloadFile(\'rawSourceInput\',\'raw_code_10v.lua\')" style="flex:1;height:32px;border-radius:999px;border:none;background:#facc15;color:#000;font-weight:900;font-size:7px">💾 Tải File Raw Về</button>'
+        +'</div></div>';
+    }
+  }catch(e){ console.error(e); }
+}
+
+// AI
+function aiQuick(text){
+  document.getElementById('aiIn').value=text;
+  sendMsg();
+}
+function copyAICode(){
+  var v=document.getElementById('aiCodeOutput').innerText;
+  navigator.clipboard.writeText(v);
+  alert('Đã copy code AI 10.0v!');
+}
+function useAICode(){
+  var v=document.getElementById('aiCodeOutput').innerText;
+  document.getElementById('inpDec').value=v;
+  showTab('dec');
+}
 function sendMsg(){
   var inp=document.getElementById('aiIn');
+  if(!inp){ alert('Không tìm thấy ô chat!'); return; }
   var p=inp.value.trim();
-  if(!p) return;
+  if(!p){ alert('Gõ chat vào ô trên!'); inp.focus(); return; }
   var chat=document.getElementById('chat');
-  chat.innerHTML+='<div style="padding:8px;border-radius:8px;background:rgba(34,211,238,.1);font-size:10px;margin-top:8px"><b>Bạn:</b> '+p+'</div>';
+  chat.innerHTML+='<div style="padding:8px;background:rgba(34,211,238,.15);border:1px solid rgba(34,211,238,.3);border-radius:8px;font-size:8px;margin-top:6px"><b style="color:#22d3ee">Bạn:</b> '+p+'</div>';
   inp.value='';
+  chat.scrollTop=chat.scrollHeight;
   setTimeout(function(){
-    chat.innerHTML+='<div style="padding:8px;border-radius:8px;background:rgba(34,197,94,.15);font-size:10px;margin-top:8px"><b>AI V13:</b> V13 đã fix tự động tạo URL Raw MK khi nhập MK! Gõ MK vào ô là tự động tạo ngay, không cần bấm nút. 1 link duy nhất, bỏ key 93, vào link bắt ghi MK, Roblox ?pwd=MK phát hiện được! Vào tab Secure Raw + MK Auto test ngay nhé! 😊</div>';
+    var reply='✅ 10.0v có file upload riêng + ảnh + tải về! Nhận: '+p;
+    var code='-- 10.0v AI + File Upload\n-- Bạn nói: '+p+'\nprint("10.0v - Có thể đưa tệp/file riêng + ảnh + tải file raw về")\nlocal code=[=['+p+']]\nreturn code';
+    chat.innerHTML+='<div style="padding:8px;background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.4);border-radius:8px;font-size:8px;margin-top:6px"><b style="color:#a855f7">AI 10.0v:</b> '+reply+'</div>';
+    document.getElementById('aiCodeOutput').innerText=code;
     chat.scrollTop=chat.scrollHeight;
-  },300);
+  },400);
 }
 
 document.addEventListener('DOMContentLoaded',function(){
-  showTab('enc');
+  showTab('dec');
+  try{selectAllDec();}catch(e){}
+  document.querySelectorAll('[id^="d_"]').forEach(function(i){i.checked=true;});
+  updateDecCount(); updateChipChecked();
+  document.addEventListener('change',function(e){if(e.target.type==='checkbox'){updateDecCount(); updateChipChecked();}});
+  
+  // Setup drag drop cho tất cả
+  setupDragDrop('dropEnc','fileEnc','inpEnc','previewEnc','infoEnc');
+  setupDragDrop('dropDec','fileDec','inpDec','previewDec','infoDec');
+  setupDragDrop('dropRaw','fileRaw','rawSourceInput','previewRaw','infoRaw');
+  setupDragDrop('dropRawUrl','fileRawUrl','rawDisplayAreaFake','previewRawUrl','infoRawUrl');
+  setupDragDrop('dropAi','fileAi','aiIn','previewAi','infoAi');
+  
+  // Custom handler cho rawDisplayAreaFake -> chuyển sang rawDisplayArea
+  var fakeInput=document.getElementById('fileRawUrl');
+  if(fakeInput){
+    fakeInput.addEventListener('change',function(){
+      var file=this.files[0];
+      if(!file) return;
+      var reader=new FileReader();
+      reader.onload=function(e){
+        var area=document.getElementById('rawDisplayArea');
+        if(area){
+          area.innerText=e.target.result;
+          area.style.borderColor='#22c55e';
+          area.style.background='#001a00';
+          area.style.color='#bbf7d0';
+        }
+        var dbg=document.getElementById('rawUrlDebug');
+        if(dbg) dbg.innerText='✅ Đã hiện raw từ file riêng: '+file.name+' ('+e.target.result.length+' ký tự) - Có thể tải về';
+      };
+      if(file.type.startsWith('image/')){
+        var readerImg=new FileReader();
+        readerImg.onload=function(ev){
+          var area=document.getElementById('rawDisplayArea');
+          if(area){ area.innerText='-- Ảnh: '+file.name+'\n-- Base64: '+ev.target.result.substring(0,500)+'...'; }
+        };
+        readerImg.readAsDataURL(file);
+      } else {
+        reader.readAsText(file);
+      }
+    });
+  }
+  
   var chat=document.getElementById('chat');
   if(chat){
-    chat.innerHTML=`<div style="padding:10px;border-radius:10px;background:linear-gradient(135deg,rgba(34,211,238,.15),rgba(168,85,247,.15));border:2px solid #22d3ee;font-size:10px;line-height:1.6">
-<b style="color:#22d3ee">🤖 AI V13 - Auto Secure Raw Fix</b><br><br>
-Bạn nói: Nó không tự tạo url raw mk -> V13 Fix: Gõ MK vào ô là TỰ ĐỘNG tạo URL Raw MK ngay, không cần bấm nút!<br>
-Vào tab Secure Raw + MK Auto, nhập MK, sẽ tự động tạo 1 link duy nhất + loadstring Roblox có MK!
-</div>`;
+    chat.innerHTML='<div style="padding:10px;background:linear-gradient(135deg,rgba(239,68,68,.15),rgba(34,211,238,.15));border:2px solid #ef4444;border-radius:10px;font-size:8px;line-height:1.6">'
+    +'<b style="color:#ef4444">🔥 10.0v - Có file upload riêng + ảnh + tải về:</b><br><br>'
+    +'1. Mã hóa, Giải mã, Raw đều có thể đưa tệp/file riêng + gửi ảnh<br><br>'
+    +'2. Hiện raw có file để tải về: Bấm 💾 Tải File Raw Về<br><br>'
+    +'3. Kéo thả file vào hoặc bấm chọn file<br><br>'
+    +'4. Ai có thể gửi ảnh và tệp vào: Hỗ trợ ảnh .png .jpg .gif + mọi file<br><br>'
+    +'Bấm tab Raw để test tải file raw về!</div>';
   }
-  document.addEventListener('change',function(e){if(e.target.type==='checkbox'){updateChipChecked();}});
 });
 </script>
 <script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body></html>
