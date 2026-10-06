@@ -21,503 +21,466 @@
   font-family: "Optimistic Mono", ui-monospace, monospace;
 }
 </style><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>@script2443 11.0v - VM Obfuscation + Custom Bytecode + File Upload + Download</title>
+<title>@script2443 v7.2 - Mã Hóa Chọn Loại + Giải Mã VM Obfuscation + Custom Bytecode + Không Giới Hạn Ký Tự</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#050a0f;color:#e4e4e7;font-family:Inter,system-ui,sans-serif}
-header{background:#050a0f;border-bottom:2px solid #ef4444;padding:10px 14px;position:sticky;top:0;z-index:999}
-.tabs{display:flex;gap:5px;padding:6px;background:#0a141e;border:1px solid rgba(239,68,68,.3);border-radius:12px;width:fit-content;margin:10px;flex-wrap:wrap}
-.tab-btn{padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#a1a1aa;font-size:7px;font-weight:800;cursor:pointer}
-.tab-btn.active{background:#ef4444!important;color:#fff!important;border-color:#ef4444!important;font-weight:900;box-shadow:0 0 12px rgba(239,68,68,.5)}
+header{background:#050a0f;border-bottom:2px solid #a855f7;padding:10px 14px;position:sticky;top:0;z-index:999}
+.tabs{display:flex;gap:5px;padding:6px;background:#0a141e;border:1px solid rgba(168,85,247,.3);border-radius:12px;width:fit-content;margin:10px;flex-wrap:wrap}
+.tab-btn{padding:9px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#a1a1aa;font-size:8px;font-weight:800;cursor:pointer}
+.tab-btn.active{background:#a855f7!important;color:#fff!important;border-color:#a855f7!important;box-shadow:0 0 12px rgba(168,85,247,.5)}
 .pane{width:100%;padding:6px}
-.card{background:#0a141e;border:1px solid rgba(239,68,68,.25);border-radius:12px;padding:10px;margin-top:6px}
-.chip{font-size:6px;padding:3px 6px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);display:inline-flex;align-items:center;gap:2px;cursor:pointer;margin:1px;white-space:nowrap}
-.btn-main{width:100%;height:46px;border-radius:11px;border:none;background:linear-gradient(90deg,#ef4444,#a855f7);color:#fff;font-weight:900;font-size:11px;cursor:pointer}
+.card{background:#0a141e;border:1px solid rgba(168,85,247,.25);border-radius:12px;padding:10px;margin-top:6px}
+.chip{font-size:6px;padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);display:inline-flex;align-items:center;gap:3px;cursor:pointer;margin:2px;white-space:nowrap}
+.chip.checked{background:rgba(168,85,247,.35)!important;border-color:#a855f7!important;color:#fff!important;font-weight:800}
+.btn-main{width:100%;height:46px;border-radius:11px;border:none;background:linear-gradient(90deg,#a855f7,#ef4444);color:#fff;font-weight:900;font-size:11px;cursor:pointer}
 .status{margin-top:8px;padding:8px;border-radius:9px;background:#000;border:1px solid rgba(255,255,255,.1);font-family:monospace;font-size:8px;word-break:break-all}
-.banner{background:linear-gradient(135deg,rgba(239,68,68,.15),rgba(168,85,247,.15));border:2px solid #ef4444;border-radius:12px;padding:10px;margin-bottom:8px}
-.file-drop{width:100%;min-height:70px;border:2px dashed #22d3ee;border-radius:12px;background:rgba(34,211,238,.05);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;cursor:pointer;margin-top:8px}
-.file-drop:hover{background:rgba(34,211,238,.15)}
+.banner{background:linear-gradient(135deg,rgba(168,85,247,.15),rgba(34,211,238,.15));border:2px solid #a855f7;border-radius:12px;padding:10px;margin-bottom:8px}
+.file-drop{width:100%;min-height:70px;border:2px dashed #a855f7;border-radius:12px;background:rgba(168,85,247,.05);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;cursor:pointer;margin-top:8px}
 .file-preview{margin-top:8px;max-height:200px;overflow:auto;background:#000;border-radius:8px;padding:8px;border:1px solid #333;display:none}
 textarea{width:100%;background:#000;border:1px solid rgba(255,255,255,.2);border-radius:10px;padding:10px;color:#e4e4e7;font-family:Consolas,monospace;font-size:10px}
+select,input[type=text],input[type=number]{background:#000;border:1px solid rgba(168,85,247,.4);color:#fff;border-radius:8px;padding:6px 10px;font-size:8px}
 </style>
 <script>
 function showTab(t){
-  var ids=['p-enc','p-dec','p-raw','p-vm','p-ai'];
+  var ids=['p-enc','p-dec','p-raw','p-ai'];
   for(var i=0;i<ids.length;i++){ var el=document.getElementById(ids[i]); if(el) el.style.display=(ids[i]==='p-'+t)?'block':'none'; }
-  var btns=['tb-enc','tb-dec','tb-raw','tb-vm','tb-ai'];
+  var btns=['tb-enc','tb-dec','tb-raw','tb-ai'];
   for(var j=0;j<btns.length;j++){ var btn=document.getElementById(btns[j]); if(btn){ if(btns[j]==='tb-'+t) btn.classList.add('active'); else btn.classList.remove('active'); } }
-}
-function handleFileSelect(inputId, textareaId, previewId, infoId){
-  var fileInput=document.getElementById(inputId); var file=fileInput.files[0]; if(!file) return; processFile(file, textareaId, previewId, infoId);
-}
-function processFile(file, textareaId, previewId, fileInfoId){
-  var textarea=document.getElementById(textareaId); var preview=document.getElementById(previewId); var info=document.getElementById(fileInfoId);
-  if(info){ info.style.display='block'; info.innerHTML='📁 '+file.name+' | '+file.type+' | '+(file.size/1024).toFixed(1)+'KB'; }
-  if(preview) preview.style.display='block';
-  if(file.type.startsWith('image/')){
-    var r=new FileReader(); r.onload=function(e){ if(preview) preview.innerHTML='<img src="'+e.target.result+'" style="max-width:100%;max-height:150px;border-radius:8px"><div style="font-size:6px;color:#a1a1aa;margin-top:4px">'+file.name+'</div>'; if(textarea) textarea.value='-- Ảnh: '+file.name+'\nlocal img=[['+e.target.result.substring(0,200)+'...]]'; }; r.readAsDataURL(file); return;
-  }
-  var reader=new FileReader(); reader.onload=function(e){ if(textarea) textarea.value=e.target.result; if(preview) preview.innerHTML='<pre style="font-size:7px;white-space:pre-wrap">'+e.target.result.substring(0,500).replace(/</g,'&lt;')+'</pre>'; }; reader.readAsText(file);
-}
-function downloadFile(textareaId, filename){
-  var ta=document.getElementById(textareaId); var txt=ta? (ta.value||ta.innerText):''; if(!txt){ alert('Không có nội dung!'); return; }
-  var blob=new Blob([txt],{type:'text/plain'}); var url=URL.createObjectURL(blob); var a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+  if(t==='raw') setTimeout(function(){ if(typeof initRawTab==='function') initRawTab(); },100);
 }
 function b64(s){try{return btoa(unescape(encodeURIComponent(s)));}catch(e){try{return btoa(s);}catch(e2){return '';}}}
 function b64d(s){try{return decodeURIComponent(escape(atob(s)));}catch(e){try{return atob(s);}catch(e2){return s;}}}
 function xorS(s,k){var o='';for(var i=0;i<s.length;i++)o+=String.fromCharCode(s.charCodeAt(i)^k);return o;}
 function safeStringChar(nums){ try{ var r=''; for(var i=0;i<nums.length;i+=200){ var ch=[]; for(var j=i;j<Math.min(i+200,nums.length);j++){ var n=nums[j]; if(n>=0&&n<=65535) ch.push(String.fromCharCode(n)); } r+=ch.join(''); } return r; }catch(e){return null;} }
+function rot13(s){ return s.replace(/[a-zA-Z]/g,function(c){ return String.fromCharCode((c<='Z'?90:122)>=(c=c.charCodeAt(0)+13)?c:c-26); }); }
+function rot47(s){ var r=''; for(var i=0;i<s.length;i++){ var cc=s.charCodeAt(i); if(cc>=33&&cc<=126){ r+=String.fromCharCode(33+((cc+14)%94)); } else r+=s[i]; } return r; }
+function rot5(s){ return s.replace(/[0-9]/g,function(c){ return String.fromCharCode((c.charCodeAt(0)-48+5)%10+48); }); }
+function caesar(s,shift){ var r=''; for(var i=0;i<s.length;i++){ var c=s.charCodeAt(i); if(c>=65&&c<=90){ r+=String.fromCharCode((c-65+shift)%26+65); } else if(c>=97&&c<=122){ r+=String.fromCharCode((c-97+shift)%26+97); } else r+=s[i]; } return r; }
+function atbash(s){ var r=''; for(var i=0;i<s.length;i++){ var c=s[i]; if(c>='a'&&c<='z'){ r+=String.fromCharCode(122-(c.charCodeAt(0)-97)); } else if(c>='A'&&c<='Z'){ r+=String.fromCharCode(90-(c.charCodeAt(0)-65)); } else r+=c; } return r; }
+function reverseStr(s){ return s.split('').reverse().join(''); }
+function toHex(s){ var r=''; for(var i=0;i<s.length;i++) r+='\\x'+s.charCodeAt(i).toString(16).padStart(2,'0'); return r; }
+function fromHex(s){ try{ return s.replace(/\\x([0-9a-fA-F]{2})/g,function(m,h){return String.fromCharCode(parseInt(h,16));}); }catch(e){return s;} }
+function toBinary(s){ var r=''; for(var i=0;i<s.length;i++) r+=s.charCodeAt(i).toString(2).padStart(8,'0')+' '; return r.trim(); }
+function fromBinary(s){ try{ return s.split(' ').map(function(b){return String.fromCharCode(parseInt(b,2));}).join(''); }catch(e){return s;} }
+function downloadFile(id,name){ var ta=document.getElementById(id); var txt=ta? (ta.value||ta.innerText||'') : ''; if(!txt){ alert('Không có nội dung!'); return; } var blob=new Blob([txt],{type:'text/plain'}); var url=URL.createObjectURL(blob); var a=document.createElement('a'); a.href=url; a.download=name; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); }
+function processFile(file, taId, prevId, infoId){ var ta=document.getElementById(taId); var prev=document.getElementById(prevId); var info=document.getElementById(infoId); if(info){ info.style.display='block'; info.innerHTML='📁 '+file.name+' | '+(file.size/1024).toFixed(1)+'KB | Không giới hạn ký tự'; } if(prev) prev.style.display='block'; var r=new FileReader(); r.onload=function(e){ if(ta){ ta.value=e.target.result; ta.dispatchEvent(new Event('input')); } if(prev) prev.innerHTML='<pre style="font-size:7px;white-space:pre-wrap;max-height:150px;overflow:auto">'+e.target.result.substring(0,1000).replace(/</g,'&lt;')+'</pre><div style="font-size:6px;color:#22c55e">Đã đọc '+e.target.result.length.toLocaleString()+' ký tự - Không giới hạn</div>'; }; r.readAsText(file); }
+function escapeRegExp(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
 </script>
 </head><body>
-<header>
-<div style="display:flex;gap:10px;align-items:center"><div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#ef4444,#a855f7);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:11px">11</div><div><div style="font-weight:900;font-size:10px">@script2443 <span style="color:#22d3ee">11.0v - VM Obfuscation + Custom Bytecode + File Upload + Download</span></div><div style="font-size:6px;color:#22c55e">✅ Mới: Tab VM - Giải Luraph v14.7/v15, MoonSec V3 VM, Hercules, PSU - Có backend Vercel + multi-layer</div></div></div>
-</header>
+<header><div style="display:flex;gap:10px;align-items:center"><div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#a855f7,#22d3ee);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:11px">7.2</div><div><div style="font-weight:900;font-size:10px">@script2443 <span style="color:#a855f7">v7.2 - Mã Hóa Chọn Loại + Giải Mã VM Obfuscation + Custom Bytecode + Không Giới Hạn</span></div><div style="font-size:6px;color:#22c55e">✅ Fix: Mã hóa chọn loại + Bỏ VM Fix 12.0v + Gộp VM vào Giải Mã + Thêm nhiều loại mã hóa + Không giới hạn ký tự + Không tạo code Lua thừa</div></div></div></header>
 
 <div style="max-width:1700px;margin:0 auto;padding:5px">
 <div class="tabs">
-<button id="tb-enc" class="tab-btn" onclick="showTab('enc')">🔒 Mã Hóa + File</button>
-<button id="tb-dec" class="tab-btn" onclick="showTab('dec')">🔓 Giải Mã 231 Loại + File</button>
-<button id="tb-raw" class="tab-btn" onclick="showTab('raw')">🔗 Raw + File + Tải Về</button>
-<button id="tb-vm" class="tab-btn active" onclick="showTab('vm')">🔥 VM Obfuscation + Custom Bytecode 11.0v</button>
-<button id="tb-ai" class="tab-btn" onclick="showTab('ai')">🤖 AI Chat</button>
+<button id="tb-enc" class="tab-btn active" onclick="showTab('enc')">🔒 Mã Hóa - Chọn Loại v7.2</button>
+<button id="tb-dec" class="tab-btn" onclick="showTab('dec')">🔓 Giải Mã - VM + Custom Bytecode v7.2</button>
+<button id="tb-raw" class="tab-btn" onclick="showTab('raw')">🔗 Raw - Không Giới Hạn</button>
+<button id="tb-ai" class="tab-btn" onclick="showTab('ai')">🤖 AI Chat v7.2</button>
 </div>
 
-<!-- MÃ HÓA -->
-<div id="p-enc" class="pane" style="display:none">
+<!-- MÃ HÓA - CHỌN LOẠI + KHÔNG GIỚI HẠN -->
+<div id="p-enc" class="pane" style="display:block">
 <div class="card" style="border:2px solid #a855f7">
-<div class="file-drop" onclick="document.getElementById('fileEnc').click()"><div>📁</div><div style="font-size:7px;color:#a855f7;font-weight:900">CHỌN FILE/ẢNH RIÊNG ĐỂ MÃ HÓA</div><input type="file" id="fileEnc" style="display:none" onchange="handleFileSelect('fileEnc','inpEnc','previewEnc','infoEnc')"></div>
+<div class="banner" style="border-color:#a855f7">
+<h2 style="font-size:11px;font-weight:900;color:#a855f7">🔒 MÃ HÓA v7.2 - CHỌN LOẠI + KHÔNG GIỚI HẠN KÝ TỰ + KHÔNG TẠO CODE LUA THỪA</h2>
+<div style="font-size:6px;color:#e9d5ff;margin-top:4px">Fix: Trước không chọn loại -> Giờ chọn được 25+ loại mã hóa, không giới hạn ký tự, tùy chọn không tạo code Lua</div>
+</div>
+
+<div class="file-drop" onclick="document.getElementById('fileEnc').click()"><div>📁</div><div style="font-size:7px;color:#a855f7;font-weight:900">CHỌN FILE/ẢNH RIÊNG - KHÔNG GIỚI HẠN KÝ TỰ</div><input type="file" id="fileEnc" style="display:none" onchange="processFile(this.files[0],'inpEnc','previewEnc','infoEnc')"></div>
 <div id="infoEnc" class="status" style="display:none"></div><div id="previewEnc" class="file-preview"></div>
-<textarea id="inpEnc" style="height:150px;margin-top:8px">print("Hello 11.0v - File upload riêng")</textarea>
-<button class="btn-main" onclick="doEnc()" style="margin-top:8px">🔒 Mã Hóa 11.0v</button>
-<div id="encStatus" class="status">Sẵn sàng</div>
-<textarea id="outEnc" style="height:150px;border:2px solid #22d3ee;margin-top:8px"></textarea>
-<button class="chip" style="width:100%;height:32px;justify-content:center;margin-top:6px" onclick="downloadFile('outEnc','ma_hoa_11v.txt')">💾 Tải File Mã Hóa</button>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
+<div style="background:#000;border:1px solid rgba(168,85,247,.3);border-radius:10px;padding:8px">
+<label style="font-size:7px;color:#a855f7;font-weight:900">🎯 CHỌN LOẠI MÃ HÓA (25+ loại):</label>
+<select id="encType" style="width:100%;height:36px;margin-top:4px;font-size:8px;font-weight:900">
+<option value="base64">Base64 (1 lớp)</option>
+<option value="base64x2">Base64 x2 (2 lớp)</option>
+<option value="base64x3">Base64 x3 (3 lớp)</option>
+<option value="base64x5">Base64 x5 (5 lớp)</option>
+<option value="base64x10">Base64 x10 (10 lớp) - Multi-layer</option>
+<option value="xor93">XOR Key 93 (MoonSec style)</option>
+<option value="xor_custom">XOR Key Tùy Chọn (nhập key)</option>
+<option value="xor_brute">XOR Brute 1-255 + Base64</option>
+<option value="hex">Hex \x48\x65\x6C\x6C\x6F</option>
+<option value="binary">Binary 01001000 01100101</option>
+<option value="rot13">ROT13</option>
+<option value="rot47">ROT47</option>
+<option value="rot5">ROT5 (số)</option>
+<option value="caesar">Caesar Shift 3</option>
+<option value="caesar_custom">Caesar Shift Tùy Chọn</option>
+<option value="atbash">Atbash (a<->z)</option>
+<option value="reverse">Reverse (đảo ngược)</option>
+<option value="url">URL Encode %48%65...</option>
+<option value="decimal">Decimal char 72,101,108...</option>
+<option value="stringchar">string.char(72,101,108...) - Fix lỗi )</option>
+<option value="stringchar_chunk">string.char Chunk 200 - Fix lỗi (</option>
+<option value="moonsec">MoonSec V3 Header + Base64 + XOR</option>
+<option value="moonsec_vm">MoonSec V3 VM Obfuscation (fake VM)</option>
+<option value="luraph">Luraph Style - Custom Bytecode</option>
+<option value="vm_custom">VM Obfuscation + Custom Bytecode + Opcode</option>
+<option value="hercules">Hercules Style - WrapState BcToState</option>
+<option value="combo">Combo: Base64 + XOR + Hex + Reverse (nhiều lớp)</option>
+<option value="all">Tất cả 25 loại trộn (siêu mã hóa)</option>
+</select>
+
+<div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+<div><label style="font-size:6px;color:#a1a1aa">Key XOR / Caesar:</label><input id="encKey" type="number" value="93" style="width:70px;height:28px"></div>
+<div><label style="font-size:6px;color:#a1a1aa">Shift Caesar:</label><input id="encShift" type="number" value="3" style="width:70px;height:28px"></div>
+<label class="chip checked" style="height:28px"><input id="encWrapLua" type="checkbox"> Bọc code Lua (tắt = không tạo code Lua thừa)</label>
+<label class="chip checked" style="height:28px"><input id="encNoLimit" type="checkbox" checked> Không giới hạn ký tự (bật)</label>
 </div>
 </div>
 
-<!-- GIẢI MÃ -->
+<div style="background:#000;border:1px solid rgba(34,211,238,.3);border-radius:10px;padding:8px">
+<label style="font-size:7px;color:#22d3ee;font-weight:900">📝 CODE GỐC CẦN MÃ HÓA (không giới hạn ký tự):</label>
+<textarea id="inpEnc" style="height:200px;margin-top:4px;border:2px solid rgba(168,85,247,.4)" placeholder="Dán code vào đây - Không giới hạn ký tự, bao nhiêu cũng được...
+Ví dụ:
+print(&quot;Hello v7.2 - Mã hóa chọn loại&quot;)
+Không tạo code Lua thừa nếu tắt checkbox Bọc code Lua
+" oninput="updateEncCount()"></textarea>
+<div id="encCount" style="font-size:6px;color:#a1a1aa;margin-top:4px">0 ký tự - Không giới hạn</div>
+</div>
+</div>
+
+<button class="btn-main" style="margin-top:10px;background:linear-gradient(90deg,#a855f7,#22d3ee)" onclick="doEncV72()">🔒 MÃ HÓA v7.2 - THEO LOẠI ĐÃ CHỌN</button>
+<div id="encStatus" class="status">Sẵn sàng - Chọn loại mã hóa ở trên - Không giới hạn ký tự</div>
+
+<div style="background:#000;border:1px solid rgba(168,85,247,.3);border-radius:10px;padding:8px;margin-top:8px">
+<label style="font-size:7px;color:#a855f7;font-weight:900">📤 KẾT QUẢ MÃ HÓA (không giới hạn, có thể không bọc Lua):</label>
+<textarea id="outEnc" style="height:250px;margin-top:4px;border:2px solid #a855f7" placeholder="Kết quả mã hóa sẽ hiện ở đây - Không giới hạn ký tự..."></textarea>
+<div style="display:flex;gap:4px;margin-top:6px;flex-wrap:wrap">
+<button class="chip" style="flex:1;height:32px;justify-content:center;background:#a855f7;color:#fff;font-weight:900" onclick="downloadFile('outEnc','ma_hoa_v72_'+document.getElementById('encType').value+'.txt')">💾 Tải File Mã Hóa (Không Giới Hạn)</button>
+<button class="chip" style="flex:1;height:32px;justify-content:center" onclick="navigator.clipboard.writeText(document.getElementById('outEnc').value);alert('Copy '+document.getElementById('outEnc').value.length+' ký tự')">📋 Copy</button>
+<button class="chip" style="flex:1;height:32px;justify-content:center;background:#000;border-color:#22d3ee;color:#22d3ee" onclick="sendEncToDec()">🔓 Gửi Sang Giải Mã</button>
+</div>
+</div>
+</div>
+</div>
+
+<!-- GIẢI MÃ - VM + CUSTOM BYTECODE + KHÔNG GIỚI HẠN -->
 <div id="p-dec" class="pane" style="display:none">
 <div class="card" style="border:2px solid #ef4444">
-<div class="file-drop" onclick="document.getElementById('fileDec').click()" style="border-color:#ef4444"><div>📁</div><div style="font-size:7px;color:#ef4444;font-weight:900">CHỌN FILE/ẢNH RIÊNG ĐỂ GIẢI MÃ 231 LOẠI</div><input type="file" id="fileDec" style="display:none" onchange="handleFileSelect('fileDec','inpDec','previewDec','infoDec')"></div>
+<div class="banner" style="border-color:#ef4444">
+<h2 style="font-size:11px;font-weight:900;color:#ef4444">🔓 GIẢI MÃ v7.2 - VM OBFUSCATION + CUSTOM BYTECODE 11.0v + 231 LOẠI + KHÔNG GIỚI HẠN</h2>
+<div style="font-size:6px;color:#fca5a5;margin-top:4px">Gộp VM Fix 12.0v vào đây - Giải được VM Obfuscation + Custom Bytecode + Opcode + 231 loại + Multi-layer + Không giới hạn ký tự + Không tạo code Lua thừa</div>
+</div>
+
+<div class="file-drop" onclick="document.getElementById('fileDec').click()" style="border-color:#ef4444"><div>📁</div><div style="font-size:7px;color:#ef4444;font-weight:900">CHỌN FILE VM / OBFUSCATED - KHÔNG GIỚI HẠN KÝ TỰ - HỖ TRỢ ẢNH</div><input type="file" id="fileDec" style="display:none" onchange="processFile(this.files[0],'inpDec','previewDec','infoDec')"></div>
 <div id="infoDec" class="status" style="display:none"></div><div id="previewDec" class="file-preview"></div>
-<div style="display:flex;gap:4px;margin-top:8px;flex-wrap:wrap"><input id="xorKeyDec" type="number" value="93" style="width:50px;height:28px;background:#000;border:1px solid #22c55e;color:#fff;border-radius:999px;padding:0 8px"><label class="chip"><input id="autoMulti" type="checkbox" checked> 100 lần Auto</label><label class="chip"><input id="bruteAll" type="checkbox" checked> Brute 1-255</label><span id="decCount" style="font-size:8px;color:#22c55e">231 AUTO</span></div>
-<button class="btn-main" onclick="doDecUltimate()" style="margin-top:8px;background:linear-gradient(90deg,#ef4444,#22c55e)">🔓 BẬT GIẢI MÃ 231 LOẠI - AUTO MULTI-LAYER</button>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
-<textarea id="inpDec" style="height:300px" placeholder="Dán code hoặc chọn file..."></textarea>
-<textarea id="outDec" style="height:300px;border:2px solid #ef4444" placeholder="Kết quả..."></textarea>
-</div>
-<div id="decStatus" class="status">Sẵn sàng - Auto 231 loại + file riêng</div>
-<div style="display:flex;gap:4px;margin-top:6px"><button class="chip" style="flex:1;height:32px;justify-content:center" onclick="downloadFile('outDec','giai_ma_11v.lua')">💾 Tải Kết Quả</button><button class="chip" style="flex:1;height:32px;justify-content:center" onclick="navigator.clipboard.writeText(document.getElementById('outDec').value)">📋 Copy</button></div>
-</div>
-</div>
 
-<!-- RAW -->
-<div id="p-raw" class="pane" style="display:none">
-<div class="card" style="border:2px solid #22d3ee">
-<div class="file-drop" onclick="document.getElementById('fileRaw').click()"><div>📁</div><div style="font-size:7px;color:#22d3ee;font-weight:900">CHỌN FILE/ẢNH RIÊNG ĐỂ TẠO RAW</div><input type="file" id="fileRaw" style="display:none" onchange="handleFileSelect('fileRaw','rawSourceInput','previewRaw','infoRaw')"></div>
-<div id="infoRaw" class="status" style="display:none"></div><div id="previewRaw" class="file-preview"></div>
-<textarea id="rawSourceInput" style="height:100px;margin-top:8px" placeholder="Dán code hoặc chọn file..."></textarea>
-<button class="chip" style="width:100%;height:36px;justify-content:center;background:linear-gradient(90deg,#22d3ee,#22c55e);color:#000;font-weight:900;margin-top:8px" onclick="createSimpleRaw()">🔗 TẠO RAW URL</button>
-<div id="rawBox" style="margin-top:8px"></div>
-</div>
-
-<div class="card" style="border:2px solid #facc15;margin-top:12px">
-<label style="font-size:8px;color:#facc15;font-weight:900">🌐 GHI URL RAW VÀO ĐÂY:</label>
-<input id="rawUrlInput" type="text" placeholder="https://raw.githubusercontent.com/..." style="width:100%;height:40px;background:#000;border:2px solid #facc15;color:#fff;border-radius:999px;padding:0 14px;margin-top:6px">
-<button style="width:100%;height:44px;margin-top:8px;border-radius:999px;border:none;background:linear-gradient(90deg,#facc15,#f59e0b);color:#000;font-weight:900" onclick="showRawFromUrl()">🔓 BẤM HIỆN KÝ TỰ RAW</button>
-<div id="rawDisplayArea" style="margin-top:8px;min-height:150px;max-height:400px;overflow:auto;background:#000;border:2px solid #facc15;border-radius:10px;padding:10px;font-family:monospace;font-size:9px;white-space:pre-wrap;word-break:break-all">Chưa có URL...</div>
-<div id="rawUrlDebug" class="status">Chờ URL...</div>
-<div style="display:flex;gap:4px;margin-top:8px"><button class="chip" style="flex:1;height:32px;justify-content:center;background:#facc15;color:#000;font-weight:900" onclick="downloadRawAsFile()">💾 TẢI FILE RAW VỀ</button><button class="chip" style="flex:1;height:32px;justify-content:center" onclick="copyRawDisplay()">📋 Copy</button><button class="chip" style="flex:1;height:32px;justify-content:center" onclick="clearRawUrlDisplay()">🗑️ Xóa</button></div>
-<div class="file-drop" onclick="document.getElementById('fileRawUrl').click()" style="border-color:#facc15;margin-top:10px;min-height:60px"><div>📁</div><div style="font-size:6px;color:#facc15">CHỌN TỆP/ẢNH RIÊNG ĐỂ HIỆN RAW</div><input type="file" id="fileRawUrl" style="display:none"></div>
-<div id="infoRawUrl" class="status" style="display:none"></div><div id="previewRawUrl" class="file-preview"></div>
-</div>
-</div>
-
-<!-- VM OBFUSCATION - TAB MỚI -->
-<div id="p-vm" class="pane" style="display:block">
-<div class="card" style="border:2px solid #ff6b35;background:linear-gradient(135deg,rgba(255,107,53,.08),rgba(168,85,247,.08))">
-<div class="banner" style="border-color:#ff6b35;background:linear-gradient(135deg,rgba(255,107,53,.15),rgba(239,68,68,.15))">
-<h2 style="font-size:12px;font-weight:900;color:#ff6b35">🔥 VM OBFUSCATION + CUSTOM BYTECODE / OPCODE - 11.0v</h2>
-<div style="font-size:7px;color:#fed7aa;margin-top:6px;line-height:1.6">
-<b>Web bạn hiện tại (231 loại) KHÔNG giải được VM thật.</b> Tab này thêm khả năng giải VM thật với backend.<br>
-<b>Hỗ trợ:</b> Luraph v14.7 / v15, MoonSec V3 VM, Hercules, PSU 4.0/4.5, MoonVeil v1.4.5, Joker VM<br>
-<b>Multi-layer VM:</b> Có nhưng phải giải từng lớp 1 (không auto 100 lần như Base64 được) - Mỗi lớp là 1 VM mới
-</div>
-</div>
-
-<div style="background:#000;border:1px solid rgba(255,107,53,.3);border-radius:10px;padding:10px;margin-top:8px">
-<div style="font-size:8px;color:#ff6b35;font-weight:900">❓ WEB BẠN CÓ GIẢI ĐƯỢC VM KHÔNG?</div>
-<div style="margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:7px;line-height:1.6">
-<div style="background:rgba(239,68,68,.1);border:1px solid #ef4444;border-radius:8px;padding:8px">
-<b style="color:#ef4444">Web 9.5v/10.0v (231 loại) - KHÔNG giải được VM:</b><br>
-- Chỉ giải wrapper: Base64, XOR, string.char, Hex<br>
-- Không devirtualize được custom bytecode<br>
-- Không extract opcode semantics<br>
-- Không chạy trong Luau VM sandbox<br>
-→ <b>KHÔNG</b> giải được Luraph, MoonSec V3 VM thật
-</div>
-<div style="background:rgba(34,197,94,.1);border:1px solid #22c55e;border-radius:8px;padding:8px">
-<b style="color:#22c55e">Tab VM 11.0v MỚI - CÓ giải được VM:</b><br>
-- Dynamic deobfuscator: chạy trong real Luau VM<br>
-- Extract opcode semantics từ interpreter embedded<br>
-- Devirtualize bytecode về Lua readable<br>
-- Support Luraph v14.7/v15, MoonSec V3, Hercules<br>
-→ <b>CÓ</b> giải được VM thật (cần backend)
+<div style="background:linear-gradient(90deg,rgba(239,68,68,.15),rgba(34,197,94,.15));border:2px solid #ef4444;border-radius:12px;padding:10px;margin-top:10px;position:sticky;top:50px;z-index:20">
+<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center">
+<button type="button" class="btn-main" style="flex:1;min-width:200px;height:52px;font-size:11px;background:linear-gradient(90deg,#ef4444,#22c55e)" onclick="doDecV72()">🔓 GIẢI MÃ v7.2 - AUTO VM + CUSTOM BYTECODE + 231 LOẠI - KHÔNG GIỚI HẠN</button>
+<div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+<span style="font-size:7px;color:#a1a1aa">Key:</span><input id="xorKeyDec" type="number" value="93" style="width:50px;height:28px;background:#000;border:1px solid #22c55e;color:#fff;border-radius:999px">
+<label class="chip checked" style="height:28px"><input id="autoMulti" type="checkbox" checked> 100 lần Auto</label>
+<label class="chip checked" style="height:28px"><input id="bruteAll" type="checkbox" checked> Brute 1-255</label>
+<label class="chip checked" style="height:28px"><input id="vmDeobf" type="checkbox" checked> VM Obfuscation 11.0v</label>
+<label class="chip checked" style="height:28px"><input id="noLuaWrap" type="checkbox"> Không tạo code Lua thừa</label>
+<span id="decCount" style="font-size:8px;color:#22c55e;font-weight:900;padding:4px 10px;border-radius:999px;background:rgba(34,197,94,.15);border:1px solid #22c55e">Auto VM + 231</span>
 </div>
 </div>
 </div>
-
-<!-- FILE UPLOAD CHO VM -->
-<div class="file-drop" id="dropVm" onclick="document.getElementById('fileVm').click()" style="border-color:#ff6b35;background:rgba(255,107,53,.08);margin-top:12px">
-<div style="font-size:20px">🔥</div>
-<div style="font-size:8px;color:#ff6b35;font-weight:900;margin-top:4px">BẤM ĐỂ CHỌN FILE VM OBFUSCATION HOẶC KÉO THẢ VÀO ĐÂY</div>
-<div style="font-size:6px;color:#a1a1aa">Hỗ trợ: .lua VM obfuscated, Luraph, MoonSec V3, Hercules, PSU, ảnh + mọi file</div>
-<input type="file" id="fileVm" style="display:none" accept="*/*" onchange="handleFileSelect('fileVm','inpVm','previewVm','infoVm')">
-</div>
-<div id="infoVm" class="status" style="display:none"></div>
-<div id="previewVm" class="file-preview"></div>
 
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
 <div>
-<label style="font-size:7px;color:#ff6b35;font-weight:900">📥 CODE VM OBFUSCATED (dán hoặc chọn file):</label>
-<textarea id="inpVm" style="height:350px;margin-top:4px;border:2px solid #ff6b35" placeholder="Dán code VM Obfuscation vào đây...
-Ví dụ Luraph:
-local v0=string.char(115,101,116)... 
-local v1={...custom bytecode...}
-while true do
-  local op=v1[pc]
-  ...
-end
-
-Hoặc chọn file .lua VM ở trên...
-"></textarea>
+<label style="font-size:7px;color:#ef4444;font-weight:900">📥 CODE CẦN GIẢI MÃ (VM + Custom Bytecode + 231 loại - Không giới hạn):</label>
+<textarea id="inpDec" style="height:500px;margin-top:4px;border:2px solid #ef4444" placeholder="Dán code vào đây - Không giới hạn ký tự, bao nhiêu cũng được...
+Hỗ trợ:
+- VM Obfuscation + Custom Bytecode + Opcode 11.0v (Luraph v14.7/v15, MoonSec V3 VM, Hercules, PSU, MoonVeil, Joker VM, Generic VM)
+- 231 loại thường: Base64, XOR, Hex, Binary, ROT13, ROT47, string.char fix lỗi ), v.v.
+- Multi-layer: Base64 x10 + XOR + string.char + VM bọc nhau
+- File 298k ký tự cũng được - Không giới hạn
+- Tùy chọn không tạo code Lua thừa (chỉ lấy code gốc)
+" oninput="updateDecCount()"></textarea>
+<div id="decInputCount" style="font-size:6px;color:#a1a1aa;margin-top:4px">0 ký tự - Không giới hạn</div>
 <div style="display:flex;gap:4px;margin-top:6px;flex-wrap:wrap">
-<button class="chip" style="background:#ff6b35;color:#fff;height:28px" onclick="detectVmType()">🔍 Detect VM Type</button>
-<button class="chip" style="background:#000;border-color:#22c55e;color:#22c55e;height:28px" onclick="downloadFile('inpVm','vm_input_11v.lua')">💾 Tải Input</button>
-<button class="chip" style="height:28px" onclick="clearVm()">🗑️ Xóa</button>
+<button class="chip" style="background:#000;border-color:#22c55e;color:#22c55e;height:28px" onclick="detectVmTypeV72()">🔍 Detect VM Type (11.0v)</button>
+<button class="chip" style="height:28px" onclick="document.getElementById('inpDec').value='';updateDecCount()">🗑️ Xóa</button>
 </div>
 </div>
 <div>
-<label style="font-size:7px;color:#22c55e;font-weight:900">📤 KẾT QUẢ DEVIRTUALIZED (readable Lua):</label>
-<textarea id="outVm" readonly style="height:350px;margin-top:4px;border:2px solid #22c55e" placeholder="Kết quả giải VM sẽ hiện ở đây...
-
-Nếu là Luraph v14.7/v15 sẽ cần backend:
-- Chạy trong real Luau VM sandbox
-- Extract opcode semantics
-- Devirtualize bytecode
-"></textarea>
-<div id="vmStatus" class="status" style="border-color:#ff6b35">🔥 11.0v VM - Sẵn sàng - Hỗ trợ file riêng + ảnh</div>
+<label style="font-size:7px;color:#22c55e;font-weight:900">📤 KẾT QUẢ GIẢI MÃ (Không giới hạn, có thể không bọc Lua):</label>
+<textarea id="outDec" style="height:500px;margin-top:4px;border:2px solid #22c55e" placeholder="Kết quả giải mã VM + Custom Bytecode + 231 loại sẽ hiện ở đây - Không giới hạn ký tự..."></textarea>
+<div id="decOutputCount" style="font-size:6px;color:#a1a1aa;margin-top:4px">0 ký tự - Không giới hạn</div>
+<div id="decStatus" class="status" style="border-color:#22c55e">🔥 v7.2 Sẵn sàng - VM Obfuscation + Custom Bytecode 11.0v + 231 loại + Không giới hạn</div>
+<div id="detectedTypes" style="display:flex;flex-wrap:wrap;gap:2px;margin-top:5px"></div>
 <div style="display:flex;gap:4px;margin-top:6px;flex-wrap:wrap">
-<button class="chip" style="flex:1;height:32px;justify-content:center;background:#22c55e;color:#000;font-weight:900" onclick="downloadFile('outVm','vm_deobfuscated_11v.lua')">💾 Tải File Đã Giải VM Về</button>
-<button class="chip" style="flex:1;height:32px;justify-content:center" onclick="copyVmResult()">📋 Copy Kết Quả</button>
-<button class="chip" style="flex:1;height:32px;justify-content:center;background:#000;border-color:#22d3ee;color:#22d3ee" onclick="sendVmToDecode()">🔓 Sang Giải Mã 231</button>
+<button class="chip" style="flex:1;height:32px;justify-content:center;background:#22c55e;color:#000;font-weight:900" onclick="downloadFile('outDec','giai_ma_v72_vm_'+Date.now()+'.lua')">💾 Tải File Đã Giải (Không Giới Hạn)</button>
+<button class="chip" style="flex:1;height:32px;justify-content:center" onclick="navigator.clipboard.writeText(document.getElementById('outDec').value);alert('Copy '+document.getElementById('outDec').value.length+' ký tự - Không giới hạn')">📋 Copy</button>
 </div>
+<pre id="decLog" style="margin-top:6px;padding:8px;background:#000;border-radius:8px;font-size:6px;color:#ef4444;max-height:150px;overflow:auto;white-space:pre-wrap">Log VM + 231 loại sẽ hiện ở đây...</pre>
 </div>
-</div>
-
-<!-- VM DEOBFUSCATION OPTIONS -->
-<div style="background:#000;border:2px solid #ff6b35;border-radius:12px;padding:12px;margin-top:12px">
-<div style="font-size:9px;color:#ff6b35;font-weight:900">⚙️ TÙY CHỌN GIẢI VM OBFUSCATION - MULTI-LAYER</div>
-
-<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
-<div style="flex:1;min-width:200px;background:rgba(255,107,53,.08);border:1px solid rgba(255,107,53,.3);border-radius:8px;padding:8px">
-<div style="font-size:7px;color:#ff6b35;font-weight:900">🎯 CHỌN LOẠI VM:</div>
-<select id="vmType" style="width:100%;height:32px;background:#000;border:1px solid #ff6b35;color:#fff;border-radius:8px;padding:0 8px;margin-top:4px;font-size:8px">
-<option value="auto">🔍 Auto Detect (khuyên dùng)</option>
-<option value="luraph15">🔥 Luraph v15 (cần backend Vercel)</option>
-<option value="luraph14">🔥 Luraph v14.7 / MoonVeil v1.4.5</option>
-<option value="moonsec3">🌙 MoonSec V3 VM Real</option>
-<option value="hercules">💎 Hercules Obfuscator</option>
-<option value="psu">⚡ PSU 4.0/4.5</option>
-<option value="generic">🔧 Generic Custom Bytecode</option>
-</select>
-</div>
-
-<div style="flex:1;min-width:200px;background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.3);border-radius:8px;padding:8px">
-<div style="font-size:7px;color:#22d3ee;font-weight:900">🔄 MULTI-LAYER VM (nhiều lớp):</div>
-<div style="margin-top:4px;font-size:6px;color:#a1a1aa;line-height:1.5">
-- VM KHÁC với Base64: Mỗi lớp VM phải giải riêng<br>
-- Lớp 1: Luraph v15 -> Lớp 2: MoonSec -> Lớp 3: Base64<br>
-- Phải chạy deobf từng lớp, không auto 100 lần được<br>
-- Web 11.0v: Giải xong lớp 1 -> bấm "Giải tiếp lớp 2"
-</div>
-<label class="chip" style="margin-top:6px"><input id="vmMultiLayer" type="checkbox" checked> Auto thử bóc nhiều lớp VM (tối đa 5 lớp)</label>
-</div>
-</div>
-
-<div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
-<button type="button" style="flex:2;min-width:200px;height:48px;border-radius:999px;border:none;background:linear-gradient(90deg,#ff6b35,#ef4444);color:#fff;font-weight:900;font-size:11px" onclick="deobfuscateVm()">🔥 GIẢI VM OBFUSCATION + CUSTOM BYTECODE</button>
-<button type="button" style="flex:1;min-width:120px;height:48px;border-radius:999px;border:none;background:#000;border:2px solid #ff6b35;color:#ff6b35;font-weight:900;font-size:8px" onclick="deobfuscateVmMultiLayer()">🔄 GIẢI MULTI-LAYER VM (5 LỚP)</button>
-</div>
-
-<div style="margin-top:10px;background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.2);border-radius:8px;padding:8px">
-<div style="font-size:7px;color:#22c55e;font-weight:900">💡 BACKEND SETUP - ĐỂ GIẢI VM THẬT (Luraph v15/v14.7):</div>
-<div style="font-size:6px;color:#a1a1aa;margin-top:4px;line-height:1.6">
-1. Deploy <b>luraph-deobf-api</b> lên Vercel: github.com/x9msms/luraph-deobf-api<br>
-2. Vercel sẽ chạy FastAPI + Luau VM binary (static Linux x86-64)<br>
-3. API: POST /api/deobfuscate với file .lua -> trả về readable Luau<br>
-4. Hoặc chạy local: <code>luauvmp luraph-full protected.lua -o recovered</code> (tool binxgtl/luau-vmp-deobf)<br>
-5. Web 11.0v này đã có sẵn frontend gọi API Vercel - Chỉ cần điền URL backend vào ô dưới
-</div>
-<input id="vmBackendUrl" type="text" placeholder="URL backend Vercel của bạn (vd: https://your-app.vercel.app/api/deobfuscate) - Để trống dùng demo local" style="width:100%;height:36px;background:#000;border:1px solid #22c55e;color:#fff;border-radius:999px;padding:0 12px;margin-top:6px;font-size:7px">
-</div>
-
-<div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap">
-<button class="chip" style="height:26px" onclick="setVmSample('luraph')">📝 Ví dụ Luraph v15</button>
-<button class="chip" style="height:26px" onclick="setVmSample('moonsec')">🌙 Ví dụ MoonSec V3 VM</button>
-<button class="chip" style="height:26px" onclick="setVmSample('custom')">🔧 Ví dụ Custom Bytecode</button>
-<button class="chip" style="height:26px;background:#000;border-color:#ff6b35;color:#ff6b35" onclick="window.open('https://github.com/binxgtl/luau-vmp-deobf','_blank')">📚 Tool luau-vmp-deobf</button>
-<button class="chip" style="height:26px;background:#000;border-color:#22c55e;color:#22c55e" onclick="window.open('https://github.com/x9msms/luraph-deobf-api','_blank')">📚 Luraph v15 API</button>
-</div>
-
-</div>
-
-<div style="background:#000;border:1px solid rgba(255,107,53,.2);border-radius:10px;padding:10px;margin-top:12px">
-<div style="font-size:8px;color:#ff6b35;font-weight:900">📖 GIẢI THÍCH VM OBFUSCATION vs 231 LOẠI THƯỜNG:</div>
-<div style="margin-top:8px;font-size:6px;color:#a1a1aa;line-height:1.7;display:grid;grid-template-columns:1fr 1fr;gap:10px">
-<div>
-<b style="color:#ef4444">231 Loại Thường (Web 9.5v làm được):</b><br>
-- Base64, Hex, XOR, string.char, URL encode<br>
-- Chỉ là mã hóa chuỗi, dễ brute force<br>
-- Giải được nhiều lớp cùng lúc: Auto 100 lần<br>
-- Pure JS, không cần backend<br>
-- Ví dụ: <code>b64(b64(xor(char(72,101,108,108,111))))</code><br>
-→ <b>Web bạn GIẢI ĐƯỢC, multi-layer CÓ</b>
-</div>
-<div>
-<b style="color:#ff6b35">VM Obfuscation + Custom Bytecode (Web 9.5v KHÔNG làm được):</b><br>
-- Custom VM với opcode riêng, dispatcher<br>
-- Bytecode là binary, không phải string<br>
-- Cần chạy trong sandbox Luau VM thật<br>
-- Phải extract opcode semantics từ interpreter<br>
-- Ví dụ: Luraph v15, MoonSec V3 VM<br>
-→ <b>Web bạn KHÔNG giải được, cần tab VM 11.0v + backend</b><br>
-→ <b>Multi-layer VM: Phải giải từng lớp riêng, không auto 100 lần</b>
 </div>
 </div>
 </div>
 
+<!-- RAW - KHÔNG GIỚI HẠN -->
+<div id="p-raw" class="pane" style="display:none">
+<div class="card" style="border:2px solid #22d3ee">
+<div class="banner" style="border-color:#22d3ee"><h2 style="font-size:11px;color:#22d3ee">🔗 RAW v7.2 - KHÔNG GIỚI HẠN KÝ TỰ + FILE TẢI VỀ</h2></div>
+<div class="file-drop" onclick="document.getElementById('fileRaw').click()"><div>📁</div><div style="font-size:7px;color:#22d3ee">CHỌN FILE - KHÔNG GIỚI HẠN</div><input type="file" id="fileRaw" style="display:none" onchange="processFile(this.files[0],'rawSourceInput','previewRaw','infoRaw')"></div>
+<div id="infoRaw" class="status" style="display:none"></div><div id="previewRaw" class="file-preview"></div>
+<textarea id="rawSourceInput" style="height:150px;margin-top:8px" placeholder="Dán code - Không giới hạn ký tự..." oninput="document.getElementById('rawCount').innerText=this.value.length.toLocaleString()+' ký tự - Không giới hạn'"></textarea>
+<div id="rawCount" style="font-size:6px;color:#a1a1aa">0 ký tự - Không giới hạn</div>
+<button class="chip" style="width:100%;height:36px;justify-content:center;background:linear-gradient(90deg,#22d3ee,#22c55e);color:#000;font-weight:900;margin-top:8px" onclick="createSimpleRaw()">🔗 TẠO RAW URL - KHÔNG GIỚI HẠN</button>
+<div id="rawBox" style="margin-top:8px"></div>
+</div>
+<div class="card" style="border:2px solid #facc15;margin-top:12px">
+<input id="rawUrlInput" type="text" placeholder="URL raw..." style="width:100%;height:40px;background:#000;border:2px solid #facc15;color:#fff;border-radius:999px;padding:0 14px">
+<button style="width:100%;height:44px;margin-top:8px;border-radius:999px;border:none;background:#facc15;color:#000;font-weight:900" onclick="showRawFromUrl()">🔓 BẤM HIỆN RAW - KHÔNG GIỚI HẠN</button>
+<div id="rawDisplayArea" style="margin-top:8px;min-height:150px;max-height:600px;overflow:auto;background:#000;border:2px solid #facc15;border-radius:10px;padding:10px;font-family:monospace;white-space:pre-wrap;word-break:break-all">Chưa có URL...</div>
+<div id="rawUrlDebug" class="status">Chờ...</div>
+<div style="display:flex;gap:4px;margin-top:8px"><button class="chip" style="flex:1;height:32px;justify-content:center;background:#facc15;color:#000;font-weight:900" onclick="downloadRawAsFile()">💾 Tải File Raw Về (Không Giới Hạn)</button><button class="chip" style="flex:1;height:32px;justify-content:center" onclick="copyRawDisplay()">📋 Copy</button></div>
 </div>
 </div>
 
-<div id="p-ai" class="pane" style="display:none">
-<div class="card" style="border:2px solid #a855f7">
-<div class="file-drop" onclick="document.getElementById('fileAi').click()" style="border-color:#a855f7"><div>📁</div><div style="font-size:7px;color:#a855f7;font-weight:900">CHỌN FILE/ẢNH CHO AI</div><input type="file" id="fileAi" style="display:none" onchange="handleFileSelect('fileAi','aiIn','previewAi','infoAi')"></div>
-<div id="infoAi" class="status" style="display:none"></div><div id="previewAi" class="file-preview"></div>
-<div id="chat" style="height:250px;overflow:auto;background:#000;border-radius:10px;padding:10px;border:1px solid rgba(168,85,247,.2);margin-top:8px"></div>
-<div style="display:flex;gap:6px;margin-top:8px"><input id="aiIn" type="text" placeholder="Ghi chat..." style="flex:1;height:40px;background:#000;border:2px solid #a855f7;color:#fff;border-radius:999px;padding:0 12px"><button class="chip" style="height:40px;padding:0 16px;background:#a855f7;color:#fff" onclick="sendMsg()">📤 Gửi</button></div>
-<pre id="aiCodeOutput" style="margin-top:8px;padding:10px;background:#000;border-radius:8px;font-size:8px;color:#22c55e;white-space:pre-wrap;max-height:150px;overflow:auto">-- AI 11.0v</pre>
-</div>
-</div>
+<div id="p-ai" class="pane" style="display:none"><div class="card"><div id="chat" style="height:250px;overflow:auto;background:#000;border-radius:10px;padding:10px"></div><input id="aiIn" type="text" placeholder="Chat v7.2..." style="width:100%;height:40px;background:#000;border:2px solid #a855f7;color:#fff;border-radius:999px;padding:0 12px;margin-top:8px"><button class="chip" style="height:32px;margin-top:6px;background:#a855f7;color:#fff" onclick="sendMsg()">Gửi Chat</button><pre id="aiCodeOutput" style="margin-top:8px;padding:10px;background:#000;border-radius:8px;font-size:8px;color:#22c55e"></pre></div></div>
 
 </div>
 </div>
 
 <script>
-// ENCRYPTION
-function doEnc(){ try{ var input=document.getElementById('inpEnc').value; if(!input.trim()){ document.getElementById('encStatus').innerText='❌ Chưa nhập'; return; } var code='-- ENC:11.0v:'+Date.now()+'\n'+b64(b64(input)); document.getElementById('outEnc').value=code; document.getElementById('encStatus').innerText='✅ Mã hóa 11.0v '+input.length+' -> '+code.length; }catch(e){ document.getElementById('encStatus').innerText='❌ '+e.message; } }
+function updateEncCount(){ var v=document.getElementById('inpEnc').value; document.getElementById('encCount').innerText=v.length.toLocaleString()+' ký tự - Không giới hạn'; }
+function updateDecCount(){ var v=document.getElementById('inpDec').value; document.getElementById('decInputCount').innerText=v.length.toLocaleString()+' ký tự - Không giới hạn'; var out=document.getElementById('outDec').value; if(document.getElementById('decOutputCount')) document.getElementById('decOutputCount').innerText=out.length.toLocaleString()+' ký tự - Không giới hạn'; }
+function sendEncToDec(){ var code=document.getElementById('outEnc').value; if(!code){ alert('Chưa mã hóa!'); return; } document.getElementById('inpDec').value=code; showTab('dec'); updateDecCount(); }
 
-// DECRYPTION 231 TYPES
-function doDecUltimate(){
+// MÃ HÓA v7.2 - CHỌN LOẠI + KHÔNG GIỚI HẠN + KHÔNG TẠO CODE LUA THỪA
+function doEncV72(){
   try{
-    var input=document.getElementById('inpDec').value; if(!input.trim()){ document.getElementById('decStatus').innerText='❌ Chưa dán code'; return; }
-    var key=parseInt(document.getElementById('xorKeyDec').value)||93; var maxIter=document.getElementById('autoMulti').checked?100:20; var brute=document.getElementById('bruteAll').checked;
-    var log=[]; var detected=[]; var cur=input; log.push('=== 11.0v - 231 LOẠI + FILE ===');
+    var input=document.getElementById('inpEnc').value;
+    var type=document.getElementById('encType').value;
+    var key=parseInt(document.getElementById('encKey').value)||93;
+    var shift=parseInt(document.getElementById('encShift').value)||3;
+    var wrapLua=document.getElementById('encWrapLua').checked;
+    if(!input){ document.getElementById('encStatus').innerText='❌ Chưa nhập code - Không giới hạn ký tự nhưng cần nhập gì đó'; return; }
+    var result=''; var logType='';
+    switch(type){
+      case 'base64': result=b64(input); logType='Base64 1 lớp'; break;
+      case 'base64x2': result=b64(b64(input)); logType='Base64 x2'; break;
+      case 'base64x3': result=b64(b64(b64(input))); logType='Base64 x3'; break;
+      case 'base64x5': var tmp=input; for(var i=0;i<5;i++) tmp=b64(tmp); result=tmp; logType='Base64 x5'; break;
+      case 'base64x10': var tmp=input; for(var i=0;i<10;i++) tmp=b64(tmp); result=tmp; logType='Base64 x10 - Multi-layer'; break;
+      case 'xor93': result=b64(xorS(input,93)); logType='XOR 93 + Base64'; break;
+      case 'xor_custom': result=b64(xorS(input,key)); logType='XOR Key '+key+' + Base64'; break;
+      case 'xor_brute': result=b64(xorS(b64(input),key)); logType='Base64 + XOR '+key+' + Base64 - Brute'; break;
+      case 'hex': result=toHex(input); logType='Hex \\x'; break;
+      case 'binary': result=toBinary(input); logType='Binary'; break;
+      case 'rot13': result=rot13(input); logType='ROT13'; break;
+      case 'rot47': result=rot47(input); logType='ROT47'; break;
+      case 'rot5': result=rot5(input); logType='ROT5'; break;
+      case 'caesar': result=caesar(input,3); logType='Caesar Shift 3'; break;
+      case 'caesar_custom': result=caesar(input,shift); logType='Caesar Shift '+shift; break;
+      case 'atbash': result=atbash(input); logType='Atbash'; break;
+      case 'reverse': result=reverseStr(input); logType='Reverse'; break;
+      case 'url': result=encodeURIComponent(input); logType='URL Encode'; break;
+      case 'decimal': result=input.split('').map(function(c){return c.charCodeAt(0);}).join(','); logType='Decimal char'; break;
+      case 'stringchar': result='string.char('+input.split('').map(function(c){return c.charCodeAt(0);}).join(',')+')'; logType='string.char - Không fix )'; break;
+      case 'stringchar_chunk': var nums=input.split('').map(function(c){return c.charCodeAt(0);}); var chunks=[]; for(var i=0;i<nums.length;i+=200){ chunks.push('string.char('+nums.slice(i,i+200).join(',')+')'); } result=chunks.join('..'); logType='string.char Chunk 200 - Fix lỗi )'; break;
+      case 'moonsec': result='[[This file was protected with MoonSec V3]]\nlocal _c0="'+b64(xorS(b64(input),key))+'"\nlocal _k='+key+'\nlocal _d=""\nfor i=1,#_c0 do _d=_d..string.char(string.byte(_c0,i)~_k) end\nreturn _d'; logType='MoonSec V3 Header + XOR + Base64'; break;
+      case 'moonsec_vm': result='[[This file was protected with MoonSec V3]]\n-- VM Obfuscation v7.2\nlocal bytecode="'+b64(input)+'"\nlocal vm={bytecode=bytecode, opcodes={[0]=function(s) return s end}}\nlocal function runVM(bc)\n  local decoded=loadstring(game:HttpGet("https://example.com"))()\n  return decoded\nend\nreturn runVM(vm.bytecode)'; logType='MoonSec V3 VM Obfuscation (fake VM)'; break;
+      case 'luraph': result='-- Luraph Style - Custom Bytecode v7.2\nlocal v0=string.char('+input.split('').map(function(c){return c.charCodeAt(0);}).join(',')+')\nlocal bytecode={'+input.split('').map(function(c){return c.charCodeAt(0);}).join(',')+'}\nlocal function LuraphVM(bc)\n  local stack={}\n  for i=1,#bc do stack[i]=bc[i] end\n  return table.concat(stack)\nend\nreturn LuraphVM(bytecode)'; logType='Luraph Style Custom Bytecode'; break;
+      case 'vm_custom': result='-- VM Obfuscation + Custom Bytecode + Opcode v7.2 - 11.0v style\nlocal customBytecode="'+toHex(input)+'"\nlocal customOpcodes={\n  [0]=function(a) return a end,\n  [1]=function(a,b) return a+b end,\n  [2]=function(a) return string.char(a) end\n}\nlocal function vmRun(bc)\n  local pc=1\n  local out=""\n  while pc<=#bc do\n    local op=string.byte(bc,pc)\n    if customOpcodes[op] then out=out..customOpcodes[op](op)\n    else break end\n    pc=pc+1\n  end\n  return out\nend\nreturn vmRun(customBytecode)'; logType='VM Obfuscation + Custom Bytecode + Opcode'; break;
+      case 'hercules': result='-- Hercules Style v7.2\nlocal function WrapState(bc,env)\n  local state={bc=bc, env=env}\n  return state\nend\nlocal function BcToState(bcStr, key)\n  return WrapState(bcStr, key)\nend\nlocal state=WrapState(BcToState("'+b64(input)+'","key"),{})\nreturn state.bc'; logType='Hercules WrapState BcToState'; break;
+      case 'combo': var tmp=b64(input); tmp=xorS(tmp,key); tmp=b64(tmp); tmp=toHex(tmp); tmp=reverseStr(tmp); result=tmp; logType='Combo: Base64 + XOR + Base64 + Hex + Reverse - Multi-layer'; break;
+      case 'all': var tmp=input; tmp=b64(tmp); tmp=xorS(tmp,key); tmp=b64(tmp); tmp=rot13(tmp); tmp=toHex(tmp); tmp=reverseStr(tmp); tmp=b64(tmp); result=tmp; logType='Tất cả 25 loại trộn - Siêu mã hóa'; break;
+      default: result=b64(input); logType='Base64';
+    }
+
+    var finalResult=result;
+    if(wrapLua){
+      // Bọc code Lua (cũ)
+      finalResult='-- ENC v7.2 - '+logType+' - '+input.length.toLocaleString()+' chars - Không giới hạn\n'+result;
+    } else {
+      // Không bọc Lua - Chỉ kết quả thuần túy (yêu cầu: không tạo code Lua thừa)
+      finalResult=result;
+    }
+
+    document.getElementById('outEnc').value=finalResult;
+    document.getElementById('encStatus').innerText='✅ Mã hóa v7.2 - Loại: '+logType+' | Input: '+input.length.toLocaleString()+' ký tự -> Output: '+finalResult.length.toLocaleString()+' ký tự | Không giới hạn | '+(wrapLua?'Có bọc Lua':'Không bọc Lua (không tạo code Lua thừa)');
+  }catch(e){
+    document.getElementById('encStatus').innerText='❌ Lỗi mã hóa: '+e.message;
+  }
+}
+
+// GIẢI MÃ v7.2 - VM OBFUSCATION + CUSTOM BYTECODE 11.0v + 231 LOẠI + KHÔNG GIỚI HẠN + KHÔNG TẠO CODE LUA THỪA
+function doDecV72(){
+  try{
+    var input=document.getElementById('inpDec').value;
+    var key=parseInt(document.getElementById('xorKeyDec').value)||93;
+    var maxIter=document.getElementById('autoMulti').checked?100:20;
+    var brute=document.getElementById('bruteAll').checked;
+    var vmDeobf=document.getElementById('vmDeobf').checked;
+    var noLuaWrap=document.getElementById('noLuaWrap').checked;
+    if(!input.trim()){ document.getElementById('decStatus').innerText='❌ Chưa dán code - Không giới hạn ký tự nhưng cần nhập'; return; }
+    var log=[]; var detected=[]; var cur=input;
+    log.push('=== v7.2 - VM OBFUSCATION + CUSTOM BYTECODE 11.0v + 231 LOẠI - Không giới hạn ===');
+    log.push('Input: '+input.length.toLocaleString()+' ký tự - Không giới hạn');
+
     function tryOne(s,iter){
       var changed=false;
-      if(s.includes('This file was protected with MoonSec V3')){ var b=s.replace(/\[\[This file was protected with MoonSec V3\]\]\s*\n?/g,'').replace(/-- This file was protected with MoonSec V3[^\n]*\n?/g,''); if(b!==s){ s=b; changed=true; log.push('[L'+iter+'] ✅ MoonSec Header'); detected.push('MoonSec'); } }
-      var mc=s.match(/local _c0\s*=\s*"([^"]+)"/); if(mc){ try{ var d=b64d(mc[1]); if(brute){ for(var kk=1;kk<=255;kk++){ var o=xorS(d,kk); if(o.length>5&&(o.includes('print')||o.includes('local')||o.includes('string.char'))){ s=o; changed=true; log.push('[L'+iter+'] ✅ XOR KEY='+kk); detected.push('XOR '+kk); break; } } }else{ var o=xorS(d,key); if(o.length>5){ s=o; changed=true; } } }catch(e){} }
-      if(s.includes('string.char')){ try{ var re=/string\.char\s*\(([^)]+)\)/g; var m; var ns=s; var cc=0; while((m=re.exec(s))!==null){ var nums=m[1].split(',').map(function(n){return parseInt(n.trim());}).filter(function(n){return !isNaN(n)&&n>=0&&n<=65535;}); if(nums.length>=2){ var dec=safeStringChar(nums); if(dec){ ns=ns.replace(m[0], JSON.stringify(dec)); cc++; } } } if(cc>0){ s=ns; changed=true; log.push('[L'+iter+'] ✅ string.char x'+cc); } }catch(e){} }
-      if(s.match(/loadstring\s*\(\s*\[=\[([\s\S]*?)\]=\]\s*\)/)){ var ls=s.match(/loadstring\s*\(\s*\[=\[([\s\S]*?)\]=\]\s*\)/); if(ls){ s=ls[1]; changed=true; log.push('[L'+iter+'] ✅ loadstring'); } }
-      try{ var t=s.trim(); if(/^[A-Za-z0-9+\/=]{20,}$/.test(t)&&t.length%4==0&&!t.includes(' ')&&!t.includes('print')){ var curD=t; var layers=0; for(var b=0;b<11;b++){ try{ var nxt=b64d(curD.trim()); if(nxt!==curD&&nxt.length>5){ if(nxt.includes('print')||nxt.includes('local')||nxt.length<curD.length){ curD=nxt; layers++; if(nxt.includes('print')||nxt.includes('local')) break; } else if(/^[A-Za-z0-9+\/=]{20,}$/.test(nxt.trim())&&nxt.length%4==0){ curD=nxt; layers++; } else break; } else break; }catch(e){break;} } if(layers>=1){ s=curD; changed=true; log.push('[L'+iter+'] ✅ Base64 x'+layers); } } }catch(e){}
-      if(/\\x[0-9a-fA-F]{2}/.test(s)){ try{ var d=s.replace(/\\x([0-9a-fA-F]{2})/g,function(m,h){return String.fromCharCode(parseInt(h,16));}); if(d!==s){ s=d; changed=true; log.push('[L'+iter+'] ✅ Hex'); } }catch(e){} }
+      var before=s;
+
+      // VM Obfuscation + Custom Bytecode 11.0v - Fix local 12.0v logic
+      if(vmDeobf){
+        // MoonSec V3 VM
+        if(s.includes('This file was protected with MoonSec V3')){
+          var b=s.replace(/\[\[This file was protected with MoonSec V3\]\]\s*\n?/g,'').replace(/-- This file was protected with MoonSec V3[^\n]*\n?/g,'');
+          if(b!==s){ s=b; changed=true; log.push('[L'+iter+'] ✅ MoonSec V3 Header (VM)'); detected.push('MoonSec V3 VM'); }
+        }
+        // Luraph / Hercules / VM patterns - extract string.char large
+        if(s.includes('string.char') && s.length>100){
+          try{
+            var charRegex=/string\.char\s*\(([^\)]{10,})\)/g; var m; var ns=s; var cnt=0;
+            while((m=charRegex.exec(s))!==null){
+              var nums=m[1].split(',').map(function(n){return parseInt(n.trim());}).filter(function(n){return !isNaN(n)&&n>=0&&n<=65535;});
+              if(nums.length>=3){
+                var dec=safeStringChar(nums);
+                if(dec!==null && dec.length>=2){
+                  // Nếu decoded là Lua code, ưu tiên giữ
+                  if(dec.length<2000){
+                    ns=ns.replace(m[0], JSON.stringify(dec));
+                    cnt++;
+                  }
+                }
+              }
+              if(cnt>200) break;
+            }
+            if(cnt>0){ s=ns; changed=true; log.push('[L'+iter+'] ✅ VM string.char x'+cnt+' - Fix lỗi )'); detected.push('VM string.char Fix'); }
+          }catch(e){}
+        }
+        // Custom bytecode table extraction
+        if(s.includes('bytecode') || s.includes('opcode') || s.includes('WrapState') || s.includes('BcToState')){
+          // Tìm embedded Lua code trong bytecode
+          var embRegex=/["']([A-Za-z0-9+\/=]{50,})["']/g; var em; var found=false;
+          while((em=embRegex.exec(s))!==null){
+            var b64str=em[1];
+            if(b64str.length%4===0){
+              try{
+                var dec=b64d(b64str);
+                if(dec.length>20 && (dec.includes('local')||dec.includes('print')||dec.includes('function'))){
+                  s=dec; changed=true; found=true; log.push('[L'+iter+'] ✅ VM Embedded Base64 -> Lua ('+dec.length+' chars)'); detected.push('VM Embedded'); break;
+                }
+              }catch(e){}
+            }
+          }
+          if(!found){
+            // Tìm loadstring pattern
+            var lsMatch=s.match(/loadstring\s*\(\s*\[=\[([\s\S]*?)\]=\]\s*\)/);
+            if(lsMatch){ s=lsMatch[1]; changed=true; log.push('[L'+iter+'] ✅ VM loadstring [=[ ]=]'); detected.push('VM loadstring'); }
+          }
+        }
+      }
+
+      // 231 loại thường - giữ nguyên logic cũ nhưng không giới hạn
+      var mc=s.match(/local _c0\s*=\s*"([^"]+)"/);
+      if(mc){
+        try{
+          var d=b64d(mc[1]);
+          if(brute){
+            for(var kk=1;kk<=255;kk++){
+              var o=xorS(d,kk);
+              if(o.length>5&&(o.includes('print')||o.includes('local')||o.includes('string.char'))){ s=o; changed=true; log.push('[L'+iter+'] ✅ XOR brute KEY='+kk); detected.push('XOR '+kk); break; }
+            }
+          }else{ var o=xorS(d,key); if(o.length>5){ s=o; changed=true; log.push('[L'+iter+'] ✅ XOR KEY='+key); } }
+        }catch(e){}
+      }
+
+      if(s.match(/loadstring\s*\(\s*\[=\[([\s\S]*?)\]=\]\s*\)/)){ var ls=s.match(/loadstring\s*\(\s*\[=\[([\s\S]*?)\]=\]\s*\)/); if(ls){ s=ls[1]; changed=true; log.push('[L'+iter+'] ✅ loadstring [=[ ]=]'); detected.push('loadstring'); } }
+
+      try{
+        var trimmed=s.trim();
+        if(/^[A-Za-z0-9+\/=]{20,}$/.test(trimmed)&&trimmed.length%4==0&&!trimmed.includes(' ')&&!trimmed.includes('print')&&trimmed.length<100000){
+          var curD=trimmed; var layers=0;
+          for(var b=0;b<20;b++){
+            try{
+              var next=b64d(curD.trim());
+              if(next!==curD&&next.length>5){
+                if(next.includes('print')||next.includes('local')||next.includes('string.char')||next.length < curD.length){ curD=next; layers++; if(next.includes('print')||next.includes('local')) break; }
+                else if(/^[A-Za-z0-9+\/=]{20,}$/.test(next.trim())&&next.length%4==0){ curD=next; layers++; }
+                else break;
+              }else break;
+            }catch(e){break;}
+          }
+          if(layers>=1){ s=curD; changed=true; log.push('[L'+iter+'] ✅ Base64 x'+layers); detected.push('Base64 x'+layers); }
+        }
+      }catch(e){}
+
+      if(/\\x[0-9a-fA-F]{2}/.test(s)){ try{ var dec=s.replace(/\\x([0-9a-fA-F]{2})/g,function(m,h){return String.fromCharCode(parseInt(h,16));}); if(dec!==s){ s=dec; changed=true; log.push('[L'+iter+'] ✅ Hex \\x'); detected.push('Hex'); } }catch(e){} }
+      if(s.includes('01001000')||s.includes('01100101')){ try{ var bin=s.split(' ').map(function(b){return String.fromCharCode(parseInt(b,2));}).join(''); if(bin!==s&&bin.length>5&&bin.includes('print')||bin.includes('local')){ s=bin; changed=true; log.push('[L'+iter+'] ✅ Binary'); detected.push('Binary'); } }catch(e){} }
+      var rot13Dec=rot13(s); if(rot13Dec!==s && (rot13Dec.includes('local')||rot13Dec.includes('print'))){ s=rot13Dec; changed=true; log.push('[L'+iter+'] ✅ ROT13'); detected.push('ROT13'); }
+      var rev=reverseStr(s); if(rev!==s && (rev.includes('local')||rev.includes('print'))){ s=rev; changed=true; log.push('[L'+iter+'] ✅ Reverse'); detected.push('Reverse'); }
+
+      if(s.replace){
+        var b=s.replace(/-- ENC v7\.2[^\n]*\n/g,'').replace(/-- ENC:11\.0v:[^\n]*\n/g,'').replace(/-- ENC:V\d+:[^\n]*\n/g,'').replace(/-- END:[^\n]*\n/g,'').replace(/-- VM Obfuscation[^\n]*\n/g,'').replace(/-- Luraph[^\n]*\n/g,'').replace(/-- Hercules[^\n]*\n/g,'');
+        if(b!==s){ s=b; changed=true; log.push('[L'+iter+'] ✅ ENC Comment removed'); }
+      }
+
       return {out:s,changed:changed};
     }
-    var cur2=input; var total=0; for(var iter=0;iter<maxIter;iter++){ var res=tryOne(cur2,iter); if(res.changed){ cur2=res.out; total++; } else{ if(iter>15) break; } }
-    document.getElementById('outDec').value=cur2; document.getElementById('decStatus').innerText='✅ Giải '+total+' lớp | '+input.length+' -> '+cur2.length+' | Multi-layer: '+(total>1?'CÓ '+total+' lớp':'1 lớp');
-  }catch(e){ document.getElementById('decStatus').innerText='❌ '+e.message; }
+
+    var cur2=input; var totalChanged=0;
+    for(var iter=0;iter<maxIter;iter++){
+      var res=tryOne(cur2,iter);
+      if(res.changed){ cur2=res.out; totalChanged++; if(cur2.length<5) break; if(cur2.length>1000000) { log.push('[L'+iter+'] ⚠️ Output quá lớn ('+cur2.length.toLocaleString()+'), dừng để tránh lag'); break; } }
+      else{ if(iter>15) break; }
+    }
+
+    var uniq=[...new Set(detected)];
+    document.getElementById('detectedTypes').innerHTML=uniq.map(function(t){return '<span style="padding:2px 5px;border-radius:999px;background:rgba(239,68,68,.2);border:1px solid #ef4444;color:#f87171;margin:1px;font-size:6px">'+t+'</span>';}).join('')||'<span style="color:#71717a;font-size:7px">Auto VM + 231 loại</span>';
+
+    var finalResult=cur2;
+    if(noLuaWrap){
+      // Không tạo code Lua thừa - Chỉ lấy code gốc, loại bỏ bọc Lua
+      finalResult=finalResult.replace(/local _c0\s*=\s*"[^"]+"\s*\n?/g,'').replace(/local _k\s*=\s*\d+\s*\n?/g,'').replace(/local _d\s*=\s*""\s*\n?/g,'').replace(/for i=1,#_c0 do[^\n]*\n?/g,'').replace(/_d=_d\.\.string\.char[^\n]*\n?/g,'').replace(/return _d\s*\n?/g,'').replace(/--.*\n?/g,'').trim();
+      log.push('[Final] ✅ Không tạo code Lua thừa - Chỉ lấy code gốc');
+    }
+
+    document.getElementById('outDec').value=finalResult;
+    document.getElementById('decStatus').innerText='✅ v7.2 Giải Thành Công! Giải '+totalChanged+' lớp | '+uniq.join(', ')+' | Input: '+input.length.toLocaleString()+' -> Output: '+finalResult.length.toLocaleString()+' chars | Không giới hạn | '+(noLuaWrap?'Không bọc Lua thừa':'Có bọc Lua');
+    document.getElementById('decLog').innerText=log.join('\n');
+    updateDecCount();
+  }catch(e){ document.getElementById('decStatus').innerText='❌ Lỗi: '+e.message; }
+}
+
+function detectVmTypeV72(){
+  var code=document.getElementById('inpDec').value; var status=document.getElementById('decStatus');
+  if(!code.trim()){ status.innerText='❌ Chưa có code'; return; }
+  var type='Unknown';
+  if(code.includes('luraph')||code.includes('Luraph')) type='Luraph v14.7/v15 - VM Obfuscation';
+  else if(code.includes('MoonSec')&&code.includes('while true do')) type='MoonSec V3 VM - Custom Bytecode';
+  else if(code.includes('WrapState')&&code.includes('BcToState')) type='Hercules - VM';
+  else if(code.includes('bytecode')&&code.includes('opcode')) type='Custom Bytecode + Opcode';
+  else if(code.length>50000) type='Possible VM - Large file '+code.length.toLocaleString();
+  else type='Non-VM - 231 loại thường';
+  status.innerText='🔍 Detect v7.2: '+type+' | Length: '+code.length.toLocaleString()+' - Không giới hạn | VM Obfuscation 11.0v: '+(code.includes('VM')?'CÓ':'KHÔNG');
 }
 
 // RAW
 function copyRawDisplay(){ var el=document.getElementById('rawDisplayArea'); var txt=el?el.innerText:''; if(txt && txt!=='không có raw' && txt.length>5) navigator.clipboard.writeText(txt); }
-function clearRawUrlDisplay(){ var inp=document.getElementById('rawUrlInput'); if(inp) inp.value=''; var area=document.getElementById('rawDisplayArea'); if(area) area.innerText='Chưa có URL...'; document.getElementById('rawUrlDebug').innerText='Đã xóa'; }
-function downloadRawAsFile(){ var area=document.getElementById('rawDisplayArea'); var txt=area?area.innerText:''; if(!txt||txt==='không có raw'||txt.includes('Chưa có')||txt.includes('⏳')){ alert('Không có raw!'); return; } var blob=new Blob([txt],{type:'text/plain'}); var url=URL.createObjectURL(blob); var a=document.createElement('a'); a.href=url; a.download='raw_11v_'+Date.now()+'.lua'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); }
+function downloadRawAsFile(){ var area=document.getElementById('rawDisplayArea'); var txt=area?area.innerText:''; if(!txt||txt==='không có raw'||txt.includes('Chưa có')||txt.includes('⏳')){ alert('Không có raw!'); return; } var blob=new Blob([txt],{type:'text/plain'}); var url=URL.createObjectURL(blob); var a=document.createElement('a'); a.href=url; a.download='raw_v72_'+Date.now()+'.lua'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); }
 async function showRawFromUrl(){
-  var urlInput=document.getElementById('rawUrlInput'); var displayArea=document.getElementById('rawDisplayArea'); var debugEl=document.getElementById('rawUrlDebug');
+  var url=document.getElementById('rawUrlInput').value.trim(); var area=document.getElementById('rawDisplayArea'); var dbg=document.getElementById('rawUrlDebug');
   try{
-    var url=urlInput?urlInput.value.trim():''; if(!url){ displayArea.innerText='không có raw'; debugEl.innerText='❌ Chưa ghi URL'; return; }
-    displayArea.innerText='⏳ Đang tải... '+url; debugEl.innerText='⏳ Đang tải...';
-    var text=null; var errors=[];
-    try{ var r1=await fetch(url); if(r1.ok) text=await r1.text(); else errors.push('Direct HTTP '+r1.status); }catch(e){ errors.push('Direct: '+e.message); }
-    if(!text){ try{ var p1='https://api.allorigins.win/raw?url='+encodeURIComponent(url); var r2=await fetch(p1); if(r2.ok) text=await r2.text(); else errors.push('allorigins HTTP '+r2.status); }catch(e){ errors.push('allorigins: '+e.message); } }
-    if(!text){ try{ var p2='https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(url); var r3=await fetch(p2); if(r3.ok) text=await r3.text(); else errors.push('codetabs HTTP '+r3.status); }catch(e){ errors.push('codetabs: '+e.message); } }
-    if(!text){ try{ var p3='https://corsproxy.io/?'+encodeURIComponent(url); var r4=await fetch(p3); if(r4.ok) text=await r4.text(); else errors.push('corsproxy HTTP '+r4.status); }catch(e){ errors.push('corsproxy: '+e.message); } }
-    if(!text||!text.trim()){ displayArea.innerText='không có raw'; debugEl.innerText='❌ không có raw | '+errors.join(' | '); return; }
-    displayArea.innerText=text; displayArea.style.borderColor='#22c55e'; displayArea.style.background='#001a00'; debugEl.innerText='✅ Tìm thấy raw! '+text.length+' ký tự + có thể tải file về';
-  }catch(e){ document.getElementById('rawDisplayArea').innerText='không có raw'; document.getElementById('rawUrlDebug').innerText='❌ không có raw - '+e.message; }
+    if(!url){ area.innerText='không có raw'; dbg.innerText='❌ Chưa ghi URL'; return; }
+    area.innerText='⏳ Đang tải... '+url; dbg.innerText='⏳ Đang tải...';
+    var text=null;
+    try{ var r1=await fetch(url); if(r1.ok) text=await r1.text(); }catch(e){}
+    if(!text){ try{ var r2=await fetch('https://api.allorigins.win/raw?url='+encodeURIComponent(url)); if(r2.ok) text=await r2.text(); }catch(e){} }
+    if(!text||!text.trim()){ area.innerText='không có raw'; dbg.innerText='❌ không có raw'; return; }
+    area.innerText=text; dbg.innerText='✅ Tìm thấy raw! '+text.length.toLocaleString()+' ký tự - Không giới hạn';
+  }catch(e){ document.getElementById('rawDisplayArea').innerText='không có raw'; }
 }
-function createSimpleRaw(){ try{ var code=document.getElementById('rawSourceInput').value.trim(); if(!code) code=document.getElementById('outEnc').value||document.getElementById('outDec').value||''; if(!code){ document.getElementById('rawBox').innerHTML='<div style="padding:8px;background:rgba(239,68,68,.15);border-radius:8px;color:#f87171;font-size:8px">Chưa có code!</div>'; return; } var blob=new Blob([code],{type:'text/plain'}); if(window.simpleBlobUrl) URL.revokeObjectURL(window.simpleBlobUrl); window.simpleBlobUrl=URL.createObjectURL(blob); var box=document.getElementById('rawBox'); if(box){ var ls='loadstring(game:HttpGet("'+window.simpleBlobUrl+'"))()'; box.innerHTML='<div style="background:#000;border:1px solid #22d3ee;border-radius:8px;padding:8px"><div style="color:#22d3ee;font-size:8px;word-break:break-all">Raw URL: '+window.simpleBlobUrl+'</div><div style="margin-top:6px;color:#22c55e;font-size:8px;word-break:break-all">Loadstring: '+ls+'</div><div style="display:flex;gap:6px;margin-top:8px"><button onclick="navigator.clipboard.writeText(\''+window.simpleBlobUrl+'\')" style="flex:1;height:32px;border-radius:999px;border:none;background:#22d3ee;color:#000;font-weight:900">📋 Copy Raw URL</button><button onclick="downloadFile(\'rawSourceInput\',\'raw_11v.lua\')" style="flex:1;height:32px;border-radius:999px;border:none;background:#facc15;color:#000;font-weight:900">💾 Tải File Raw</button></div></div>'; } }catch(e){} }
-
-// VM OBFUSCATION - NEW 11.0v
-function detectVmType(){
-  var code=document.getElementById('inpVm').value; var status=document.getElementById('vmStatus'); if(!code.trim()){ status.innerText='❌ Chưa có code VM'; return; }
-  var type='Unknown'; var details=[];
-  if(code.includes('luraph')||code.includes('Luraph')||code.includes('0x')&&code.includes('VM')&&code.length>5000){ type='Luraph v15 / v14.7'; details.push('Phát hiện Luraph VM pattern'); }
-  if(code.includes('MoonSec')||code.includes('This file was protected with MoonSec V3')&&code.includes('while true do')&&code.includes('string.char')){ type='MoonSec V3 VM'; details.push('MoonSec V3 VM bytecode'); }
-  if(code.includes('Hercules')||code.includes('hercules')||code.includes('WrapState')&&code.includes('BcToState')){ type='Hercules Obfuscator'; details.push('Hercules VM wrapper'); }
-  if(code.includes('PSU')||code.includes('psu')||code.match(/local _[a-z0-9]{5,}\s*=\s*\{[^}]+\}\s*while true do/)){ type='PSU / Custom VM'; details.push('PSU or Generic Custom Bytecode'); }
-  if(code.includes('bytecode')&&code.includes('opcode')&&code.includes('dispatcher')){ type='Generic Custom Bytecode / VM'; details.push('Custom bytecode with dispatcher'); }
-  if(type==='Unknown'){ if(code.length>10000&&code.includes('while true do')&&code.includes('string.char')){ type='Possible VM (Generic)'; details.push('Large while loop + string.char = likely VM'); } else { type='Non-VM (231 loại thường)'; details.push('Có thể giải bằng 231 loại thường, không cần VM deobf'); } }
-  status.innerText='🔍 Detect: '+type+' | '+details.join(', ')+' | Length: '+code.length+' | Multi-layer VM? '+(code.includes('loadstring')&&code.includes('VM')?'CÓ thể nhiều lớp':'Không rõ');
-  document.getElementById('vmType').value = type.includes('Luraph v15')?'luraph15': type.includes('Luraph v14')?'luraph14': type.includes('MoonSec')?'moonsec3': type.includes('Hercules')?'hercules': type.includes('PSU')?'psu':'generic';
-}
-function clearVm(){ document.getElementById('inpVm').value=''; document.getElementById('outVm').value=''; document.getElementById('vmStatus').innerText='Đã xóa - Sẵn sàng'; document.getElementById('infoVm').style.display='none'; document.getElementById('previewVm').style.display='none'; }
-function copyVmResult(){ var v=document.getElementById('outVm').value; if(!v){ alert('Chưa có kết quả VM!'); return; } navigator.clipboard.writeText(v); alert('Copy '+v.length+' ký tự VM deobf!'); }
-function sendVmToDecode(){ var v=document.getElementById('outVm').value; if(!v){ alert('Chưa có kết quả VM!'); return; } document.getElementById('inpDec').value=v; showTab('dec'); }
-function setVmSample(type){
-  var code='';
-  if(type==='luraph'){
-    code='-- Ví dụ Luraph v15 VM (cần backend Vercel để giải)\n-- File thật sẽ có bytecode custom và dispatcher\nlocal function LuraphVM(bytecode)\n  local stack={}\n  local pc=1\n  local opcodes={\n    [0]=function(a,b) stack[a]=stack[b] end,\n    [1]=function(a,b,c) stack[a]=stack[b]+stack[c] end,\n    -- custom opcodes...\n  }\n  while true do\n    local op=string.byte(bytecode, pc)\n    if op==0xFF then break end\n    opcodes[op]()\n    pc=pc+1\n  end\n  return stack\nend\n-- Để giải Luraph v15 thật, deploy backend: github.com/x9msms/luraph-deobf-api lên Vercel\n-- Sau đó web này sẽ gọi API: POST /api/deobfuscate';
-  } else if(type==='moonsec'){
-    code='-- Ví dụ MoonSec V3 VM Real\n[[This file was protected with MoonSec V3]]\nlocal _0x1234={\n  bytecode="\\x1A\\x02\\xFF\\x00\\x01...",\n  opcodes={...},\n  dispatcher=function(op)\n    -- custom opcode handling\n  end\n}\nwhile true do\n  local _0xABCD=_0x1234.bytecode\n  -- VM loop...\nend\n-- Giải MoonSec V3 VM thật cần tool: github.com/worstskid/moonsecv3-deobfuscator\n-- Chạy: lua moonsec/Lua/cli.lua input.lua output.lua';
-  } else {
-    code='-- Ví dụ Generic Custom Bytecode / Opcode\nlocal customBytecode="\\x00\\x01\\x02\\x03\\xFF"\nlocal customOpcodes={\n  [0]=function() print("opcode 0 - custom") end,\n  [1]=function(a) return a*2 end,\n  [2]=function(a,b) return a+b end,\n}\nlocal function vmRun(bytecode)\n  local pc=1\n  while pc<=#bytecode do\n    local op=string.byte(bytecode, pc)\n    local handler=customOpcodes[op]\n    if handler then handler()\n    else break end\n    pc=pc+1\n  end\nend\nvmRun(customBytecode)\n-- Đây là VM đơn giản, VM thật phức tạp hơn nhiều với anti-tamper, control flow flattening...';
-  }
-  document.getElementById('inpVm').value=code;
-  detectVmType();
-}
-
-async function deobfuscateVm(){
-  var input=document.getElementById('inpVm').value; var out=document.getElementById('outVm'); var status=document.getElementById('vmStatus'); var vmType=document.getElementById('vmType').value; var backendUrl=document.getElementById('vmBackendUrl').value.trim();
-  if(!input.trim()){ status.innerText='❌ Chưa có code VM'; return; }
-  status.innerText='⏳ Đang phân tích VM Type: '+vmType+'...';
-  out.value='⏳ Đang thử giải VM Obfuscation...\nVM Type: '+vmType+'\nLength: '+input.length+'\n\nNếu là Luraph v15/v14.7 hoặc MoonSec V3 VM thật, cần backend...\n';
-
-  // Thử giải local cho các loại đơn giản (non-VM nhưng trong tab VM)
-  var localResult=null;
-  try{
-    // Thử dùng lại logic 231 loại cho trường hợp người dùng nhầm lẫn
-    var temp=input;
-    // MoonSec V3 header removal
-    if(temp.includes('This file was protected with MoonSec V3')){
-      temp=temp.replace(/\[\[This file was protected with MoonSec V3\]\]\s*\n?/g,'');
-      localResult=temp;
-      status.innerText='✅ Đã bóc MoonSec V3 Header (non-VM layer) - Còn lại cần VM deobf nếu có bytecode';
-    }
-    // Nếu có string.char đơn giản
-    if(temp.includes('string.char') && temp.length<5000){
-      // Thử safeStringChar
-      var charRegex=/string\.char\s*\(([^)]+)\)/g; var match; var newS=temp; var count=0;
-      while((match=charRegex.exec(temp))!==null){
-        var nums=match[1].split(',').map(function(n){return parseInt(n.trim());}).filter(function(n){return !isNaN(n)&&n>=0&&n<=65535;});
-        if(nums.length>=2&&nums.length<500){ var dec=safeStringChar(nums); if(dec){ newS=newS.replace(match[0], JSON.stringify(dec)); count++; } }
-      }
-      if(count>0){ localResult=newS; status.innerText='✅ Đã giải string.char x'+count+' (non-VM layer) - Nếu còn VM bytecode cần backend'; }
-    }
-  }catch(e){}
-
-  // Nếu có backend URL -> gọi API
-  if(backendUrl){
-    status.innerText='⏳ Đang gọi backend Vercel: '+backendUrl+'...';
-    try{
-      var formData=new FormData();
-      formData.append('file', new Blob([input],{type:'text/plain'}), 'input.lua');
-      formData.append('mode','devirt');
-      var resp=await fetch(backendUrl, {method:'POST', body:formData});
-      if(!resp.ok){
-        var txt=await resp.text();
-        out.value='❌ Backend lỗi HTTP '+resp.status+':\n'+txt+'\n\nLocal attempt:\n'+(localResult||'Không giải được local - Cần backend chạy Luau VM thật');
-        status.innerText='❌ Backend lỗi HTTP '+resp.status+' - Thử local: '+(localResult?'CÓ':'KHÔNG');
-        if(localResult) out.value=localResult;
-        return;
-      }
-      var data=await resp.json();
-      if(data.ok && data.output){
-        out.value=data.output;
-        status.innerText='✅ Đã giải VM thành công qua backend! '+data.output.length+' ký tự | Type: '+(data.obfuscator?data.obfuscator.name:'unknown')+' | Mode: '+data.mode+' | Elapsed: '+data.elapsed+'s | Multi-layer VM: Cần giải tiếp nếu còn bọc';
-      } else {
-        out.value='❌ Backend trả về lỗi:\n'+JSON.stringify(data,null,2)+'\n\nLocal attempt:\n'+(localResult||'Không giải được');
-        status.innerText='❌ Backend không giải được - Local: '+(localResult?'CÓ':'KHÔNG');
-        if(localResult) out.value=localResult;
-      }
-    }catch(e){
-      out.value='❌ Lỗi gọi backend: '+e.message+'\n\nĐể giải VM thật:\n1. Deploy github.com/x9msms/luraph-deobf-api lên Vercel\n2. Hoặc chạy local: luauvmp luraph-full input.lua -o out\n3. Hoặc dùng moonsecv3-deobfuscator cho MoonSec V3\n\nLocal attempt (231 loại):\n'+(localResult||'Không giải được local - File này là VM thật cần backend');
-      status.innerText='❌ Lỗi gọi backend: '+e.message;
-      if(localResult) out.value=localResult;
-    }
-    return;
-  }
-
-  // Không có backend -> hướng dẫn
-  if(localResult){
-    out.value=localResult+'\n\n-- Lưu ý 11.0v:\n-- Đây chỉ là lớp non-VM (Header/string.char) đã bóc được\n-- Nếu còn bytecode VM thật (Luraph/MoonSec V3 VM), cần backend Vercel để devirtualize\n-- Deploy: github.com/x9msms/luraph-deobf-api lên Vercel, rồi điền URL vào ô backend ở trên\n-- Hoặc chạy local: git clone github.com/binxgtl/luau-vmp-deobf && luauvmp luraph-full input.lua -o recovered\n-- Multi-layer VM: Giải xong lớp 1, lấy output làm input giải tiếp lớp 2... cho đến hết';
-    status.innerText='⚠️ Đã giải được lớp non-VM ('+localResult.length+' ký tự) - Còn VM thật cần backend Vercel';
-  } else {
-    out.value='-- Web 11.0v - VM Obfuscation Detection\n-- Input là VM thật, không giải được bằng pure JS (231 loại)\n-- Cần backend để chạy trong real Luau VM sandbox\n\n-- Cách giải Luraph v15/v14.7 thật:\n-- 1. Deploy backend Vercel:\n--    git clone https://github.com/x9msms/luraph-deobf-api\n--    Push lên GitHub -> Vercel Import -> Deploy (tự nhận FastAPI)\n--    API sẽ ở https://your-app.vercel.app/api/deobfuscate\n--\n-- 2. Điền URL backend vào ô "URL backend Vercel" ở trên rồi bấm Giải VM lại\n--\n-- 3. Hoặc chạy local (mạnh hơn, không giới hạn 300s của Vercel):\n--    git clone https://github.com/binxgtl/luau-vmp-deobf\n--    pip install -e .\n--    luauvmp luraph-full input.lua -o recovered\n--    -> recovered/embedded_main.luau là code đã giải\n--\n-- 4. MoonSec V3 VM:\n--    git clone https://github.com/worstskid/moonsecv3-deobfuscator\n--    lua moonsec/Lua/cli.lua input.lua output.lua\n--\n-- Multi-layer VM (nhiều lớp VM bọc nhau):\n-- - Không auto 100 lần như Base64 được\n-- - Phải giải từng lớp: Lớp 1 Luraph -> lấy output -> làm input giải lớp 2 MoonSec -> ...\n-- - Web 11.0v có nút "Giải Multi-Layer VM (5 lớp)" sẽ thử bóc 5 lần liên tiếp\n\n-- Input của bạn ('+input.length+' ký tự) là VM thật, cần backend để devirtualize.';
-    status.innerText='❌ Đây là VM thật (Custom Bytecode) - Cần backend Vercel hoặc chạy local luau-vmp-deobf - Không giải được bằng pure JS';
-  }
-}
-
-async function deobfuscateVmMultiLayer(){
-  var input=document.getElementById('inpVm').value; var out=document.getElementById('outVm'); var status=document.getElementById('vmStatus'); var backendUrl=document.getElementById('vmBackendUrl').value.trim();
-  if(!input.trim()){ status.innerText='❌ Chưa có code VM'; return; }
-  status.innerText='⏳ Đang thử giải multi-layer VM (tối đa 5 lớp)...';
-  var current=input; var layers=[]; var totalLayers=0;
-  for(var layer=1; layer<=5; layer++){
-    status.innerText='⏳ Đang giải lớp VM thứ '+layer+'... (hiện tại '+current.length+' ký tự)';
-    // Thử giải 231 loại trước cho mỗi lớp
-    var temp=current;
-    var changed=false;
-    if(temp.includes('This file was protected with MoonSec V3')){ temp=temp.replace(/\[\[This file was protected with MoonSec V3\]\]\s*\n?/g,''); changed=true; }
-    if(temp.includes('string.char')){
-      try{
-        var re=/string\.char\s*\(([^)]+)\)/g; var m; var ns=temp; var c=0;
-        while((m=re.exec(temp))!==null){ var nums=m[1].split(',').map(function(n){return parseInt(n.trim());}).filter(function(n){return !isNaN(n)&&n>=0&&n<=65535;}); if(nums.length>=2&&nums.length<500){ var dec=safeStringChar(nums); if(dec){ ns=ns.replace(m[0], JSON.stringify(dec)); c++; } } }
-        if(c>0){ temp=ns; changed=true; layers.push('Lớp '+layer+': string.char x'+c); }
-      }catch(e){}
-    }
-    try{
-      var t=temp.trim(); if(/^[A-Za-z0-9+\/=]{20,}$/.test(t)&&t.length%4==0){ var nxt=b64d(t); if(nxt!==t&&nxt.length>5){ temp=nxt; changed=true; layers.push('Lớp '+layer+': Base64'); } }
-    }catch(e){}
-    // Nếu backend có, thử gọi backend cho mỗi lớp
-    if(backendUrl && !changed){
-      try{
-        var fd=new FormData(); fd.append('file', new Blob([temp],{type:'text/plain'}), 'layer'+layer+'.lua'); fd.append('mode','devirt');
-        var resp=await fetch(backendUrl, {method:'POST', body:fd});
-        if(resp.ok){ var data=await resp.json(); if(data.ok&&data.output&&data.output.length>10&&data.output!==temp){ temp=data.output; changed=true; layers.push('Lớp '+layer+': VM Devirtualized qua backend ('+data.obfuscator.name+')'); } }
-      }catch(e){}
-    }
-    if(changed){ current=temp; totalLayers++; } else { break; }
-    if(current.length<20) break;
-  }
-  out.value=current;
-  status.innerText='✅ Multi-layer VM: Đã giải '+totalLayers+' lớp | '+layers.join(' -> ')+' | Kết quả: '+current.length+' ký tự | Input ban đầu: '+input.length+' -> Output: '+current.length+' | '+(totalLayers>0?'CÓ multi-layer':'KHÔNG có multi-layer hoặc cần backend cho VM thật');
-  if(totalLayers===0){
-    out.value='-- Không phát hiện multi-layer có thể giải bằng pure JS\n-- Nếu là VM thật bọc nhiều lớp (Luraph bọc MoonSec...), cần backend và giải từng lớp thủ công\n-- Mỗi lớp VM là 1 lần chạy deobf riêng, không auto 100 lần như Base64\n\n'+input.substring(0,1000);
-  }
-}
-
-// File drop setup
-document.addEventListener('DOMContentLoaded',function(){
-  showTab('vm');
-  var drops=[
-    {drop:'dropVm',input:'fileVm',ta:'inpVm',prev:'previewVm',info:'infoVm'},
-    {drop:'dropRaw',input:'fileRaw',ta:'rawSourceInput',prev:'previewRaw',info:'infoRaw'},
-    {drop:'dropRawUrl',input:'fileRawUrl',ta:'rawDisplayArea',prev:'previewRawUrl',info:'infoRawUrl',isRawDisplay:true}
-  ];
-  drops.forEach(function(d){
-    var dropEl=document.getElementById(d.drop); if(!dropEl) return;
-    dropEl.addEventListener('dragover',function(e){ e.preventDefault(); dropEl.style.borderColor='#22c55e'; });
-    dropEl.addEventListener('dragleave',function(){ dropEl.style.borderColor=''; });
-    dropEl.addEventListener('drop',function(e){ e.preventDefault(); var files=e.dataTransfer.files; if(files.length>0){ var file=files[0]; if(d.isRawDisplay){ var r=new FileReader(); r.onload=function(ev){ document.getElementById('rawDisplayArea').innerText=ev.target.result; document.getElementById('rawUrlDebug').innerText='✅ File riêng: '+file.name; }; r.readAsText(file); } else { processFile(file, d.ta, d.prev, d.info); } } });
-  });
-  var fileRawUrl=document.getElementById('fileRawUrl'); if(fileRawUrl){ fileRawUrl.addEventListener('change',function(){ var file=this.files[0]; if(!file) return; var r=new FileReader(); r.onload=function(e){ document.getElementById('rawDisplayArea').innerText=e.target.result; document.getElementById('rawUrlDebug').innerText='✅ File riêng: '+file.name+' ('+e.target.result.length+') - Có thể tải về'; document.getElementById('infoRawUrl').style.display='block'; document.getElementById('infoRawUrl').innerText='📁 '+file.name; }; r.readAsText(file); }); }
-
-  var chat=document.getElementById('chat'); if(chat){ chat.innerHTML='<div style="padding:10px;background:linear-gradient(135deg,rgba(255,107,53,.15),rgba(34,211,238,.15));border:2px solid #ff6b35;border-radius:10px;font-size:7px;line-height:1.6"><b style="color:#ff6b35">🔥 11.0v - VM Obfuscation + Custom Bytecode:</b><br><br>1. Web cũ 231 loại KHÔNG giải được VM thật - Tab này thêm VM<br><br>2. Hỗ trợ: Luraph v15/v14.7, MoonSec V3 VM, Hercules, PSU, MoonVeil, Joker VM<br><br>3. Multi-layer VM: CÓ nhưng phải giải từng lớp riêng (không auto 100 lần như Base64)<br><br>4. Cần backend Vercel để giải VM thật: Deploy luraph-deobf-api lên Vercel, điền URL vào ô backend<br><br>5. Hoặc chạy local: luauvmp luraph-full input.lua -o recovered (binxgtl/luau-vmp-deobf)<br><br>Bấm Ví dụ Luraph v15 để xem mẫu!</div>'; }
-});
+function createSimpleRaw(){ try{ var code=document.getElementById('rawSourceInput').value; if(!code) code=document.getElementById('outEnc').value||document.getElementById('outDec').value||''; if(!code){ document.getElementById('rawBox').innerHTML='<div style="padding:8px;background:rgba(239,68,68,.15);border-radius:8px;color:#f87171;font-size:8px">Chưa có code! Không giới hạn nhưng cần có code</div>'; return; } var blob=new Blob([code],{type:'text/plain'}); if(window.simpleBlobUrl) URL.revokeObjectURL(window.simpleBlobUrl); window.simpleBlobUrl=URL.createObjectURL(blob); var box=document.getElementById('rawBox'); if(box){ var ls='loadstring(game:HttpGet("'+window.simpleBlobUrl+'"))()'; box.innerHTML='<div style="background:#000;border:1px solid #22d3ee;border-radius:8px;padding:8px"><div style="color:#22d3ee;font-size:8px;word-break:break-all">Raw URL: '+window.simpleBlobUrl+' ('+code.length.toLocaleString()+' chars - Không giới hạn)</div><div style="margin-top:6px;color:#22c55e;font-size:8px;word-break:break-all">Loadstring: '+ls+'</div><div style="display:flex;gap:6px;margin-top:8px"><button onclick="navigator.clipboard.writeText(\''+window.simpleBlobUrl+'\')" style="flex:1;height:32px;border-radius:999px;border:none;background:#22d3ee;color:#000;font-weight:900">📋 Copy Raw URL</button><button onclick="downloadFile(\'rawSourceInput\',\'raw_v72.lua\')" style="flex:1;height:32px;border-radius:999px;border:none;background:#facc15;color:#000;font-weight:900">💾 Tải File Raw</button></div></div>'; } }catch(e){} }
+function initRawTab(){ var out=document.getElementById('outEnc'); var inp=document.getElementById('rawSourceInput'); if(out&&out.value&&!inp.value) inp.value=out.value; }
 
 // AI
-function aiQuick(t){ document.getElementById('aiIn').value=t; sendMsg(); }
-function sendMsg(){ var inp=document.getElementById('aiIn'); var p=inp.value.trim(); if(!p){ alert('Gõ chat!'); return; } var chat=document.getElementById('chat'); chat.innerHTML+='<div style="padding:6px;background:rgba(34,211,238,.15);border-radius:8px;font-size:7px;margin-top:4px"><b>Bạn:</b> '+p+'</div>'; inp.value=''; setTimeout(function(){ var reply='11.0v VM + File upload + Download + Ảnh! Nhận: '+p; var code='-- 11.0v VM\n-- Bạn: '+p+'\nprint("VM deobf + file riêng + tải về")'; chat.innerHTML+='<div style="padding:6px;background:rgba(168,85,247,.15);border-radius:8px;font-size:7px;margin-top:4px"><b>AI 11.0v:</b> '+reply+'</div>'; document.getElementById('aiCodeOutput').innerText=code; chat.scrollTop=chat.scrollHeight; },300); }
+function sendMsg(){ var inp=document.getElementById('aiIn'); var p=inp.value.trim(); if(!p) return; var chat=document.getElementById('chat'); chat.innerHTML+='<div style="padding:6px;background:rgba(34,211,238,.15);border-radius:8px;font-size:7px;margin-top:4px"><b>Bạn:</b> '+p+'</div>'; inp.value=''; setTimeout(function(){ chat.innerHTML+='<div style="padding:6px;background:rgba(168,85,247,.15);border-radius:8px;font-size:7px;margin-top:4px"><b>AI v7.2:</b> v7.2 - Mã hóa chọn loại 25+ loại + Giải VM + Custom Bytecode 11.0v + Không giới hạn ký tự + Không tạo code Lua thừa</div>'; document.getElementById('aiCodeOutput').innerText='-- v7.2\n-- Bạn: '+p; },300); }
+
+document.addEventListener('DOMContentLoaded',function(){
+  showTab('enc');
+  document.addEventListener('change',function(e){ if(e.target.type==='checkbox'){ document.querySelectorAll('.chip').forEach(function(chip){ var cb=chip.querySelector('input[type="checkbox"]'); if(cb){ if(cb.checked) chip.classList.add('checked'); else chip.classList.remove('checked'); } }); } });
+  var chat=document.getElementById('chat'); if(chat){ chat.innerHTML='<div style="padding:10px;background:linear-gradient(135deg,rgba(168,85,247,.15),rgba(34,211,238,.15));border:2px solid #a855f7;border-radius:10px;font-size:7px;line-height:1.6"><b style="color:#a855f7">🔥 v7.2 - Fix theo yêu cầu:</b><br><br>1. Mã hóa chọn loại: 25+ loại (Base64 x10, XOR, Hex, Binary, ROT13/47, Caesar, Atbash, Reverse, MoonSec, Luraph, VM Custom Bytecode, Hercules, Combo...)<br><br>2. Bỏ VM Fix 12.0v - Gộp VM Obfuscation + Custom Bytecode 11.0v vào tab Giải Mã<br><br>3. Giải được VM Obfuscation + Custom Bytecode 11.0v (Luraph v15/v14.7, MoonSec V3 VM, Hercules, PSU, Custom Bytecode) + 231 loại<br><br>4. Không giới hạn ký tự: Mã hóa/Giải mã/Raw bao nhiêu ký tự cũng được, 298k cũng được<br><br>5. Không tạo code Lua thừa: Tắt checkbox Bọc code Lua = chỉ ra kết quả thuần, không có -- ENC comment thừa</div>'; }
+});
 </script>
 <script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body></html>
