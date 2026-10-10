@@ -1,1 +1,325 @@
-y></html>
+<!DOCTYPE html>
+<html lang="vi"><head><style>
+@font-face {
+  font-family: "Optimistic";
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url("/fonts/OptimisticAI_VF_Optimized.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Optimistic Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/OptimisticMono_W_TextRegular.woff2") format("woff2");
+}
+:where(html) {
+  font-family: "Optimistic", system-ui, sans-serif;
+}
+:where(code, pre, kbd, samp) {
+  font-family: "Optimistic Mono", ui-monospace, monospace;
+}
+</style><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>v7.4 Fix Raw->Pastefy sạch</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#050a0f;color:#e4e4e7;font-family:Inter,system-ui,sans-serif}
+header{background:#050a0f;border-bottom:2px solid #a855f7;padding:10px 14px;position:sticky;top:0;z-index:999}
+.tabs{display:flex;gap:5px;padding:6px;background:#0a141e;border:1px solid rgba(168,85,247,.3);border-radius:12px;width:fit-content;margin:10px;flex-wrap:wrap}
+.tab-btn{padding:9px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#a1a1aa;font-size:8px;font-weight:800;cursor:pointer}
+.tab-btn.active{background:#a855f7!important;color:#fff!important;border-color:#a855f7!important}
+.pane{width:100%;padding:6px}
+.card{background:#0a141e;border:1px solid rgba(168,85,247,.25);border-radius:12px;padding:10px;margin-top:6px}
+.chip{font-size:7px;padding:5px 9px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);display:inline-flex;align-items:center;gap:4px;cursor:pointer;margin:2px;white-space:nowrap}
+.chip.checked{background:rgba(168,85,247,.35)!important;border-color:#a855f7!important;color:#fff!important;font-weight:800}
+.btn-main{width:100%;height:46px;border-radius:11px;border:none;background:linear-gradient(90deg,#a855f7,#ef4444);color:#fff;font-weight:900;font-size:11px;cursor:pointer}
+.status{margin-top:8px;padding:8px;border-radius:9px;background:#000;border:1px solid rgba(255,255,255,.1);font-family:monospace;font-size:8px;word-break:break-all}
+.banner{background:linear-gradient(135deg,rgba(168,85,247,.15),rgba(34,211,238,.15));border:2px solid #a855f7;border-radius:12px;padding:10px;margin-bottom:8px}
+.file-drop{width:100%;min-height:70px;border:2px dashed #a855f7;border-radius:12px;background:rgba(168,85,247,.05);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;cursor:pointer;margin-top:8px}
+textarea{width:100%;background:#000;border:1px solid rgba(255,255,255,.2);border-radius:10px;padding:10px;color:#e4e4e7;font-family:Consolas,monospace;font-size:10px}
+select,input[type=text],input[type=number]{background:#000;border:1px solid rgba(168,85,247,.4);color:#fff;border-radius:8px;padding:6px 10px;font-size:9px}
+.pastefy-box{background:linear-gradient(135deg,rgba(250,204,21,.15),rgba(168,85,247,.15));border:2px solid #facc15;border-radius:12px;padding:10px;margin-top:10px}
+</style>
+<script>
+let RAW_CLEAN_CONTENT = ""; // biến sạch chỉ chứa raw gốc, không bao giờ chứa code tạo link
+let LAST_PASTEFY = {url:'', raw:''};
+
+function showTab(t){
+  var ids=['p-enc','p-dec','p-raw']; 
+  for(var i=0;i<ids.length;i++){ var el=document.getElementById(ids[i]); if(el) el.style.display=(ids[i]==='p-'+t)?'block':'none'; }
+  var btns=['tb-enc','tb-dec','tb-raw'];
+  for(var j=0;j<btns.length;j++){ var btn=document.getElementById(btns[j]); if(btn){ if(btns[j]==='tb-'+t) btn.classList.add('active'); else btn.classList.remove('active'); } }
+}
+function b64(s){try{return btoa(unescape(encodeURIComponent(s)));}catch(e){try{return btoa(s);}catch(e2){return '';}}}
+function b64d(s){try{return decodeURIComponent(escape(atob(s)));}catch(e){try{return atob(s);}catch(e2){return s;}}}
+function xorS(s,k){var o='';for(var i=0;i<s.length;i++)o+=String.fromCharCode(s.charCodeAt(i)^k);return o;}
+function safeStringChar(nums){ try{ var r=''; for(var i=0;i<nums.length;i+=200){ var ch=[]; for(var j=i;j<Math.min(i+200,nums.length);j++){ var n=nums[j]; if(n>=0&&n<=65535) ch.push(String.fromCharCode(n)); } r+=ch.join(''); } return r; }catch(e){return null;} }
+function rot13(s){ return s.replace(/[a-zA-Z]/g,function(c){ return String.fromCharCode((c<='Z'?90:122)>=(c=c.charCodeAt(0)+13)?c:c-26); }); }
+function reverseStr(s){ return s.split('').reverse().join(''); }
+function toHex(s){ var r=''; for(var i=0;i<s.length;i++) r+='\\x'+s.charCodeAt(i).toString(16).padStart(2,'0'); return r; }
+function downloadFile(id,name){ var ta=document.getElementById(id); var txt=ta? (ta.value||'') : ''; if(!txt){ alert('Không có nội dung!'); return; } var blob=new Blob([txt],{type:'text/plain'}); var url=URL.createObjectURL(blob); var a=document.createElement('a'); a.href=url; a.download=name; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); }
+function processFile(file, taId){
+  var ta=document.getElementById(taId); var r=new FileReader(); r.onload=function(e){ RAW_CLEAN_CONTENT = e.target.result; ta.value = RAW_CLEAN_CONTENT; document.getElementById('rawCount').innerText = RAW_CLEAN_CONTENT.length.toLocaleString()+' ký tự - SẠCH'; document.getElementById('rawDisplayArea').textContent = RAW_CLEAN_CONTENT; }; r.readAsText(file);
+}
+</script>
+</head><body>
+<header><div style="display:flex;gap:10px;align-items:center"><div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#a855f7,#22d3ee);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900">7.4</div><div><div style="font-weight:900;font-size:10px">@script2443 <span style="color:#22c55e">v7.4 - FIX RAW->PASTEFY SẠCH 100%</span></div><div style="font-size:6px;color:#22c55e">✅ FIX: Chỉ up đúng nội dung raw gốc, không dính code tạo link - textContent thay vì innerHTML</div></div></div></header>
+
+<div style="max-width:1700px;margin:0 auto;padding:5px">
+<div class="tabs">
+<button id="tb-enc" class="tab-btn" onclick="showTab('enc')">🔒 Mã Hóa</button>
+<button id="tb-dec" class="tab-btn" onclick="showTab('dec')">🔓 Giải Mã</button>
+<button id="tb-raw" class="tab-btn active" onclick="showTab('raw')">🔗 Raw -> Pastefy FIX</button>
+</div>
+
+<div id="p-enc" class="pane" style="display:none">
+<div class="card"><h2 style="font-size:11px;color:#a855f7">🔒 MÃ HÓA</h2>
+<select id="encType" style="width:100%;height:36px;margin-top:8px"><option value="base64">Base64</option><option value="base64x5">Base64 x5</option><option value="xor93">XOR 93</option><option value="hex">Hex</option><option value="reverse">Reverse</option></select>
+<textarea id="inpEnc" style="height:150px;margin-top:8px" placeholder="Code gốc..."></textarea>
+<button class="btn-main" style="margin-top:8px" onclick="doEnc()">Mã Hóa</button>
+<textarea id="outEnc" style="height:200px;margin-top:8px"></textarea>
+<button class="chip" style="background:#facc15;color:#000" onclick="document.getElementById('rawSourceInput').value=document.getElementById('outEnc').value; RAW_CLEAN_CONTENT=document.getElementById('outEnc').value; showTab('raw')">Sang Pastefy</button>
+</div>
+</div>
+
+<div id="p-dec" class="pane" style="display:none">
+<div class="card"><h2 style="font-size:11px;color:#ef4444">🔓 GIẢI MÃ VM</h2>
+<textarea id="inpDec" style="height:300px;margin-top:8px" placeholder="Code cần giải..."></textarea>
+<button class="btn-main" style="background:linear-gradient(90deg,#ef4444,#22c55e)" onclick="doDec()">Giải Mã</button>
+<textarea id="outDec" style="height:300px;margin-top:8px"></textarea>
+<div id="decStatus" class="status">Sẵn sàng</div>
+</div>
+</div>
+
+<div id="p-raw" class="pane" style="display:block">
+<div class="card" style="border:2px solid #22d3ee">
+<div class="banner" style="border-color:#22d3ee"><h2 style="font-size:11px;color:#22d3ee">🔗 RAW -> PASTEFY v7.4 FIX SẠCH</h2><div style="font-size:7px;color:#22c55e;margin-top:4px">FIX QUAN TRỌNG: Biến RAW_CLEAN_CONTENT chỉ chứa nội dung raw gốc, dùng textContent không dùng innerHTML, không bao giờ ghi code tạo link vào nội dung up lên</div></div>
+
+<div class="file-drop" onclick="document.getElementById('fileRaw').click()"><div>📁</div><div style="font-size:7px;color:#22d3ee">CHỌN FILE</div><input type="file" id="fileRaw" style="display:none" onchange="processFile(this.files[0],'rawSourceInput')"></div>
+
+<label style="font-size:7px;color:#22d3ee;font-weight:900;margin-top:10px;display:block">📝 NỘI DUNG SẠCH SẼ UP LÊN PASTEFY (chỉ raw gốc):</label>
+<textarea id="rawSourceInput" style="height:150px;margin-top:4px;border:2px solid #22d3ee" placeholder="Dán code sạch vào đây..." oninput="RAW_CLEAN_CONTENT=this.value; document.getElementById('rawCount').innerText=this.value.length.toLocaleString()+' ký tự - SẠCH'"></textarea>
+<div id="rawCount" style="font-size:6px;color:#a1a1aa">0 ký tự - SẠCH</div>
+<button class="chip" style="width:100%;height:40px;justify-content:center;background:linear-gradient(90deg,#22d3ee,#a855f7);color:#fff;font-weight:900;margin-top:8px;font-size:9px" onclick="uploadCleanToPastefy()">🚀 UP NỘI DUNG SẠCH NÀY LÊN PASTEFY</button>
+</div>
+
+<div class="card" style="border:2px solid #facc15;margin-top:12px">
+<h3 style="font-size:9px;color:#facc15;font-weight:900">🌐 NHẬP LINK RAW -> TỰ CHUYỂN PASTEFY SẠCH</h3>
+<input id="rawUrlInput" type="text" placeholder="Dán link raw... raw.githubusercontent.com / pastebin.com/raw / etc" style="width:100%;height:44px;margin-top:8px;background:#000;border:2px solid #facc15;color:#fff;border-radius:999px;padding:0 14px">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px">
+<button style="height:44px;border-radius:999px;border:none;background:#facc15;color:#000;font-weight:900" onclick="fetchOnly()">🔓 1. CHỈ FETCH RAW</button>
+<button style="height:44px;border-radius:999px;border:none;background:linear-gradient(90deg,#facc15,#a855f7);color:#fff;font-weight:900" onclick="fetchAndPastefy()">🔗 2. FETCH + UP PASTEFY SẠCH</button>
+</div>
+
+<label style="font-size:7px;color:#facc15;margin-top:8px;display:block">📄 RAW GỐC FETCH ĐƯỢC (textContent sạch):</label>
+<div id="rawDisplayArea" style="margin-top:6px;min-height:150px;max-height:400px;overflow:auto;background:#000;border:2px solid #facc15;border-radius:10px;padding:10px;font-family:monospace;white-space:pre-wrap;word-break:break-all;font-size:8px">Chưa có...</div>
+<div id="rawUrlDebug" class="status">Chờ...</div>
+
+<div id="pastefyResult" class="pastefy-box" style="display:none">
+<h4 style="font-size:9px;color:#facc15;font-weight:900">✅ PASTEFY SẠCH:</h4>
+<div id="pastefyLinks" style="margin-top:6px;font-size:8px;word-break:break-all"></div>
+<div id="pastefyEmbed" style="margin-top:8px;background:#000;border-radius:8px;padding:8px;font-size:7px;word-break:break-all"></div>
+<div style="display:flex;gap:4px;margin-top:8px">
+<button class="chip" style="flex:1;height:32px;justify-content:center;background:#facc15;color:#000;font-weight:900" onclick="navigator.clipboard.writeText(LAST_PASTEFY.url)">Copy Link</button>
+<button class="chip" style="flex:1;height:32px;justify-content:center;background:#22d3ee;color:#000;font-weight:900" onclick="navigator.clipboard.writeText(LAST_PASTEFY.raw)">Copy Raw</button>
+<button class="chip" style="flex:1;height:32px;justify-content:center;background:#fff;color:#000" onclick="navigator.clipboard.writeText('loadstring(game:HttpGet(\''+LAST_PASTEFY.raw+'\'))()')">Copy Loadstring</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<script>
+// SIMPLE ENC/DEC
+function doEnc(){
+  var inp=document.getElementById('inpEnc').value; var t=document.getElementById('encType').value;
+  var r=inp;
+  if(t=='base64') r=b64(inp);
+  if(t=='base64x5'){ var tmp=inp; for(var i=0;i<5;i++) tmp=b64(tmp); r=tmp; }
+  if(t=='xor93') r=b64(xorS(inp,93));
+  if(t=='hex') r=toHex(inp);
+  if(t=='reverse') r=reverseStr(inp);
+  document.getElementById('outEnc').value=r;
+  RAW_CLEAN_CONTENT = r;
+}
+function doDec(){
+  try{
+    var inp=document.getElementById('inpDec').value; var cur=inp;
+    for(var i=0;i<20;i++){
+      try{ var d=b64d(cur.trim()); if(d!==cur && d.length>5){ cur=d; continue; } }catch(e){}
+      break;
+    }
+    if(/\\x[0-9a-fA-F]{2}/.test(cur)) cur=cur.replace(/\\x([0-9a-fA-F]{2})/g,function(m,h){return String.fromCharCode(parseInt(h,16));});
+    var r13=rot13(cur); if(r13!==cur && (r13.includes('local')||r13.includes('print'))) cur=r13;
+    document.getElementById('outDec').value=cur;
+    RAW_CLEAN_CONTENT = cur;
+    document.getElementById('decStatus').innerText='✅ Giải xong '+cur.length+' chars - SẠCH';
+  }catch(e){ document.getElementById('decStatus').innerText='❌ '+e.message; }
+}
+
+// CORE FETCH - SẠCH
+async function fetchRawContentClean(url){
+  let text=null;
+  const proxies = [
+    (u)=>u,
+    (u)=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u),
+    (u)=>'https://corsproxy.io/?'+encodeURIComponent(u),
+    (u)=>'https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(u)
+  ];
+  for(let p of proxies){
+    try{
+      let fetchUrl = p(url);
+      let res = await fetch(fetchUrl);
+      if(res.ok){
+        let t = await res.text();
+        // Lọc: nếu t là HTML chứa <!DOCTYPE thì bỏ qua nếu url là raw
+        if(t && t.length>0){
+          // Nếu là github raw mà trả về html login page thì bỏ
+          if(t.trim().startsWith('<!DOCTYPE') && t.includes('<html') && t.length>500){
+            // thử tiếp proxy khác, trừ khi user cố ý fetch html
+            if(url.includes('raw.githubusercontent') || url.includes('/raw/') || url.includes('pastefy') ){
+              continue;
+            }
+          }
+          // Đây là nội dung sạch
+          return t;
+        }
+      }
+    }catch(e){}
+  }
+  return null;
+}
+
+async function fetchOnly(){
+  var url=document.getElementById('rawUrlInput').value.trim();
+  var area=document.getElementById('rawDisplayArea');
+  var dbg=document.getElementById('rawUrlDebug');
+  if(!url){ dbg.innerText='❌ Chưa nhập URL'; return; }
+  dbg.innerText='⏳ Đang fetch sạch... '+url;
+  area.textContent='⏳ Đang tải...';
+  let content = await fetchRawContentClean(url);
+  if(!content){ area.textContent='không có raw - không fetch được'; dbg.innerText='❌ không fetch được'; return; }
+  RAW_CLEAN_CONTENT = content; // GÁN BIẾN SẠCH
+  area.textContent = content; // dùng textContent, không dùng innerHTML/innerText
+  document.getElementById('rawSourceInput').value = content;
+  document.getElementById('rawCount').innerText = content.length.toLocaleString()+' ký tự - SẠCH 100%';
+  dbg.innerText='✅ Fetch sạch OK! '+content.length.toLocaleString()+' ký tự - Sẵn sàng up Pastefy';
+}
+
+async function fetchAndPastefy(){
+  await fetchOnly();
+  if(RAW_CLEAN_CONTENT && RAW_CLEAN_CONTENT.length>0){
+    await uploadCleanToPastefy();
+  }
+}
+
+async function uploadCleanToPastefy(){
+  var dbg=document.getElementById('rawUrlDebug');
+  var resultBox=document.getElementById('pastefyResult');
+  var linksDiv=document.getElementById('pastefyLinks');
+  var embedDiv=document.getElementById('pastefyEmbed');
+  
+  // Lấy nội dung sạch nhất
+  let contentToUpload = RAW_CLEAN_CONTENT || document.getElementById('rawSourceInput').value;
+  
+  if(!contentToUpload || contentToUpload.trim().length<1){
+    dbg.innerText='❌ Không có nội dung sạch để up';
+    return;
+  }
+  
+  // Đảm bảo không chứa code tạo link của chính tool
+  if(contentToUpload.includes('simpleBlobUrl') || contentToUpload.includes('pastefyResult') || contentToUpload.includes('RAW_CLEAN_CONTENT')){
+    dbg.innerText='⚠️ Nội dung có vẻ chứa code của tool - đang lọc...';
+    // Nếu user vô tình copy cả code tool, chỉ lấy phần rawDisplayArea
+    contentToUpload = document.getElementById('rawDisplayArea').textContent || contentToUpload;
+  }
+  
+  // Trim nhưng giữ nguyên nội dung gốc
+  contentToUpload = contentToUpload.trimEnd();
+  
+  dbg.innerText='🚀 Đang up '+contentToUpload.length.toLocaleString()+' ký tự SẠCH lên Pastefy...';
+  resultBox.style.display='block';
+  linksDiv.innerHTML='⏳ Đang upload SẠCH...';
+  
+  try{
+    const payload = {
+      title: 'clean_raw_'+Date.now(),
+      content: contentToUpload, // CHỈ NỘI DUNG SẠCH, KHÔNG KÈM CODE TẠO LINK
+      type: 'PASTE'
+    };
+    
+    let data=null;
+    let urlsToTry = [
+      'https://pastefy.app/api/v2/paste',
+      'https://pastefy.ga/api/v2/paste'
+    ];
+    
+    for(let apiUrl of urlsToTry){
+      try{
+        let res = await fetch(apiUrl, {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify(payload)
+        });
+        if(res.ok){
+          data = await res.json();
+          if(data && (data.paste || data.id || data.paste_id)) break;
+        }
+      }catch(e){ console.log('fail', apiUrl, e); }
+    }
+    
+    if(!data || (!data.paste && !data.id && !data.paste_id)){
+      // Fallback: tạo blob URL tạm nhưng vẫn SẠCH, không ghi code tạo link vào nội dung
+      if(window.cleanBlobUrl) URL.revokeObjectURL(window.cleanBlobUrl);
+      let blob = new Blob([contentToUpload], {type:'text/plain'}); // CHỈ NỘI DUNG SẠCH
+      window.cleanBlobUrl = URL.createObjectURL(blob);
+      
+      let fakeId = 'local_'+Date.now();
+      LAST_PASTEFY = {url: window.cleanBlobUrl, raw: window.cleanBlobUrl};
+      
+      linksDiv.innerHTML = `
+        <div style="color:#facc15">⚠️ CORS chặn API Pastefy - Tạo link tạm SẠCH:</div>
+        <div style="margin-top:6px"><b>Blob SẠCH (chỉ chứa raw gốc):</b><br><a href="${window.cleanBlobUrl}" target="_blank" style="color:#22d3ee;word-break:break-all">${window.cleanBlobUrl}</a></div>
+        <div style="margin-top:4px;color:#22c55e">Nội dung blob là 100% raw gốc, không có code tạo link</div>
+      `;
+      embedDiv.innerHTML = `
+        <div>Để có link Pastefy thật, bấm mở Pastefy và dán (đã copy sẵn nội dung sạch):</div>
+        <button onclick="window.open('https://pastefy.app','_blank')" style="margin-top:6px;padding:8px 14px;border-radius:999px;border:none;background:#facc15;color:#000;font-weight:900">Mở pastefy.app</button>
+      `;
+      dbg.innerText='⚠️ Đã tạo Blob SẠCH - Đã copy nội dung sạch vào clipboard';
+      try{ await navigator.clipboard.writeText(contentToUpload); }catch(e){}
+      return;
+    }
+    
+    let paste = data.paste || data;
+    let id = paste.id || paste.paste_id || data.id;
+    let pasteUrl = `https://pastefy.app/${id}`;
+    let rawUrl = `https://pastefy.app/${id}/raw`;
+    
+    LAST_PASTEFY = {url: pasteUrl, raw: rawUrl};
+    
+    linksDiv.innerHTML = `
+      <div style="color:#22c55e;font-weight:900">✅ Up Pastefy SẠCH thành công!</div>
+      <div style="margin-top:6px"><b>Link Pastefy:</b><br><a href="${pasteUrl}" target="_blank" style="color:#facc15">${pasteUrl}</a></div>
+      <div style="margin-top:4px"><b>Raw Pastefy SẠCH:</b><br><a href="${rawUrl}" target="_blank" style="color:#22d3ee">${rawUrl}</a></div>
+      <div style="margin-top:4px;color:#a1a1aa;font-size:6px">Nội dung raw này là 100% raw gốc bạn nhập, không kèm code tạo link</div>
+    `;
+    embedDiv.innerHTML = `
+      <div style="color:#fff">Loadstring Roblox SẠCH:</div>
+      <code style="background:#000;padding:8px;border-radius:6px;display:block;margin-top:4px;color:#22c55e;word-break:break-all">loadstring(game:HttpGet("${rawUrl}"))()</code>
+    `;
+    dbg.innerText='✅ Đã chuyển Raw -> Pastefy SẠCH! Raw Pastefy chỉ chứa nội dung gốc';
+    
+  }catch(e){
+    dbg.innerText='❌ Lỗi: '+e.message;
+    linksDiv.innerHTML='❌ '+e.message;
+  }
+}
+
+// Auto paste
+document.getElementById('rawUrlInput').addEventListener('paste', function(){
+  setTimeout(()=>{ fetchAndPastefy(); }, 200);
+});
+</script>
+<script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body></html>
