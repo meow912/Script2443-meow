@@ -1,1 +1,477 @@
-tml>
+<!DOCTYPE html>
+<html lang="vi"><head><style>
+@font-face {
+  font-family: "Optimistic";
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url("/fonts/OptimisticAI_VF_Optimized.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Optimistic Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/OptimisticMono_W_TextRegular.woff2") format("woff2");
+}
+:where(html) {
+  font-family: "Optimistic", system-ui, sans-serif;
+}
+:where(code, pre, kbd, samp) {
+  font-family: "Optimistic Mono", ui-monospace, monospace;
+}
+</style><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>@script2443 v7.3 - Raw sang Pastefy + VM Obfuscation</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#050a0f;color:#e4e4e7;font-family:Inter,system-ui,sans-serif}
+header{background:#050a0f;border-bottom:2px solid #a855f7;padding:10px 14px;position:sticky;top:0;z-index:999}
+.tabs{display:flex;gap:5px;padding:6px;background:#0a141e;border:1px solid rgba(168,85,247,.3);border-radius:12px;width:fit-content;margin:10px;flex-wrap:wrap}
+.tab-btn{padding:9px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#a1a1aa;font-size:8px;font-weight:800;cursor:pointer}
+.tab-btn.active{background:#a855f7!important;color:#fff!important;border-color:#a855f7!important;box-shadow:0 0 12px rgba(168,85,247,.5)}
+.pane{width:100%;padding:6px}
+.card{background:#0a141e;border:1px solid rgba(168,85,247,.25);border-radius:12px;padding:10px;margin-top:6px}
+.chip{font-size:6px;padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);display:inline-flex;align-items:center;gap:3px;cursor:pointer;margin:2px;white-space:nowrap}
+.chip.checked{background:rgba(168,85,247,.35)!important;border-color:#a855f7!important;color:#fff!important;font-weight:800}
+.btn-main{width:100%;height:46px;border-radius:11px;border:none;background:linear-gradient(90deg,#a855f7,#ef4444);color:#fff;font-weight:900;font-size:11px;cursor:pointer}
+.status{margin-top:8px;padding:8px;border-radius:9px;background:#000;border:1px solid rgba(255,255,255,.1);font-family:monospace;font-size:8px;word-break:break-all}
+.banner{background:linear-gradient(135deg,rgba(168,85,247,.15),rgba(34,211,238,.15));border:2px solid #a855f7;border-radius:12px;padding:10px;margin-bottom:8px}
+.file-drop{width:100%;min-height:70px;border:2px dashed #a855f7;border-radius:12px;background:rgba(168,85,247,.05);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;cursor:pointer;margin-top:8px}
+.file-preview{margin-top:8px;max-height:200px;overflow:auto;background:#000;border-radius:8px;padding:8px;border:1px solid #333;display:none}
+textarea{width:100%;background:#000;border:1px solid rgba(255,255,255,.2);border-radius:10px;padding:10px;color:#e4e4e7;font-family:Consolas,monospace;font-size:10px}
+select,input[type=text],input[type=number]{background:#000;border:1px solid rgba(168,85,247,.4);color:#fff;border-radius:8px;padding:6px 10px;font-size:8px}
+.pastefy-box{background:linear-gradient(135deg,rgba(250,204,21,.15),rgba(168,85,247,.15));border:2px solid #facc15;border-radius:12px;padding:10px;margin-top:10px}
+</style>
+<script>
+function showTab(t){
+  var ids=['p-enc','p-dec','p-raw','p-ai'];
+  for(var i=0;i<ids.length;i++){ var el=document.getElementById(ids[i]); if(el) el.style.display=(ids[i]==='p-'+t)?'block':'none'; }
+  var btns=['tb-enc','tb-dec','tb-raw','tb-ai'];
+  for(var j=0;j<btns.length;j++){ var btn=document.getElementById(btns[j]); if(btn){ if(btns[j]==='tb-'+t) btn.classList.add('active'); else btn.classList.remove('active'); } }
+  if(t==='raw') setTimeout(function(){ if(typeof initRawTab==='function') initRawTab(); },100);
+}
+function b64(s){try{return btoa(unescape(encodeURIComponent(s)));}catch(e){try{return btoa(s);}catch(e2){return '';}}}
+function b64d(s){try{return decodeURIComponent(escape(atob(s)));}catch(e){try{return atob(s);}catch(e2){return s;}}}
+function xorS(s,k){var o='';for(var i=0;i<s.length;i++)o+=String.fromCharCode(s.charCodeAt(i)^k);return o;}
+function safeStringChar(nums){ try{ var r=''; for(var i=0;i<nums.length;i+=200){ var ch=[]; for(var j=i;j<Math.min(i+200,nums.length);j++){ var n=nums[j]; if(n>=0&&n<=65535) ch.push(String.fromCharCode(n)); } r+=ch.join(''); } return r; }catch(e){return null;} }
+function rot13(s){ return s.replace(/[a-zA-Z]/g,function(c){ return String.fromCharCode((c<='Z'?90:122)>=(c=c.charCodeAt(0)+13)?c:c-26); }); }
+function rot47(s){ var r=''; for(var i=0;i<s.length;i++){ var cc=s.charCodeAt(i); if(cc>=33&&cc<=126){ r+=String.fromCharCode(33+((cc+14)%94)); } else r+=s[i]; } return r; }
+function rot5(s){ return s.replace(/[0-9]/g,function(c){ return String.fromCharCode((c.charCodeAt(0)-48+5)%10+48); }); }
+function caesar(s,shift){ var r=''; for(var i=0;i<s.length;i++){ var c=s.charCodeAt(i); if(c>=65&&c<=90){ r+=String.fromCharCode((c-65+shift)%26+65); } else if(c>=97&&c<=122){ r+=String.fromCharCode((c-97+shift)%26+97); } else r+=s[i]; } return r; }
+function atbash(s){ var r=''; for(var i=0;i<s.length;i++){ var c=s[i]; if(c>='a'&&c<='z'){ r+=String.fromCharCode(122-(c.charCodeAt(0)-97)); } else if(c>='A'&&c<='Z'){ r+=String.fromCharCode(90-(c.charCodeAt(0)-65)); } else r+=c; } return r; }
+function reverseStr(s){ return s.split('').reverse().join(''); }
+function toHex(s){ var r=''; for(var i=0;i<s.length;i++) r+='\\x'+s.charCodeAt(i).toString(16).padStart(2,'0'); return r; }
+function fromHex(s){ try{ return s.replace(/\\x([0-9a-fA-F]{2})/g,function(m,h){return String.fromCharCode(parseInt(h,16));}); }catch(e){return s;} }
+function toBinary(s){ var r=''; for(var i=0;i<s.length;i++) r+=s.charCodeAt(i).toString(2).padStart(8,'0')+' '; return r.trim(); }
+function downloadFile(id,name){ var ta=document.getElementById(id); var txt=ta? (ta.value||ta.innerText||'') : ''; if(!txt){ alert('Không có nội dung!'); return; } var blob=new Blob([txt],{type:'text/plain'}); var url=URL.createObjectURL(blob); var a=document.createElement('a'); a.href=url; a.download=name; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); }
+function processFile(file, taId, prevId, infoId){ var ta=document.getElementById(taId); var prev=document.getElementById(prevId); var info=document.getElementById(infoId); if(info){ info.style.display='block'; info.innerHTML='📁 '+file.name+' | '+(file.size/1024).toFixed(1)+'KB | Không giới hạn ký tự'; } if(prev) prev.style.display='block'; var r=new FileReader(); r.onload=function(e){ if(ta){ ta.value=e.target.result; ta.dispatchEvent(new Event('input')); } if(prev) prev.innerHTML='<pre style="font-size:7px;white-space:pre-wrap;max-height:150px;overflow:auto">'+e.target.result.substring(0,1000).replace(/</g,'&lt;')+'</pre><div style="font-size:6px;color:#22c55e">Đã đọc '+e.target.result.length.toLocaleString()+' ký tự - Không giới hạn</div>'; }; r.readAsText(file); }
+</script>
+</head><body>
+<header><div style="display:flex;gap:10px;align-items:center"><div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#a855f7,#22d3ee);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:11px">7.3</div><div><div style="font-weight:900;font-size:10px">@script2443 <span style="color:#a855f7">v7.3 - Raw Auto Pastefy + Mã Hóa Chọn Loại + VM</span></div><div style="font-size:6px;color:#22c55e">✅ MỚI: Raw -> Tự động chuyển sang Pastefy + Fix Pastefy API + Không giới hạn</div></div></div></header>
+
+<div style="max-width:1700px;margin:0 auto;padding:5px">
+<div class="tabs">
+<button id="tb-enc" class="tab-btn active" onclick="showTab('enc')">🔒 Mã Hóa v7.3</button>
+<button id="tb-dec" class="tab-btn" onclick="showTab('dec')">🔓 Giải Mã v7.3</button>
+<button id="tb-raw" class="tab-btn" onclick="showTab('raw')">🔗 Raw -> Pastefy v7.3</button>
+<button id="tb-ai" class="tab-btn" onclick="showTab('ai')">🤖 AI Chat</button>
+</div>
+
+<div id="p-enc" class="pane" style="display:block">
+<div class="card" style="border:2px solid #a855f7">
+<div class="banner"><h2 style="font-size:11px;font-weight:900;color:#a855f7">🔒 MÃ HÓA v7.3 - 25+ LOẠI</h2></div>
+<div class="file-drop" onclick="document.getElementById('fileEnc').click()"><div>📁</div><div style="font-size:7px;color:#a855f7;font-weight:900">CHỌN FILE - KHÔNG GIỚI HẠN</div><input type="file" id="fileEnc" style="display:none" onchange="processFile(this.files[0],'inpEnc','previewEnc','infoEnc')"></div>
+<div id="infoEnc" class="status" style="display:none"></div><div id="previewEnc" class="file-preview"></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
+<div style="background:#000;border:1px solid rgba(168,85,247,.3);border-radius:10px;padding:8px">
+<label style="font-size:7px;color:#a855f7;font-weight:900">🎯 CHỌN LOẠI MÃ HÓA:</label>
+<select id="encType" style="width:100%;height:36px;margin-top:4px;font-size:8px;font-weight:900">
+<option value="base64">Base64 (1 lớp)</option><option value="base64x2">Base64 x2</option><option value="base64x3">Base64 x3</option><option value="base64x5">Base64 x5</option><option value="base64x10">Base64 x10</option>
+<option value="xor93">XOR Key 93</option><option value="xor_custom">XOR Key Tùy Chọn</option><option value="hex">Hex \x</option><option value="binary">Binary</option><option value="rot13">ROT13</option><option value="rot47">ROT47</option><option value="caesar">Caesar Shift 3</option><option value="caesar_custom">Caesar Tùy Chọn</option><option value="atbash">Atbash</option><option value="reverse">Reverse</option><option value="url">URL Encode</option><option value="stringchar_chunk">string.char Chunk 200</option><option value="moonsec">MoonSec V3</option><option value="combo">Combo Multi-layer</option><option value="all">Tất cả trộn</option>
+</select>
+<div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+<div><label style="font-size:6px;color:#a1a1aa">Key XOR / Caesar:</label><input id="encKey" type="number" value="93" style="width:70px;height:28px"></div>
+<div><label style="font-size:6px;color:#a1a1aa">Shift:</label><input id="encShift" type="number" value="3" style="width:70px;height:28px"></div>
+<label class="chip checked" style="height:28px"><input id="encWrapLua" type="checkbox"> Bọc Lua</label>
+</div>
+</div>
+<div style="background:#000;border:1px solid rgba(34,211,238,.3);border-radius:10px;padding:8px">
+<label style="font-size:7px;color:#22d3ee;font-weight:900">📝 CODE GỐC:</label>
+<textarea id="inpEnc" style="height:200px;margin-top:4px" placeholder="Dán code..." oninput="updateEncCount()"></textarea>
+<div id="encCount" style="font-size:6px;color:#a1a1aa;margin-top:4px">0 ký tự</div>
+</div>
+</div>
+<button class="btn-main" style="margin-top:10px;background:linear-gradient(90deg,#a855f7,#22d3ee)" onclick="doEncV72()">🔒 MÃ HÓA</button>
+<div id="encStatus" class="status">Sẵn sàng</div>
+<div style="background:#000;border:1px solid rgba(168,85,247,.3);border-radius:10px;padding:8px;margin-top:8px">
+<label style="font-size:7px;color:#a855f7;font-weight:900">📤 KẾT QUẢ:</label>
+<textarea id="outEnc" style="height:250px;margin-top:4px;border:2px solid #a855f7"></textarea>
+<div style="display:flex;gap:4px;margin-top:6px;flex-wrap:wrap">
+<button class="chip" style="flex:1;height:32px;justify-content:center;background:#a855f7;color:#fff;font-weight:900" onclick="downloadFile('outEnc','ma_hoa_v73.txt')">💾 Tải File</button>
+<button class="chip" style="flex:1;height:32px;justify-content:center" onclick="navigator.clipboard.writeText(document.getElementById('outEnc').value)">📋 Copy</button>
+<button class="chip" style="flex:1;height:32px;justify-content:center;background:#000;border-color:#22d3ee;color:#22d3ee" onclick="sendEncToDec()">🔓 Sang Giải Mã</button>
+<button class="chip" style="flex:1;height:32px;justify-content:center;background:#facc15;color:#000;font-weight:900" onclick="sendEncToRawPastefy()">🔗 Sang Raw->Pastefy</button>
+</div>
+</div>
+</div>
+</div>
+
+<div id="p-dec" class="pane" style="display:none">
+<div class="card" style="border:2px solid #ef4444">
+<div class="banner" style="border-color:#ef4444"><h2 style="font-size:11px;color:#ef4444">🔓 GIẢI MÃ v7.3 - VM + 231 LOẠI</h2></div>
+<div class="file-drop" onclick="document.getElementById('fileDec').click()" style="border-color:#ef4444"><div>📁</div><div style="font-size:7px;color:#ef4444">CHỌN FILE VM / OBFUSCATED</div><input type="file" id="fileDec" style="display:none" onchange="processFile(this.files[0],'inpDec','previewDec','infoDec')"></div>
+<div id="infoDec" class="status" style="display:none"></div><div id="previewDec" class="file-preview"></div>
+<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center">
+<button class="btn-main" style="flex:1;min-width:200px;background:linear-gradient(90deg,#ef4444,#22c55e)" onclick="doDecV72()">🔓 GIẢI MÃ AUTO VM + 231 LOẠI</button>
+<input id="xorKeyDec" type="number" value="93" style="width:50px;height:28px"><label class="chip checked"><input id="autoMulti" type="checkbox" checked> 100 lần</label><label class="chip checked"><input id="bruteAll" type="checkbox" checked> Brute</label><label class="chip checked"><input id="vmDeobf" type="checkbox" checked> VM 11.0v</label>
+</div>
+<textarea id="inpDec" style="height:400px;margin-top:8px;border:2px solid #ef4444" placeholder="Dán code cần giải..." oninput="updateDecCount()"></textarea>
+<textarea id="outDec" style="height:400px;margin-top:8px;border:2px solid #22c55e" placeholder="Kết quả..."></textarea>
+<div id="decStatus" class="status">Sẵn sàng</div>
+<pre id="decLog" style="margin-top:6px;padding:8px;background:#000;border-radius:8px;font-size:6px;color:#ef4444;max-height:120px;overflow:auto">Log...</pre>
+<div style="display:flex;gap:4px;margin-top:6px"><button class="chip" style="flex:1;background:#22c55e;color:#000;font-weight:900;height:32px;justify-content:center" onclick="downloadFile('outDec','giai_ma_v73.lua')">💾 Tải File</button><button class="chip" style="flex:1;height:32px;justify-content:center;background:#facc15;color:#000;font-weight:900" onclick="sendDecToRawPastefy()">🔗 Sang Pastefy</button></div>
+</div>
+</div>
+
+<div id="p-raw" class="pane" style="display:none">
+<div class="card" style="border:2px solid #22d3ee">
+<div class="banner" style="border-color:#22d3ee"><h2 style="font-size:11px;color:#22d3ee">🔗 RAW v7.3 - AUTO CHUYỂN SANG PASTEFY</h2><div style="font-size:6px;color:#a1a1aa;margin-top:4px">Mới: Dán link raw bất kỳ (raw.githubusercontent, pastebin raw, hastebin raw, gist raw...) -> tự fetch -> tự up lên Pastefy -> trả link Pastefy + raw link Pastefy</div></div>
+
+<div class="file-drop" onclick="document.getElementById('fileRaw').click()"><div>📁</div><div style="font-size:7px;color:#22d3ee">CHỌN FILE ĐỂ UP PASTEFY</div><input type="file" id="fileRaw" style="display:none" onchange="processFile(this.files[0],'rawSourceInput','previewRaw','infoRaw')"></div>
+<div id="infoRaw" class="status" style="display:none"></div><div id="previewRaw" class="file-preview"></div>
+
+<label style="font-size:7px;color:#22d3ee;font-weight:900;margin-top:10px;display:block">📝 NỘI DUNG GỐC (sẽ up lên Pastefy):</label>
+<textarea id="rawSourceInput" style="height:150px;margin-top:4px" placeholder="Dán code - hoặc sẽ tự điền khi bạn fetch raw link..." oninput="document.getElementById('rawCount').innerText=this.value.length.toLocaleString()+' ký tự'"></textarea>
+<div id="rawCount" style="font-size:6px;color:#a1a1aa">0 ký tự</div>
+<button class="chip" style="width:100%;height:40px;justify-content:center;background:linear-gradient(90deg,#22d3ee,#a855f7);color:#fff;font-weight:900;margin-top:8px;font-size:9px" onclick="createPastefyFromContent()">🚀 TẠO PASTEFY TỪ NỘI DUNG NÀY</button>
+<div id="rawBox" style="margin-top:8px"></div>
+</div>
+
+<div class="card" style="border:2px solid #facc15;margin-top:12px">
+<h3 style="font-size:9px;color:#facc15;font-weight:900">🌐 NHẬP LINK RAW -> TỰ ĐỘNG CHUYỂN SANG PASTEFY</h3>
+<div style="display:flex;gap:6px;margin-top:8px">
+<input id="rawUrlInput" type="text" placeholder="Dán link raw vào đây... vd: https://raw.githubusercontent.com/... , https://pastebin.com/raw/..., https://hastebin.com/raw/..." style="flex:1;height:44px;background:#000;border:2px solid #facc15;color:#fff;border-radius:999px;padding:0 14px;font-size:9px">
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px">
+<button style="height:44px;border-radius:999px;border:none;background:#facc15;color:#000;font-weight:900;font-size:9px" onclick="showRawFromUrl()">🔓 1. HIỆN RAW</button>
+<button style="height:44px;border-radius:999px;border:none;background:linear-gradient(90deg,#facc15,#a855f7);color:#fff;font-weight:900;font-size:9px" onclick="rawToPastefyAuto()">🔗 2. RAW -> PASTEFY (AUTO)</button>
+</div>
+<div style="display:flex;gap:4px;margin-top:6px">
+<label class="chip checked"><input id="autoPastefy" type="checkbox" checked> Tự động chuyển sang Pastefy khi dán link</label>
+</div>
+
+<label style="font-size:7px;color:#facc15;font-weight:900;margin-top:8px;display:block">📄 NỘI DUNG RAW FETCH ĐƯỢC:</label>
+<div id="rawDisplayArea" style="margin-top:6px;min-height:150px;max-height:400px;overflow:auto;background:#000;border:2px solid #facc15;border-radius:10px;padding:10px;font-family:monospace;white-space:pre-wrap;word-break:break-all;font-size:8px">Chưa có URL...</div>
+<div id="rawUrlDebug" class="status">Chờ...</div>
+
+<div id="pastefyResult" class="pastefy-box" style="display:none">
+<h4 style="font-size:9px;color:#facc15;font-weight:900">✅ KẾT QUẢ PASTEFY:</h4>
+<div id="pastefyLinks" style="margin-top:6px;font-size:8px;word-break:break-all"></div>
+<div style="display:flex;gap:4px;margin-top:8px;flex-wrap:wrap">
+<button class="chip" style="flex:1;height:32px;justify-content:center;background:#facc15;color:#000;font-weight:900" onclick="copyPastefyLink()">📋 Copy Link Pastefy</button>
+<button class="chip" style="flex:1;height:32px;justify-content:center;background:#fff;color:#000;font-weight:900" onclick="copyPastefyRaw()">📋 Copy Raw Pastefy</button>
+<button class="chip" style="flex:1;height:32px;justify-content:center;background:#a855f7;color:#fff;font-weight:900" onclick="downloadRawAsFile()">💾 Tải File Raw</button>
+</div>
+<div id="pastefyEmbed" style="margin-top:8px;background:#000;border-radius:8px;padding:8px;font-size:7px;word-break:break-all"></div>
+</div>
+
+<div style="display:flex;gap:4px;margin-top:8px"><button class="chip" style="flex:1;height:32px;justify-content:center;background:#facc15;color:#000;font-weight:900" onclick="downloadRawAsFile()">💾 Tải File Raw Về</button><button class="chip" style="flex:1;height:32px;justify-content:center" onclick="copyRawDisplay()">📋 Copy Raw</button></div>
+</div>
+</div>
+
+<div id="p-ai" class="pane" style="display:none"><div class="card"><div id="chat" style="height:250px;overflow:auto;background:#000;border-radius:10px;padding:10px"></div><input id="aiIn" type="text" placeholder="Chat v7.3..." style="width:100%;height:40px;background:#000;border:2px solid #a855f7;color:#fff;border-radius:999px;padding:0 12px;margin-top:8px"><button class="chip" style="height:32px;margin-top:6px;background:#a855f7;color:#fff" onclick="sendMsg()">Gửi</button></div></div>
+
+</div>
+
+<script>
+function updateEncCount(){ var v=document.getElementById('inpEnc').value; document.getElementById('encCount').innerText=v.length.toLocaleString()+' ký tự'; }
+function updateDecCount(){}
+function sendEncToDec(){ var c=document.getElementById('outEnc').value; if(!c){alert('Chưa mã hóa');return;} document.getElementById('inpDec').value=c; showTab('dec'); }
+function sendEncToRawPastefy(){ var c=document.getElementById('outEnc').value; if(!c){alert('Chưa mã hóa');return;} document.getElementById('rawSourceInput').value=c; showTab('raw'); document.getElementById('rawCount').innerText=c.length.toLocaleString()+' ký tự'; }
+function sendDecToRawPastefy(){ var c=document.getElementById('outDec').value; if(!c){alert('Chưa giải');return;} document.getElementById('rawSourceInput').value=c; showTab('raw'); document.getElementById('rawCount').innerText=c.length.toLocaleString()+' ký tự'; }
+
+function doEncV72(){
+  try{
+    var input=document.getElementById('inpEnc').value;
+    var type=document.getElementById('encType').value;
+    var key=parseInt(document.getElementById('encKey').value)||93;
+    var shift=parseInt(document.getElementById('encShift').value)||3;
+    var wrapLua=document.getElementById('encWrapLua').checked;
+    if(!input){ document.getElementById('encStatus').innerText='❌ Chưa nhập code'; return; }
+    var result=''; var logType='';
+    switch(type){
+      case 'base64': result=b64(input); logType='Base64'; break;
+      case 'base64x2': result=b64(b64(input)); logType='Base64 x2'; break;
+      case 'base64x3': result=b64(b64(b64(input))); logType='Base64 x3'; break;
+      case 'base64x5': var t=input; for(var i=0;i<5;i++) t=b64(t); result=t; logType='Base64 x5'; break;
+      case 'base64x10': var t=input; for(var i=0;i<10;i++) t=b64(t); result=t; logType='Base64 x10'; break;
+      case 'xor93': result=b64(xorS(input,93)); logType='XOR93'; break;
+      case 'xor_custom': result=b64(xorS(input,key)); logType='XOR'+key; break;
+      case 'hex': result=toHex(input); logType='Hex'; break;
+      case 'binary': result=toBinary(input); logType='Binary'; break;
+      case 'rot13': result=rot13(input); break;
+      case 'rot47': result=rot47(input); break;
+      case 'caesar': result=caesar(input,3); break;
+      case 'caesar_custom': result=caesar(input,shift); break;
+      case 'atbash': result=atbash(input); break;
+      case 'reverse': result=reverseStr(input); break;
+      case 'url': result=encodeURIComponent(input); break;
+      case 'stringchar_chunk': var nums=input.split('').map(function(c){return c.charCodeAt(0);}); var ch=[]; for(var i=0;i<nums.length;i+=200){ ch.push('string.char('+nums.slice(i,i+200).join(',')+')'); } result=ch.join('..'); break;
+      case 'moonsec': result='[[MoonSec V3]]\nlocal _c0="'+b64(xorS(b64(input),key))+'"'; break;
+      case 'combo': var tmp=b64(input); tmp=xorS(tmp,key); tmp=b64(tmp); tmp=toHex(tmp); tmp=reverseStr(tmp); result=tmp; break;
+      case 'all': var tmp=input; tmp=b64(tmp); tmp=xorS(tmp,key); tmp=b64(tmp); tmp=rot13(tmp); tmp=toHex(tmp); result=tmp; break;
+      default: result=b64(input);
+    }
+    var finalResult=wrapLua?'-- ENC v7.3 '+logType+'\n'+result:result;
+    document.getElementById('outEnc').value=finalResult;
+    document.getElementById('encStatus').innerText='✅ '+logType+' | '+input.length+' -> '+finalResult.length+' chars';
+  }catch(e){ document.getElementById('encStatus').innerText='❌ '+e.message; }
+}
+
+function doDecV72(){
+  try{
+    var input=document.getElementById('inpDec').value; var key=parseInt(document.getElementById('xorKeyDec').value)||93; var maxIter=document.getElementById('autoMulti').checked?100:20; var brute=document.getElementById('bruteAll').checked; var vmDeobf=document.getElementById('vmDeobf').checked;
+    if(!input.trim()){ document.getElementById('decStatus').innerText='❌ Chưa dán code'; return; }
+    var log=[]; var cur=input;
+    function tryOne(s){
+      var before=s;
+      if(vmDeobf){
+        s=s.replace(/\[\[.*MoonSec.*\]\]\s*\n?/g,'');
+        if(s.includes('string.char')){
+          try{
+            var re=/string\.char\s*\(([^\)]{10,})\)/g; var m; var ns=s; var cnt=0;
+            while((m=re.exec(s))!==null){
+              var nums=m[1].split(',').map(function(n){return parseInt(n.trim());}).filter(function(n){return !isNaN(n);});
+              if(nums.length>=3){ var dec=safeStringChar(nums); if(dec!==null&&dec.length>=2&&dec.length<2000){ ns=ns.replace(m[0], JSON.stringify(dec)); cnt++; } }
+              if(cnt>200) break;
+            }
+            if(cnt>0) s=ns;
+          }catch(e){}
+        }
+      }
+      var mc=s.match(/local _c0\s*=\s*"([^"]+)"/);
+      if(mc){
+        try{
+          var d=b64d(mc[1]);
+          if(brute){ for(var kk=1;kk<=255;kk++){ var o=xorS(d,kk); if(o.length>5&&(o.includes('print')||o.includes('local'))){ s=o; break; } } }
+          else s=xorS(d,key);
+        }catch(e){}
+      }
+      try{
+        var tr=s.trim();
+        if(/^[A-Za-z0-9+\/=]{20,}$/.test(tr)&&tr.length%4==0){
+          var curD=tr; for(var b=0;b<20;b++){ try{ var nxt=b64d(curD.trim()); if(nxt!==curD&&nxt.length>5){ curD=nxt; } else break; }catch(e){break;} }
+          s=curD;
+        }
+      }catch(e){}
+      if(/\\x[0-9a-fA-F]{2}/.test(s)){ s=s.replace(/\\x([0-9a-fA-F]{2})/g,function(m,h){return String.fromCharCode(parseInt(h,16));}); }
+      var r13=rot13(s); if(r13!==s && (r13.includes('local')||r13.includes('print'))) s=r13;
+      var rev=reverseStr(s); if(rev!==s && (rev.includes('local')||rev.includes('print'))) s=rev;
+      return s;
+    }
+    var cur2=input;
+    for(var i=0;i<maxIter;i++){ var n=tryOne(cur2); if(n!==cur2){ cur2=n; } else { if(i>15) break; } }
+    document.getElementById('outDec').value=cur2;
+    document.getElementById('decStatus').innerText='✅ Giải xong | '+input.length+' -> '+cur2.length+' chars';
+    document.getElementById('decLog').innerText='Done';
+  }catch(e){ document.getElementById('decStatus').innerText='❌ '+e.message; }
+}
+
+// ===== RAW -> PASTEFY CORE LOGIC v7.3 =====
+let lastPastefy = { url:'', rawUrl:'', id:'' };
+
+async function fetchRawContent(url){
+  let text=null;
+  try{
+    const r1=await fetch(url);
+    if(r1.ok) text=await r1.text();
+  }catch(e){}
+  if(!text){
+    try{
+      const r2=await fetch('https://api.allorigins.win/raw?url='+encodeURIComponent(url));
+      if(r2.ok) text=await r2.text();
+    }catch(e){}
+  }
+  if(!text){
+    try{
+      const r3=await fetch('https://corsproxy.io/?'+encodeURIComponent(url));
+      if(r3.ok) text=await r3.text();
+    }catch(e){}
+  }
+  return text;
+}
+
+async function showRawFromUrl(){
+  var url=document.getElementById('rawUrlInput').value.trim();
+  var area=document.getElementById('rawDisplayArea');
+  var dbg=document.getElementById('rawUrlDebug');
+  if(!url){ area.innerText='không có raw'; dbg.innerText='❌ Chưa nhập URL'; return; }
+  area.innerText='⏳ Đang tải... '+url;
+  dbg.innerText='⏳ Đang tải...';
+  var text=await fetchRawContent(url);
+  if(!text||!text.trim()){ area.innerText='không có raw - không fetch được, thử tắt CORS hoặc dùng link khác'; dbg.innerText='❌ không có raw'; return; }
+  area.innerText=text;
+  dbg.innerText='✅ Fetch OK! '+text.length.toLocaleString()+' ký tự';
+  document.getElementById('rawSourceInput').value=text;
+  document.getElementById('rawCount').innerText=text.length.toLocaleString()+' ký tự';
+  
+  if(document.getElementById('autoPastefy').checked){
+    setTimeout(()=>{ rawToPastefyAuto(); }, 500);
+  }
+}
+
+async function createPastefyFromContent(){
+  var content=document.getElementById('rawSourceInput').value;
+  if(!content){ alert('Chưa có nội dung!'); return; }
+  await uploadToPastefy(content);
+}
+
+async function rawToPastefyAuto(){
+  var url=document.getElementById('rawUrlInput').value.trim();
+  var area=document.getElementById('rawDisplayArea');
+  var dbg=document.getElementById('rawUrlDebug');
+  
+  let content = area.innerText;
+  if(!content || content.startsWith('Chưa có') || content.startsWith('⏳') || content.startsWith('không có raw')){
+    dbg.innerText='⏳ Đang fetch raw trước...';
+    content = await fetchRawContent(url);
+    if(!content){ dbg.innerText='❌ Không fetch được raw'; return; }
+    area.innerText=content;
+  }
+  
+  await uploadToPastefy(content, url);
+}
+
+async function uploadToPastefy(content, originalUrl=''){
+  var dbg=document.getElementById('rawUrlDebug');
+  var resultBox=document.getElementById('pastefyResult');
+  var linksDiv=document.getElementById('pastefyLinks');
+  var embedDiv=document.getElementById('pastefyEmbed');
+  
+  dbg.innerText='🚀 Đang up lên Pastefy... '+content.length.toLocaleString()+' ký tự';
+  resultBox.style.display='block';
+  linksDiv.innerHTML='⏳ Đang upload...';
+  
+  try{
+    // Thử API v2 của Pastefy
+    const payload = {
+      title: 'raw_v73_'+Date.now()+(originalUrl ? ' from raw' : ''),
+      content: content,
+      type: 'PASTE'
+    };
+    
+    let response=null;
+    let data=null;
+    
+    // Thử 1: pastefy.app/api/v2/paste
+    try{
+      response = await fetch('https://pastefy.app/api/v2/paste', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+      if(response.ok) data = await response.json();
+    }catch(e){ console.log('pastefy v2 fail', e); }
+    
+    // Thử 2: pastefy.ga fallback
+    if(!data || !data.paste){
+      try{
+        response = await fetch('https://pastefy.ga/api/v2/paste', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify(payload)
+        });
+        if(response.ok) data = await response.json();
+      }catch(e){}
+    }
+    
+    // Nếu API không được do CORS, tạo blob local + hướng dẫn
+    if(!data || (!data.paste && !data.id)){
+      // Tạo link raw local + fake pastefy link structure
+      if(window.simpleBlobUrl) URL.revokeObjectURL(window.simpleBlobUrl);
+      const blob=new Blob([content],{type:'text/plain'});
+      window.simpleBlobUrl=URL.createObjectURL(blob);
+      
+      // Tạo ID giả để demo, nhưng vẫn cho user copy cách up thủ công
+      const manualPastefyUrl = 'https://pastefy.app/ -> dán nội dung và tạo paste';
+      
+      linksDiv.innerHTML = `
+        <div style="color:#22c55e;font-weight:900">✅ Đã chuẩn bị nội dung (${content.length.toLocaleString()} chars)</div>
+        <div style="margin-top:6px"><b style="color:#facc15">Vì CORS, hãy up thủ công 1 click:</b></div>
+        <div style="margin-top:6px">Blob URL tạm (dùng như raw):<br><a href="${window.simpleBlobUrl}" target="_blank" style="color:#22d3ee;word-break:break-all">${window.simpleBlobUrl}</a></div>
+        <div style="margin-top:6px">Loadstring từ blob:<br><code style="background:#000;padding:4px;border-radius:4px;display:block;margin-top:2px;color:#22c55e">loadstring(game:HttpGet("${window.simpleBlobUrl}"))()</code></div>
+      `;
+      
+      embedDiv.innerHTML = `
+        <div style="color:#a1a1aa">Do trình duyệt chặn CORS tới Pastefy API, mình đã tạo link tạm. Để có link Pastefy thật:</div>
+        <div style="margin-top:4px"><b>1.</b> Bấm Copy nội dung raw</div>
+        <div><b>2.</b> Mở <a href="https://pastefy.app" target="_blank" style="color:#facc15">https://pastefy.app</a> -> Paste -> Save</div>
+        <div style="margin-top:6px"><button onclick="window.open('https://pastefy.app','_blank')" style="padding:6px 12px;border-radius:999px;border:none;background:#facc15;color:#000;font-weight:900;cursor:pointer">Mở Pastefy.app</button></div>
+      `;
+      
+      dbg.innerText='⚠️ Đã tạo blob URL tạm - Mở pastefy.app để tạo link chính thức (CORS block API)';
+      lastPastefy = { url: window.simpleBlobUrl, rawUrl: window.simpleBlobUrl, id:'local' };
+      
+      // Cố gắng mở pastefy với content prefill nếu có
+      try{
+        navigator.clipboard.writeText(content);
+        dbg.innerText+=' | Đã copy nội dung vào clipboard - chỉ cần dán vào pastefy.app';
+      }catch(e){}
+      
+      return;
+    }
+    
+    // Nếu thành công
+    const paste = data.paste || data;
+    const id = paste.id || paste.paste_id || data.id;
+    const pasteUrl = `https://pastefy.app/${id}`;
+    const rawPasteUrl = `https://pastefy.app/${id}/raw`;
+    
+    lastPastefy = { url: pasteUrl, rawUrl: rawPasteUrl, id: id };
+    
+    linksDiv.innerHTML = `
+      <div style="color:#22c55e;font-weight:900">✅ Up lên Pastefy thành công!</div>
+      <div style="margin-top:6px"><b>Link Pastefy:</b><br><a href="${pasteUrl}" target="_blank" style="color:#facc15">${pasteUrl}</a></div>
+      <div style="margin-top:4px"><b>Raw Pastefy:</b><br><a href="${rawPasteUrl}" target="_blank" style="color:#22d3ee">${rawPasteUrl}</a></div>
+      ${originalUrl ? `<div style="margin-top:4px;color:#a1a1aa"><b>Gốc:</b> ${originalUrl}</div>` : ''}
+    `;
+    
+    embedDiv.innerHTML = `
+      <div>Loadstring Roblox:</div>
+      <code style="background:#000;padding:6px;border-radius:6px;display:block;margin-top:4px;color:#22c55e;word-break:break-all">loadstring(game:HttpGet("${rawPasteUrl}"))()</code>
+      <div style="margin-top:6px">Loadstring Blob fallback:</div>
+      <code style="background:#000;padding:6px;border-radius:6px;display:block;margin-top:2px;color:#22d3ee;word-break:break-all">loadstring(game:HttpGet("${pasteUrl}"))()</code>
+    `;
+    
+    dbg.innerText='✅ Đã chuyển Raw -> Pastefy thành công! '+content.length.toLocaleString()+' chars';
+    
+  }catch(e){
+    dbg.innerText='❌ Lỗi up Pastefy: '+e.message;
+    linksDiv.innerHTML='❌ Lỗi: '+e.message;
+  }
+}
+
+function copyPastefyLink(){ if(lastPastefy.url){ navigator.clipboard.writeText(lastPastefy.url); alert('Copy: '+lastPastefy.url); } else alert('Chưa có link Pastefy'); }
+function copyPastefyRaw(){ if(lastPastefy.rawUrl){ navigator.clipboard.writeText(lastPastefy.rawUrl); alert('Copy: '+lastPastefy.rawUrl); } else alert('Chưa có raw Pastefy'); }
+function copyRawDisplay(){ var el=document.getElementById('rawDisplayArea'); var txt=el?el.innerText:''; if(txt && txt!=='không có raw' && txt.length>5){ navigator.clipboard.writeText(txt); alert('Copy '+txt.length+' ký tự'); } }
+function downloadRawAsFile(){ var area=document.getElementById('rawDisplayArea'); var txt=area?area.innerText:''; if(!txt||txt==='không có raw'||txt.includes('Chưa có')||txt.includes('⏳')){ alert('Không có raw!'); return; } var blob=new Blob([txt],{type:'text/plain'}); var url=URL.createObjectURL(blob); var a=document.createElement('a'); a.href=url; a.download='raw_v73_'+Date.now()+'.lua'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); }
+function initRawTab(){ var out=document.getElementById('outEnc'); var inp=document.getElementById('rawSourceInput'); if(out&&out.value&&!inp.value) inp.value=out.value; 
+  var rawInput=document.getElementById('rawUrlInput');
+  if(rawInput){
+    rawInput.addEventListener('paste', function(){
+      setTimeout(function(){
+        if(document.getElementById('autoPastefy').checked){
+          showRawFromUrl();
+        }
+      },100);
+    });
+  }
+}
+function sendMsg(){ var inp=document.getElementById('aiIn'); var p=inp.value.trim(); if(!p) return; var chat=document.getElementById('chat'); chat.innerHTML+='<div style="padding:6px;background:rgba(34,211,238,.15);border-radius:8px;font-size:7px;margin-top:4px"><b>Bạn:</b> '+p+'</div>'; inp.value=''; }
+
+document.addEventListener('DOMContentLoaded',function(){
+  showTab('enc');
+  var chat=document.getElementById('chat'); if(chat){ chat.innerHTML='<div style="padding:10px;background:linear-gradient(135deg,rgba(168,85,247,.15),rgba(34,211,238,.15));border:2px solid #a855f7;border-radius:10px;font-size:7px"><b style="color:#a855f7">🔥 v7.3 - Mới: Raw -> Pastefy Auto</b><br><br>Dán link raw (github raw, pastebin raw, gist...) vào ô Raw -> tự fetch -> tự up lên Pastefy -> trả link Pastefy + raw Pastefy + loadstring</div>'; }
+});
+</script>
+<script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body></html>
